@@ -35,14 +35,15 @@ type Company = {
   slug: string
   name: string
   zip: string
-  pref: string
-  pref_slug: string
   city: string
-  city_slug: string
-  address: string
   tel: string
   url: string
   numbers: number[]
+}
+
+type CityData = {
+  city: string
+  company_count: number
 }
 
 export async function generateStaticParams() {
@@ -84,25 +85,25 @@ export default async function CityPage({ params }: { params: Promise<{ pref: str
 
   const supabase = createClient(supabaseUrl, supabaseKey)
 
-  // 市区町村名を取得
-  const { data: cityData } = await supabase
-    .from('city_page_targets')
-    .select('city, company_count')
-    .eq('pref_slug', pref)
-    .eq('city_slug', city)
-    .single()
+  const [{ data: cityData }, { data: companies, error }] = await Promise.all([
+    supabase
+      .from('city_page_targets')
+      .select('city, company_count')
+      .eq('pref_slug', pref)
+      .eq('city_slug', city)
+      .single(),
+    supabase
+      .from('companies')
+      .select('id, slug, name, zip, city, tel, url, numbers')
+      .eq('pref_slug', pref)
+      .eq('city_slug', city)
+      .order('name'),
+  ])
 
   if (!cityData) return <div>市区町村が見つかりません</div>
-
-  // 会社一覧を取得
-  const { data: companies, error } = await supabase
-    .from('companies')
-    .select('id, slug, name, zip, city, tel, url, numbers')
-    .eq('pref_slug', pref)
-    .eq('city_slug', city)
-    .order('name')
-
   if (error || !companies) return <div>データの取得に失敗しました</div>
+
+  const cd = cityData as CityData
 
   return (
     <main>
@@ -120,35 +121,24 @@ export default async function CityPage({ params }: { params: Promise<{ pref: str
           <a href="/" style={{ color: '#999' }}>トップ</a> &gt;{' '}
           <a href="/prefecture" style={{ color: '#999' }}>都道府県一覧</a> &gt;{' '}
           <a href={`/${pref}`} style={{ color: '#999' }}>{prefName}</a> &gt;{' '}
-          {cityData.city}
+          {cd.city}
         </div>
         <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>
-          {cityData.city}の警備会社一覧
+          {cd.city}の警備会社一覧
         </h1>
         <p style={{ color: '#666', marginBottom: '32px' }}>
           {companies.length}社掲載 — 2026年6月更新
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '12px' }}>
-          {companies.map((c: Company) => (
+          {(companies as Company[]).map(c => (
             <a key={c.id} href={`/companies/${c.slug}`} style={{ textDecoration: 'none' }}>
               <div style={{ border: '1px solid #e5e5e5', borderRadius: '12px', padding: '16px', background: 'white', height: '100%' }}>
-                <div style={{ fontSize: '15px', fontWeight: 700, color: '#1a1a2e', marginBottom: '4px' }}>
-                  {c.name}
-                </div>
-                <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>
-                  〒{c.zip} {c.city}
-                </div>
-                <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>
-                  📞 {c.tel}
-                </div>
+                <div style={{ fontSize: '15px', fontWeight: 700, color: '#1a1a2e', marginBottom: '4px' }}>{c.name}</div>
+                <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>〒{c.zip} {c.city}</div>
+                <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>📞 {c.tel}</div>
                 <div>
                   {(c.numbers ?? []).map((num: number) => (
-                    <span key={num} style={{
-                      fontSize: '11px', padding: '2px 8px', borderRadius: '99px',
-                      background: NUMBER_COLORS[num] + '22', color: NUMBER_COLORS[num],
-                      fontWeight: 600, marginRight: '4px', marginBottom: '4px',
-                      display: 'inline-block'
-                    }}>
+                    <span key={num} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: NUMBER_COLORS[num] + '22', color: NUMBER_COLORS[num], fontWeight: 600, marginRight: '4px', marginBottom: '4px', display: 'inline-block' }}>
                       {NUMBER_LABELS[num]}
                     </span>
                   ))}

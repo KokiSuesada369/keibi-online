@@ -1,6 +1,16 @@
+import { articles } from '@/app/column/data'
+
 export const metadata = {
   title: '警備業界コラム | keibi.online',
   description: '警備会社の選び方・警備料金の相場・警備業界の基礎知識などをコラム形式でお届けします。',
+}
+
+const CATEGORY_COLORS: Record<string, string> = {
+  'ガイド': '#457b9d',
+  '料金': '#2a9d8f',
+  '資格・仕事': '#6a4c93',
+  '法律・制度': '#e76f51',
+  'ニュース': '#e9c46a',
 }
 
 export default function ColumnPage() {
@@ -16,15 +26,31 @@ export default function ColumnPage() {
           <a href="/contact" style={{ color: 'white', textDecoration: 'none' }}>お問い合わせ</a>
         </nav>
       </header>
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '48px 24px' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '48px 24px' }}>
         <div style={{ fontSize: '13px', color: '#999', marginBottom: '16px' }}>
           <a href="/" style={{ color: '#999' }}>トップ</a> &gt; コラム
         </div>
         <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>警備業界コラム</h1>
         <p style={{ color: '#666', marginBottom: '40px' }}>警備会社の選び方や業界の基礎知識をお届けします。</p>
-        <div style={{ background: 'white', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '48px', textAlign: 'center', color: '#999' }}>
-          <p style={{ fontSize: '16px', marginBottom: '8px' }}>準備中</p>
-          <p style={{ fontSize: '14px' }}>近日公開予定です。</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
+          {articles.map(article => {
+            const color = CATEGORY_COLORS[article.category] ?? '#1a1a2e'
+            return (
+              <a key={article.slug} href={`/column/${article.slug}`} style={{ textDecoration: 'none' }}>
+                <div style={{ border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', background: 'white', height: '100%' }}>
+                  <span style={{ fontSize: '11px', padding: '3px 10px', borderRadius: '99px', background: color + '22', color, fontWeight: 600, marginBottom: '12px', display: 'inline-block' }}>
+                    {article.category}
+                  </span>
+                  <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#1a1a2e', marginBottom: '8px', lineHeight: 1.5 }}>
+                    {article.title}
+                  </h2>
+                  <p style={{ fontSize: '13px', color: '#666', lineHeight: 1.6 }}>
+                    {article.description.slice(0, 60)}...
+                  </p>
+                </div>
+              </a>
+            )
+          })}
         </div>
       </div>
       <footer style={{ background: '#1a1a2e', color: 'white', textAlign: 'center', padding: '32px 24px', fontSize: '14px' }}>

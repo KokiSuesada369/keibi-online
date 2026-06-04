@@ -61,14 +61,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const supabase = createClient(supabaseUrl, supabaseKey)
   const { data: c } = await supabase
     .from('companies')
-    .select('name, pref, city, numbers')
+    .select('name, pref, city')
     .eq('slug', slug)
     .single()
   if (!c) return {}
-  const desc = generateDescription({ name: c.name, pref: c.pref, city: c.city, zip: '', address: '', tel: '', url: '', numbers: c.numbers ?? [] })
   return {
     title: `${c.name} | ${c.pref}${c.city}の警備会社 | keibi.online`,
-    description: desc.slice(0, 120),
+    description: `${c.name}（${c.pref}${c.city}）の警備会社情報。対応業務・所在地・電話番号を掲載。`,
   }
 }
 
@@ -124,7 +123,6 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
       </header>
 
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 24px' }}>
-        {/* パンくず */}
         <div style={{ fontSize: '13px', color: '#999', marginBottom: '20px' }}>
           <a href="/" style={{ color: '#999' }}>トップ</a> &gt;{' '}
           <a href="/prefecture" style={{ color: '#999' }}>都道府県一覧</a> &gt;{' '}
@@ -132,10 +130,8 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
           {c.name}
         </div>
 
-        {/* 会社名 */}
         <h1 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '24px', color: '#1a1a2e' }}>{c.name}</h1>
 
-        {/* 基本情報カード */}
         <div style={{ background: 'white', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
             <tbody>
@@ -165,7 +161,6 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
           </table>
         </div>
 
-        {/* 対応業務 */}
         <div style={{ background: 'white', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '16px', color: '#1a1a2e' }}>対応している警備業務</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -188,13 +183,11 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
           </div>
         </div>
 
-        {/* 自動生成紹介文 */}
         <div style={{ background: 'white', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '12px', color: '#1a1a2e' }}>会社紹介</h2>
           <p style={{ fontSize: '14px', lineHeight: 1.9, color: '#444' }}>{description}</p>
         </div>
 
-        {/* 関連リンク */}
         <div style={{ background: '#f0f4f8', borderRadius: '12px', padding: '20px', marginBottom: '32px' }}>
           <p style={{ fontSize: '13px', color: '#666', marginBottom: '12px', fontWeight: 600 }}>
             {c.pref}の他の警備会社

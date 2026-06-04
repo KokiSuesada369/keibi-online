@@ -164,9 +164,6 @@ export default async function PrefServicePage({ params }: { params: Promise<{ pr
           </div>
         )}
       </div>
-      <footer style={{ background: '#1a1a2e', color: 'white', textAlign: 'center', padding: '32px 24px', fontSize: '14px', opacity: 0.7 }}>
-        © 2026 keibi.online
-      </footer>
     </main>
   )
 }

@@ -139,9 +139,6 @@ export default async function CityPage({ params }: { params: Promise<{ pref: str
           ))}
         </div>
       </div>
-      <footer style={{ background: '#1a1a2e', color: 'white', textAlign: 'center', padding: '32px 24px', fontSize: '14px', opacity: 0.7 }}>
-        © 2026 keibi.online
-      </footer>
     </main>
   )
 }

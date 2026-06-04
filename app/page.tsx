@@ -76,12 +76,9 @@ export default async function HomePage() {
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '32px', lineHeight: 1.8 }}>
             警備会社の検索・業界ニュース・資格情報・求人まで<br />警備業界に関する情報を一か所に集約
           </p>
-          <div style={{ background: 'white', borderRadius: '10px', padding: '6px 6px 6px 16px', display: 'flex', gap: '8px', alignItems: 'center', maxWidth: '420px', margin: '0 auto' }}>
-            <span style={{ fontSize: '13px', color: '#aaa', flex: 1 }}>会社名・都道府県で検索...</span>
-            <a href="/prefecture" style={{ background: '#1a1a2e', color: 'white', border: 'none', borderRadius: '7px', padding: '8px 20px', fontSize: '13px', fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap' }}>
-              警備会社を探す
-            </a>
-          </div>
+          <a href="/prefecture" style={{ display: 'inline-block', background: '#f4820a', color: 'white', borderRadius: '8px', padding: '12px 32px', fontSize: '15px', fontWeight: 700, textDecoration: 'none' }}>
+            警備会社を探す →
+          </a>
         </div>
         <script dangerouslySetInnerHTML={{ __html: `
           (function(){
@@ -156,15 +153,12 @@ export default async function HomePage() {
            { name: '企業警備保障株式会社', city: '広島県広島市', nums: [{label:'1号警備',bg:'#eef2ff',color:'#3b4fa8'},{label:'2号警備',bg:'#e6f7f4',color:'#0f6e56'},{label:'4号警備',bg:'#fef3f2',color:'#b91c1c'}], slug: 'hiroshima-35' },
           ].map(c => (
             <a key={c.slug} href={`/companies/${c.slug}`} style={{ textDecoration: 'none' }}>
-              <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '8px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a2e', marginBottom: '2px' }}>{c.name}</div>
-                  <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>{c.city}</div>
-                  <div style={{ display: 'flex', gap: '4px' }}>
-                    {c.nums.map(n => <span key={n.label} style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: n.bg, color: n.color, fontWeight: 600 }}>{n.label}</span>)}
-                  </div>
+              <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '8px', padding: '10px 12px' }}>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a2e', marginBottom: '2px' }}>{c.name}</div>
+                <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>{c.city}</div>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  {c.nums.map(n => <span key={n.label} style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: n.bg, color: n.color, fontWeight: 600 }}>{n.label}</span>)}
                 </div>
-                <div style={{ fontSize: '11px', color: '#1a1a2e', fontWeight: 700, opacity: 0.7 }}>📞 タップで発信</div>
               </div>
             </a>
           ))}
@@ -213,27 +207,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* フッター */}
-      <footer style={{ background: 'white', borderTop: '1px solid #e8e8e8', padding: '32px 24px' }}>
-        <div style={{ fontSize: '17px', fontWeight: 800, color: '#1a1a2e', marginBottom: '4px' }}>
-          keibi<span style={{ color: '#f4820a' }}>.online</span>
-        </div>
-        <div style={{ fontSize: '12px', color: '#888', marginBottom: '20px' }}>警備業界専門のポータルサイト</div>
-        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '20px' }}>
-          {[
-            { label: '警備会社検索', href: '/prefecture' },
-            { label: '業界ニュース', href: '/news' },
-            { label: '資格情報', href: '/license' },
-            { label: 'コラム', href: '/column' },
-            { label: '求人情報', href: '/news' },
-            { label: 'お問い合わせ', href: '/contact' },
-            { label: '修正依頼', href: '/contact' },
-          ].map(l => (
-            <a key={l.label} href={l.href} style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>{l.label}</a>
-          ))}
-        </div>
-        <div style={{ fontSize: '11px', color: '#bbb' }}>© 2026 keibi.online All rights reserved.</div>
-      </footer>
     </main>
   )
 }

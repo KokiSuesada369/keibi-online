@@ -1,14 +1,23 @@
 export default function Footer() {
   return (
-    <footer style={{ background: '#1a1a2e', color: 'white', textAlign: 'center', padding: '32px 24px', fontSize: '14px' }}>
-      <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center', gap: '24px', flexWrap: 'wrap' }}>
-        <a href="/prefecture" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>都道府県から探す</a>
-        <a href="/news" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>ニュース</a>
-        <a href="/license" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>資格情報</a>
-        <a href="/column" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>コラム</a>
-        <a href="/contact" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>お問い合わせ</a>
+    <footer style={{ background: 'white', borderTop: '1px solid #e8e8e8', padding: '32px 24px' }}>
+      <div style={{ fontSize: '17px', fontWeight: 800, color: '#1a1a2e', marginBottom: '4px' }}>
+        keibi<span style={{ color: '#f4820a' }}>.online</span>
       </div>
-      <div style={{ opacity: 0.5 }}>© 2026 keibi.online</div>
+      <div style={{ fontSize: '12px', color: '#888', marginBottom: '20px' }}>警備業界専門のポータルサイト</div>
+      <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '20px' }}>
+        {[
+          { label: '警備会社検索', href: '/prefecture' },
+          { label: 'ニュース', href: '/news' },
+          { label: '資格情報', href: '/license' },
+          { label: 'コラム', href: '/column' },
+          { label: 'お問い合わせ', href: '/contact' },
+          { label: '修正依頼', href: '/contact' },
+        ].map(l => (
+          <a key={l.label} href={l.href} style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>{l.label}</a>
+        ))}
+      </div>
+      <div style={{ fontSize: '11px', color: '#bbb' }}>© 2026 keibi.online All rights reserved.</div>
     </footer>
   )
 }

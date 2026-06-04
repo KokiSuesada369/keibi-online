@@ -132,7 +132,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
                 <td style={{ padding: '12px 16px 12px 0', color: '#666', fontWeight: 600 }}>電話番号</td>
                 <td style={{ padding: '12px 0' }}>
                   {c.tel
-                    ? <a href={`tel:${c.tel}`} style={{ color: '#e63946', fontWeight: 700, fontSize: '16px', textDecoration: 'none' }}>📞 {c.tel}</a>
+                    ? <a href={`tel:${c.tel}`} style={{ color: '#e63946', fontWeight: 700, fontSize: '16px', textDecoration: 'none' }}>{c.tel}</a>
                     : <span style={{ color: '#999' }}>—</span>}
                 </td>
               </tr>
@@ -196,21 +196,6 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
         </a>
       </div>
 
-      <footer style={{ background: '#1a1a2e', color: 'white', padding: '40px 24px', marginTop: '40px' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '24px', marginBottom: '24px' }}>
-          <div style={{ fontWeight: 800, fontSize: '18px' }}>
-            keibi<span style={{ color: '#e63946' }}>.online</span>
-          </div>
-          <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-            <a href="/prefecture" style={{ color: 'white', textDecoration: 'none', fontSize: '13px', opacity: 0.7 }}>都道府県から探す</a>
-            <a href="/column" style={{ color: 'white', textDecoration: 'none', fontSize: '13px', opacity: 0.7 }}>コラム</a>
-            <a href="/contact" style={{ color: 'white', textDecoration: 'none', fontSize: '13px', opacity: 0.7 }}>お問い合わせ</a>
-          </div>
-        </div>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px', textAlign: 'center', fontSize: '13px', opacity: 0.4 }}>
-          © 2026 keibi.online All rights reserved.
-        </div>
-      </footer>
     </main>
   )
 }

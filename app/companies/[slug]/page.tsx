@@ -38,18 +38,15 @@ export async function generateStaticParams() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
-
   const allSlugs: { slug: string }[] = []
   const pageSize = 1000
   let from = 0
   let hasMore = true
-
   while (hasMore) {
     const { data } = await supabase
       .from('companies')
       .select('slug')
       .range(from, from + pageSize - 1)
-
     if (!data || data.length === 0) {
       hasMore = false
     } else {
@@ -58,7 +55,6 @@ export async function generateStaticParams() {
       if (data.length < pageSize) hasMore = false
     }
   }
-
   return allSlugs.map(c => ({ slug: c.slug }))
 }
 
@@ -72,8 +68,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     .single()
   if (!c) return {}
   return {
-    title: `${c.name} | ${c.pref}の警備会社 | keibi.online`,
-    description: `${c.name}（${c.pref}${c.city}）の警備会社情報。対応業務・所在地・電話番号を掲載。`,
+    title: `${c.name} | ${c.pref}${c.city}の警備会社 | keibi.online`,
+    description: `${c.name}（${c.pref}${c.city}）の警備会社情報。対応業務・所在地・電話番号を掲載。施設警備・交通誘導警備など対応業務を確認できます。`,
   }
 }
 
@@ -89,8 +85,32 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
   if (!company) notFound()
   const c = company as Company
 
+  // 構造化データ（JSON-LD）
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    'name': c.name,
+    'address': {
+      '@type': 'PostalAddress',
+      'postalCode': c.zip,
+      'addressRegion': c.pref,
+      'addressLocality': c.city,
+      'streetAddress': c.address,
+      'addressCountry': 'JP',
+    },
+    ...(c.tel && { 'telephone': c.tel }),
+    ...(c.url && { 'url': c.url }),
+    'areaServed': c.pref,
+    'description': `${c.pref}${c.city}の警備会社。${(c.numbers ?? []).map((n: number) => NUMBER_LABELS[n]).join('・')}に対応。`,
+  }
+
   return (
     <main>
+      {/* 構造化データ */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header style={{ background: '#1a1a2e', color: 'white', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <a href="/" style={{ fontWeight: 700, fontSize: '20px', color: 'white', textDecoration: 'none' }}>keibi.online</a>
         <nav style={{ display: 'flex', gap: '24px', fontSize: '14px', flexWrap: 'wrap' }}>
@@ -114,11 +134,17 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
             <tbody>
               <tr style={{ borderBottom: '1px solid #f0f0f0' }}>
                 <td style={{ padding: '12px 16px 12px 0', color: '#666', width: '120px', fontWeight: 500 }}>所在地</td>
-                <td style={{ padding: '12px 0' }}>〒{c.zip} {c.pref}{c.city}{c.address}</td>
+                <td style={{ padding: '12px 0' }}>
+                  {c.zip && `〒${c.zip} `}{c.pref}{c.city}{c.address}
+                </td>
               </tr>
               <tr style={{ borderBottom: '1px solid #f0f0f0' }}>
                 <td style={{ padding: '12px 16px 12px 0', color: '#666', fontWeight: 500 }}>電話番号</td>
-                <td style={{ padding: '12px 0' }}>{c.tel || '—'}</td>
+                <td style={{ padding: '12px 0' }}>
+                  {c.tel
+                    ? <a href={`tel:${c.tel}`} style={{ color: '#1a1a2e' }}>{c.tel}</a>
+                    : '—'}
+                </td>
               </tr>
               <tr>
                 <td style={{ padding: '12px 16px 12px 0', color: '#666', fontWeight: 500 }}>ホームページ</td>
@@ -144,6 +170,21 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
               </div>
             </div>
           ))}
+        </div>
+        <div style={{ background: '#f0f4f8', borderRadius: '12px', padding: '20px', marginBottom: '32px' }}>
+          <p style={{ fontSize: '14px', color: '#666', marginBottom: '12px' }}>
+            {c.pref}の他の警備会社も見る
+          </p>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <a href={`/${c.pref_slug}`} style={{ padding: '6px 14px', borderRadius: '99px', border: '1px solid #1a1a2e', color: '#1a1a2e', fontSize: '13px', textDecoration: 'none' }}>
+              {c.pref}の警備会社一覧
+            </a>
+            {(c.numbers ?? []).map((num: number) => (
+              <a key={num} href={`/${c.pref_slug}/service/${num}`} style={{ padding: '6px 14px', borderRadius: '99px', border: `1px solid ${NUMBER_COLORS[num]}`, color: NUMBER_COLORS[num], fontSize: '13px', textDecoration: 'none' }}>
+                {c.pref}の{NUMBER_LABELS[num].split('（')[0]}
+              </a>
+            ))}
+          </div>
         </div>
         <a href={`/${c.pref_slug}`} style={{ color: '#457b9d', fontSize: '14px' }}>
           ← {c.pref}の警備会社一覧に戻る

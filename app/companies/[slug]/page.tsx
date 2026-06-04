@@ -1,4 +1,7 @@
-import companiesData from '@/data/companies.json'
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 const NUMBER_LABELS: Record<number, string> = {
   1: '1号警備（施設警備）',
@@ -6,7 +9,6 @@ const NUMBER_LABELS: Record<number, string> = {
   3: '3号警備（貴重品運搬警備）',
   4: '4号警備（身辺警備）',
 }
-
 const NUMBER_COLORS: Record<number, string> = {
   1: '#457b9d',
   2: '#2a9d8f',
@@ -14,9 +16,57 @@ const NUMBER_COLORS: Record<number, string> = {
   4: '#e63946',
 }
 
-export default function CompanyPage({ params }: { params: { slug: string } }) {
-  const company = (companiesData as any[]).find(c => c.slug === params.slug)
+export const revalidate = 86400
+
+type Company = {
+  id: number
+  slug: string
+  name: string
+  zip: string
+  pref: string
+  pref_slug: string
+  city: string
+  address: string
+  tel: string
+  url: string
+  numbers: number[]
+}
+
+export async function generateStaticParams() {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+  const { data } = await supabase.from('companies').select('slug')
+  return (data ?? []).map(c => ({ slug: c.slug }))
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const supabase = createClient(supabaseUrl, supabaseKey)
+  const { data: c } = await supabase
+    .from('companies')
+    .select('name, pref, city')
+    .eq('slug', slug)
+    .single()
+  if (!c) return {}
+  return {
+    title: `${c.name} | ${c.pref}の警備会社 | keibi.online`,
+    description: `${c.name}（${c.pref}${c.city}）の警備会社情報。対応業務・所在地・電話番号を掲載。`,
+  }
+}
+
+export default async function CompanyPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const supabase = createClient(supabaseUrl, supabaseKey)
+  const { data: company } = await supabase
+    .from('companies')
+    .select('*')
+    .eq('slug', slug)
+    .single()
+
   if (!company) return <div>会社が見つかりません</div>
+  const c = company as Company
 
   return (
     <main>
@@ -31,32 +81,37 @@ export default function CompanyPage({ params }: { params: { slug: string } }) {
       </header>
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '48px 24px' }}>
         <div style={{ fontSize: '13px', color: '#999', marginBottom: '16px' }}>
-          <a href="/" style={{ color: '#999' }}>トップ</a> &gt; <a href="/prefecture" style={{ color: '#999' }}>都道府県一覧</a> &gt; <a href={`/prefecture/${company.prefSlug}`} style={{ color: '#999' }}>{company.pref}</a> &gt; {company.name}
+          <a href="/" style={{ color: '#999' }}>トップ</a> &gt;{' '}
+          <a href="/prefecture" style={{ color: '#999' }}>都道府県一覧</a> &gt;{' '}
+          <a href={`/${c.pref_slug}`} style={{ color: '#999' }}>{c.pref}</a> &gt;{' '}
+          {c.name}
         </div>
-        <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>{company.name}</h1>
+        <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '24px' }}>{c.name}</h1>
         <div style={{ background: 'white', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
             <tbody>
-              {[
-                ['所在地', `〒${company.zip} ${company.pref}${company.city}${company.address}`],
-                ['電話番号', company.tel],
-                ['ホームページ', company.url ? company.url : '—'],
-              ].map(([label, value]) => (
-                <tr key={label} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                  <td style={{ padding: '12px 16px 12px 0', color: '#666', width: '120px', fontWeight: 500 }}>{label}</td>
-                  <td style={{ padding: '12px 0' }}>
-                    {label === 'ホームページ' && company.url
-                      ? <a href={company.url} target="_blank" rel="noopener noreferrer" style={{ color: '#457b9d' }}>{company.url}</a>
-                      : value}
-                  </td>
-                </tr>
-              ))}
+              <tr style={{ borderBottom: '1px solid #f0f0f0' }}>
+                <td style={{ padding: '12px 16px 12px 0', color: '#666', width: '120px', fontWeight: 500 }}>所在地</td>
+                <td style={{ padding: '12px 0' }}>〒{c.zip} {c.pref}{c.city}{c.address}</td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid #f0f0f0' }}>
+                <td style={{ padding: '12px 16px 12px 0', color: '#666', fontWeight: 500 }}>電話番号</td>
+                <td style={{ padding: '12px 0' }}>{c.tel || '—'}</td>
+              </tr>
+              <tr>
+                <td style={{ padding: '12px 16px 12px 0', color: '#666', fontWeight: 500 }}>ホームページ</td>
+                <td style={{ padding: '12px 0' }}>
+                  {c.url
+                    ? <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ color: '#457b9d' }}>{c.url}</a>
+                    : '—'}
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
         <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>対応している警備業務</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
-          {(company.numbers as number[]).map(num => (
+          {(c.numbers ?? []).map((num: number) => (
             <div key={num} style={{ background: 'white', border: `2px solid ${NUMBER_COLORS[num]}`, borderRadius: '8px', padding: '16px 20px' }}>
               <div style={{ fontWeight: 700, color: NUMBER_COLORS[num], marginBottom: '4px' }}>{NUMBER_LABELS[num]}</div>
               <div style={{ fontSize: '13px', color: '#666' }}>
@@ -68,13 +123,13 @@ export default function CompanyPage({ params }: { params: { slug: string } }) {
             </div>
           ))}
         </div>
-        <a href={`/prefecture/${company.prefSlug}`} style={{ color: '#457b9d', fontSize: '14px' }}>← {company.pref}の警備会社一覧に戻る</a>
+        <a href={`/${c.pref_slug}`} style={{ color: '#457b9d', fontSize: '14px' }}>
+          ← {c.pref}の警備会社一覧に戻る
+        </a>
       </div>
-      <footer style={{ background: '#1a1a2e', color: 'white', textAlign: 'center', padding: '32px 24px', fontSize: '14px', opacity: 0.7 }}>© 2026 keibi.online</footer>
+      <footer style={{ background: '#1a1a2e', color: 'white', textAlign: 'center', padding: '32px 24px', fontSize: '14px', opacity: 0.7 }}>
+        © 2026 keibi.online
+      </footer>
     </main>
   )
-}
-
-export async function generateStaticParams() {
-  return (companiesData as any[]).map(c => ({ slug: c.slug }))
 }

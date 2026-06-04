@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -37,8 +38,28 @@ export async function generateStaticParams() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
-  const { data } = await supabase.from('companies').select('slug')
-  return (data ?? []).map(c => ({ slug: c.slug }))
+
+  const allSlugs: { slug: string }[] = []
+  const pageSize = 1000
+  let from = 0
+  let hasMore = true
+
+  while (hasMore) {
+    const { data } = await supabase
+      .from('companies')
+      .select('slug')
+      .range(from, from + pageSize - 1)
+
+    if (!data || data.length === 0) {
+      hasMore = false
+    } else {
+      allSlugs.push(...data)
+      from += pageSize
+      if (data.length < pageSize) hasMore = false
+    }
+  }
+
+  return allSlugs.map(c => ({ slug: c.slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -65,18 +86,19 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
     .eq('slug', slug)
     .single()
 
-  if (!company) return <div>会社が見つかりません</div>
+  if (!company) notFound()
   const c = company as Company
 
   return (
     <main>
-      <header style={{ background: '#1a1a2e', color: 'white', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <header style={{ background: '#1a1a2e', color: 'white', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <a href="/" style={{ fontWeight: 700, fontSize: '20px', color: 'white', textDecoration: 'none' }}>keibi.online</a>
-        <nav style={{ display: 'flex', gap: '24px', fontSize: '14px' }}>
+        <nav style={{ display: 'flex', gap: '24px', fontSize: '14px', flexWrap: 'wrap' }}>
           <a href="/prefecture" style={{ color: 'white', textDecoration: 'none' }}>都道府県から探す</a>
           <a href="/news" style={{ color: 'white', textDecoration: 'none' }}>ニュース</a>
           <a href="/license" style={{ color: 'white', textDecoration: 'none' }}>資格情報</a>
           <a href="/column" style={{ color: 'white', textDecoration: 'none' }}>コラム</a>
+          <a href="/contact" style={{ color: 'white', textDecoration: 'none' }}>お問い合わせ</a>
         </nav>
       </header>
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '48px 24px' }}>
@@ -127,8 +149,15 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
           ← {c.pref}の警備会社一覧に戻る
         </a>
       </div>
-      <footer style={{ background: '#1a1a2e', color: 'white', textAlign: 'center', padding: '32px 24px', fontSize: '14px', opacity: 0.7 }}>
-        © 2026 keibi.online
+      <footer style={{ background: '#1a1a2e', color: 'white', textAlign: 'center', padding: '32px 24px', fontSize: '14px' }}>
+        <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center', gap: '24px', flexWrap: 'wrap' }}>
+          <a href="/prefecture" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>都道府県から探す</a>
+          <a href="/news" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>ニュース</a>
+          <a href="/license" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>資格情報</a>
+          <a href="/column" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>コラム</a>
+          <a href="/contact" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>お問い合わせ</a>
+        </div>
+        <div style={{ opacity: 0.5 }}>© 2026 keibi.online</div>
       </footer>
     </main>
   )

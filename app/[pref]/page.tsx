@@ -69,7 +69,7 @@ export default async function PrefecturePage({ params }: { params: Promise<{ pre
       .from('companies')
       .select('id, slug, name, zip, city, tel, url, numbers')
       .eq('pref_slug', pref)
-      .order('name'),
+      .order('featured', { ascending: false }).order('name'),
     supabase
       .from('city_page_targets')
       .select('city, city_slug, company_count')

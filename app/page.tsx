@@ -167,8 +167,8 @@ export default async function HomePage() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {[
-            { name: 'SAIZEN警備保障株式会社', city: '広島県広島市', nums: [{label:'1号警備',bg:'#eef2ff',color:'#3b4fa8'},{label:'2号警備',bg:'#e6f7f4',color:'#0f6e56'}], slug: 'hiroshima-1' },
-            { name: 'ALSOK広島株式会社', city: '広島県広島市', nums: [{label:'1号警備',bg:'#eef2ff',color:'#3b4fa8'},{label:'3号警備',bg:'#fff4e6',color:'#854f0b'}], slug: 'hiroshima-2' },
+           { name: 'SAIZEN警備保障株式会社', city: '広島県広島市西区', nums: [{label:'2号警備',bg:'#e6f7f4',color:'#0f6e56'}], slug: 'saizen-666' },
+           { name: '企業警備保障株式会社', city: '広島県広島市', nums: [{label:'1号警備',bg:'#eef2ff',color:'#3b4fa8'},{label:'2号警備',bg:'#e6f7f4',color:'#0f6e56'}], slug: 'hiroshima-35' },
           ].map(c => (
             <a key={c.slug} href={`/companies/${c.slug}`} style={{ textDecoration: 'none' }}>
               <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '8px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

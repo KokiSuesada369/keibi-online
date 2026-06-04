@@ -109,19 +109,6 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <header style={{ background: '#1a1a2e', color: 'white', padding: '0 24px', position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '60px' }}>
-          <a href="/" style={{ fontWeight: 800, fontSize: '20px', color: 'white', textDecoration: 'none' }}>
-            keibi<span style={{ color: '#e63946' }}>.online</span>
-          </a>
-          <nav style={{ display: 'flex', gap: '20px', fontSize: '13px', flexWrap: 'wrap' }}>
-            <a href="/prefecture" style={{ color: 'rgba(255,255,255,0.85)', textDecoration: 'none' }}>都道府県から探す</a>
-            <a href="/column" style={{ color: 'rgba(255,255,255,0.85)', textDecoration: 'none' }}>コラム</a>
-            <a href="/contact" style={{ color: 'rgba(255,255,255,0.85)', textDecoration: 'none' }}>お問い合わせ</a>
-          </nav>
-        </div>
-      </header>
-
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 24px' }}>
         <div style={{ fontSize: '13px', color: '#999', marginBottom: '20px' }}>
           <a href="/" style={{ color: '#999' }}>トップ</a> &gt;{' '}

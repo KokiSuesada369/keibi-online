@@ -63,21 +63,6 @@ export default async function HomePage() {
     <main style={{ background: '#f5f6fa', minHeight: '100vh', fontFamily: "'Noto Sans JP', sans-serif" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      {/* ヘッダー */}
-      <header style={{ background: 'white', borderBottom: '1px solid #e8e8e8', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '60px', position: 'sticky', top: 0, zIndex: 100 }}>
-        <a href="/" style={{ fontSize: '20px', fontWeight: 800, color: '#1a1a2e', textDecoration: 'none', letterSpacing: '-0.5px' }}>
-          keibi<span style={{ color: '#f4820a' }}>.online</span>
-        </a>
-        <nav style={{ display: 'flex', gap: '20px', fontSize: '13px', flexWrap: 'wrap' }}>
-          <a href="/prefecture" style={{ color: '#555', textDecoration: 'none' }}>警備会社</a>
-          <a href="/news" style={{ color: '#555', textDecoration: 'none' }}>ニュース</a>
-          <a href="/license" style={{ color: '#555', textDecoration: 'none' }}>資格</a>
-          <a href="/column" style={{ color: '#555', textDecoration: 'none' }}>コラム</a>
-          <a href="/news" style={{ color: '#555', textDecoration: 'none' }}>求人</a>
-          <a href="/contact" style={{ color: '#555', textDecoration: 'none' }}>お問い合わせ</a>
-        </nav>
-      </header>
-
       {/* ヒーロー */}
       <section style={{ position: 'relative', padding: '56px 24px 48px', textAlign: 'center', background: '#0f172a', overflow: 'hidden' }}>
         <canvas id="particle-canvas" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />

@@ -5,15 +5,11 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 const NUMBER_LABELS: Record<number, string> = {
-  1: '1号警備',
-  2: '2号警備',
-  3: '3号警備',
-  4: '4号警備',
+  1: '1号警備', 2: '2号警備', 3: '3号警備', 4: '4号警備',
 }
 const NUMBER_COLORS: Record<number, string> = {
   1: '#457b9d', 2: '#2a9d8f', 3: '#e76f51', 4: '#e63946',
 }
-
 const PREF_MAP: Record<string, string> = {
   hokkaido:'北海道', aomori:'青森県', iwate:'岩手県', miyagi:'宮城県',
   akita:'秋田県', yamagata:'山形県', fukushima:'福島県', ibaraki:'茨城県',
@@ -41,7 +37,6 @@ type Company = {
   url: string
   numbers: number[]
 }
-
 type CityTarget = {
   city: string
   city_slug: string
@@ -65,7 +60,7 @@ export async function generateMetadata({ params }: { params: Promise<{ pref: str
 export default async function PrefecturePage({ params }: { params: Promise<{ pref: string }> }) {
   const { pref } = await params
   const prefName = PREF_MAP[pref]
-  if (!prefName) return notFound()
+  if (!prefName) notFound()
 
   const supabase = createClient(supabaseUrl, supabaseKey)
 
@@ -84,6 +79,31 @@ export default async function PrefecturePage({ params }: { params: Promise<{ pre
 
   if (error || !companies) return <div>データの取得に失敗しました</div>
 
+  // 構造化データ（JSON-LD）
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'name': `${prefName}の警備会社一覧`,
+    'description': `${prefName}の警備会社${companies.length}社を掲載。施設警備・交通誘導警備・雑踏警備など業務別に検索できます。`,
+    'numberOfItems': companies.length,
+    'itemListElement': companies.slice(0, 10).map((c, i) => ({
+      '@type': 'ListItem',
+      'position': i + 1,
+      'item': {
+        '@type': 'LocalBusiness',
+        'name': c.name,
+        'url': `https://keibi.online/companies/${c.slug}`,
+        ...(c.tel && { 'telephone': c.tel }),
+        'address': {
+          '@type': 'PostalAddress',
+          'addressRegion': prefName,
+          'addressLocality': c.city,
+          'addressCountry': 'JP',
+        },
+      },
+    })),
+  }
+
   const serviceLinks = [
     { num: 1, label: '1号警備', color: '#457b9d' },
     { num: 2, label: '2号警備', color: '#2a9d8f' },
@@ -93,13 +113,18 @@ export default async function PrefecturePage({ params }: { params: Promise<{ pre
 
   return (
     <main>
-      <header style={{ background: '#1a1a2e', color: 'white', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <header style={{ background: '#1a1a2e', color: 'white', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <a href="/" style={{ fontWeight: 700, fontSize: '20px', color: 'white', textDecoration: 'none' }}>keibi.online</a>
-        <nav style={{ display: 'flex', gap: '24px', fontSize: '14px' }}>
+        <nav style={{ display: 'flex', gap: '24px', fontSize: '14px', flexWrap: 'wrap' }}>
           <a href="/prefecture" style={{ color: 'white', textDecoration: 'none' }}>都道府県から探す</a>
           <a href="/news" style={{ color: 'white', textDecoration: 'none' }}>ニュース</a>
           <a href="/license" style={{ color: 'white', textDecoration: 'none' }}>資格情報</a>
           <a href="/column" style={{ color: 'white', textDecoration: 'none' }}>コラム</a>
+          <a href="/contact" style={{ color: 'white', textDecoration: 'none' }}>お問い合わせ</a>
         </nav>
       </header>
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px' }}>
@@ -145,8 +170,12 @@ export default async function PrefecturePage({ params }: { params: Promise<{ pre
             <a key={c.id} href={`/companies/${c.slug}`} style={{ textDecoration: 'none' }}>
               <div style={{ border: '1px solid #e5e5e5', borderRadius: '12px', padding: '16px', background: 'white', height: '100%' }}>
                 <div style={{ fontSize: '15px', fontWeight: 700, color: '#1a1a2e', marginBottom: '4px' }}>{c.name}</div>
-                <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>〒{c.zip} {c.city}</div>
-                <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>📞 {c.tel}</div>
+                <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>
+                  {c.zip && `〒${c.zip} `}{c.city}
+                </div>
+                <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>
+                  {c.tel && `📞 ${c.tel}`}
+                </div>
                 <div>
                   {(c.numbers ?? []).map((num: number) => (
                     <span key={num} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: NUMBER_COLORS[num] + '22', color: NUMBER_COLORS[num], fontWeight: 600, marginRight: '4px', marginBottom: '4px', display: 'inline-block' }}>
@@ -159,8 +188,15 @@ export default async function PrefecturePage({ params }: { params: Promise<{ pre
           ))}
         </div>
       </div>
-      <footer style={{ background: '#1a1a2e', color: 'white', textAlign: 'center', padding: '32px 24px', fontSize: '14px', opacity: 0.7 }}>
-        © 2026 keibi.online
+      <footer style={{ background: '#1a1a2e', color: 'white', textAlign: 'center', padding: '32px 24px', fontSize: '14px' }}>
+        <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center', gap: '24px', flexWrap: 'wrap' }}>
+          <a href="/prefecture" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>都道府県から探す</a>
+          <a href="/news" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>ニュース</a>
+          <a href="/license" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>資格情報</a>
+          <a href="/column" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>コラム</a>
+          <a href="/contact" style={{ color: 'white', textDecoration: 'none', opacity: 0.7 }}>お問い合わせ</a>
+        </div>
+        <div style={{ opacity: 0.5 }}>© 2026 keibi.online</div>
       </footer>
     </main>
   )

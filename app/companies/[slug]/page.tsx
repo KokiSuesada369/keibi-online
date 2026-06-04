@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     .eq('slug', slug)
     .single()
   if (!c) return {}
-  const desc = generateDescription({ ...c, zip: '', address: '', tel: '', url: '', slug: '' })
+  const desc = generateDescription({ name: c.name, pref: c.pref, city: c.city, zip: '', address: '', tel: '', url: '', numbers: c.numbers ?? [] })
   return {
     title: `${c.name} | ${c.pref}${c.city}の警備会社 | keibi.online`,
     description: desc.slice(0, 120),

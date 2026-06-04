@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { MetadataRoute } from 'next'
+import { articles } from '@/app/column/data'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -18,13 +19,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient(supabaseUrl, supabaseKey)
   const baseUrl = 'https://keibi.online'
 
-  // 静的ページ
   const staticPages: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'weekly', priority: 1.0 },
     { url: `${baseUrl}/prefecture`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${baseUrl}/column`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${baseUrl}/news`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${baseUrl}/license`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
   ]
 
-  // 都道府県ページ（47ページ）
   const prefPages: MetadataRoute.Sitemap = PREF_SLUGS.map(pref => ({
     url: `${baseUrl}/${pref}`,
     lastModified: new Date(),
@@ -32,7 +35,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }))
 
-  // 地域×業務ページ（188ページ）
   const prefServicePages: MetadataRoute.Sitemap = PREF_SLUGS.flatMap(pref =>
     [1, 2, 3, 4].map(service => ({
       url: `${baseUrl}/${pref}/service/${service}`,
@@ -42,7 +44,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   )
 
-  // 市区町村ページ
+  const columnPages: MetadataRoute.Sitemap = articles.map(a => ({
+    url: `${baseUrl}/column/${a.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }))
+
   const { data: cities } = await supabase
     .from('city_page_targets')
     .select('pref_slug, city_slug')
@@ -54,7 +62,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  // 会社詳細ページ（1,000件ずつ分割取得）
   const companyPages: MetadataRoute.Sitemap = []
   const pageSize = 1000
   let from = 0
@@ -86,6 +93,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticPages,
     ...prefPages,
     ...prefServicePages,
+    ...columnPages,
     ...cityPages,
     ...companyPages,
   ]

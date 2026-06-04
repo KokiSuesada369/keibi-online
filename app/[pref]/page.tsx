@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -64,7 +65,7 @@ export async function generateMetadata({ params }: { params: Promise<{ pref: str
 export default async function PrefecturePage({ params }: { params: Promise<{ pref: string }> }) {
   const { pref } = await params
   const prefName = PREF_MAP[pref]
-  if (!prefName) return <div>都道府県が見つかりません</div>
+  if (!prefName) return notFound()
 
   const supabase = createClient(supabaseUrl, supabaseKey)
 

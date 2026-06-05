@@ -6,14 +6,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-const SOURCES = [
-  {
-    pref: '神奈川県',
-    source: '神奈川県警察',
-    url: 'https://www.police.pref.kanagawa.jp/tetsuzuki/eigyokankei/keibi/mesd0099.html',
-  },
-]
-
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const secret = searchParams.get('secret')
@@ -21,9 +13,19 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  // crawl_sourcesからアクティブなURLを取得
+  const { data: sources, error: sourcesError } = await supabase
+    .from('crawl_sources')
+    .select('*')
+    .eq('is_active', true)
+
+  if (sourcesError || !sources) {
+    return NextResponse.json({ error: 'Failed to fetch sources' }, { status: 500 })
+  }
+
   const results = []
 
-  for (const source of SOURCES) {
+  for (const source of sources) {
     try {
       const res = await fetch(source.url, {
         headers: { 'User-Agent': 'Mozilla/5.0 (compatible; keibi.online bot)' }
@@ -38,7 +40,7 @@ export async function GET(request: Request) {
         .single()
 
       if (existing?.html_hash === hash) {
-        results.push({ url: source.url, status: '変更なし' })
+        results.push({ pref: source.pref, url: source.url, status: '変更なし' })
         continue
       }
 
@@ -48,12 +50,15 @@ export async function GET(request: Request) {
         updated_at: new Date().toISOString()
       })
 
-      results.push({ url: source.url, status: '変更あり', html_length: html.length })
+      results.push({ pref: source.pref, url: source.url, status: '変更あり', html_length: html.length })
 
     } catch (e: any) {
-      results.push({ url: source.url, status: 'エラー', error: e.message })
+      results.push({ pref: source.pref, url: source.url, status: 'エラー', error: e.message })
     }
   }
 
-  return NextResponse.json({ results })
+  return NextResponse.json({
+    checked: sources.length,
+    results
+  })
 }

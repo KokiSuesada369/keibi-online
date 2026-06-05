@@ -1,0 +1,452 @@
+{
+  "html": [
+    {
+      "id": 1,
+      "pref": "神奈川県",
+      "source": "神奈川県警察",
+      "url": "https://www.police.pref.kanagawa.jp/tetsuzuki/eigyokankei/keibi/mesd0099.html",
+      "is_active": true,
+      "created_at": "2026-06-05T02:19:24.196519+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 4,
+      "pref": "広島県",
+      "source": "広島県警察",
+      "url": "https://www.pref.hiroshima.lg.jp/site/police/keibigyoukousyuu.html",
+      "is_active": true,
+      "created_at": "2026-06-05T02:19:24.196519+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 8,
+      "pref": "千葉県",
+      "source": "千葉県警察",
+      "url": "https://www.police.pref.chiba.jp/fuhoka/shidoukyoiku_kanrisya.html",
+      "is_active": true,
+      "created_at": "2026-06-05T02:19:24.196519+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 9,
+      "pref": "福岡県",
+      "source": "福岡県警察",
+      "url": "https://www.police.pref.fukuoka.jp/seian/seikan/keibigyou/072_2.html",
+      "is_active": true,
+      "created_at": "2026-06-05T02:19:24.196519+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 11,
+      "pref": "兵庫県",
+      "source": "兵庫県警察",
+      "url": "https://www.police.pref.hyogo.lg.jp/tetuduki/keibigyou/index2.htm",
+      "is_active": true,
+      "created_at": "2026-06-05T02:19:24.196519+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 12,
+      "pref": "茨城県",
+      "source": "茨城県警察",
+      "url": "https://www.pref.ibaraki.jp/kenkei/a06_shinsei/guard/course.html",
+      "is_active": true,
+      "created_at": "2026-06-05T02:19:24.196519+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 13,
+      "pref": "京都府",
+      "source": "京都府警察",
+      "url": "https://www.pref.kyoto.jp/fukei/site/seiki_b/keibi/e_appli/r80526.html",
+      "is_active": true,
+      "created_at": "2026-06-05T02:19:24.196519+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 14,
+      "pref": "山口県",
+      "source": "山口県警察",
+      "url": "https://www.pref.yamaguchi.lg.jp/site/police/11149.html",
+      "is_active": true,
+      "created_at": "2026-06-05T06:17:43.5575+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 16,
+      "pref": "岡山県",
+      "source": "岡山県警察",
+      "url": "https://www.pref.okayama.jp/page/detail-116733.html",
+      "is_active": true,
+      "created_at": "2026-06-05T06:17:43.5575+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 17,
+      "pref": "徳島県",
+      "source": "徳島県警備業協会",
+      "url": "https://tokukeikyo.jp/pages/28/",
+      "is_active": true,
+      "created_at": "2026-06-05T06:17:43.5575+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 27,
+      "pref": "佐賀県",
+      "source": "佐賀県警察",
+      "url": "https://www.police.pref.saga.jp/shinsei/seikatsuanzen/_1016/_1023.html",
+      "is_active": true,
+      "created_at": "2026-06-05T07:06:46.774096+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 28,
+      "pref": "熊本県",
+      "source": "熊本県警備業協会",
+      "url": "https://www.kssa.or.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:06:46.774096+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 30,
+      "pref": "宮崎県",
+      "source": "宮崎県警備業協会",
+      "url": "https://miyazaki-keibi.or.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:06:46.774096+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 31,
+      "pref": "沖縄県",
+      "source": "沖縄県警備業協会",
+      "url": "https://www.okikei.com/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:06:46.774096+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 32,
+      "pref": "島根県",
+      "source": "島根県警備業協会",
+      "url": "http://www.shimane-ssa.or.jp/02sc/index.html",
+      "is_active": true,
+      "created_at": "2026-06-05T07:06:46.774096+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 33,
+      "pref": "青森県",
+      "source": "青森県警備業協会",
+      "url": "http://www.aokeikyo.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 37,
+      "pref": "福島県",
+      "source": "福島県警備業協会",
+      "url": "https://www.fukukeikyo.or.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 38,
+      "pref": "栃木県",
+      "source": "栃木県警備業協会",
+      "url": "http://www.tochikeikyo.or.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 40,
+      "pref": "埼玉県",
+      "source": "埼玉県警備業協会",
+      "url": "http://www.saikeikyo.or.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 42,
+      "pref": "長野県",
+      "source": "長野県警備業協会",
+      "url": "http://www.nagano-keibi.or.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 43,
+      "pref": "静岡県",
+      "source": "静岡県警備業協会",
+      "url": "http://www.shizu-keikyo.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 45,
+      "pref": "石川県",
+      "source": "石川県警備業協会",
+      "url": "http://www.ishikeikyo.or.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 47,
+      "pref": "奈良県",
+      "source": "奈良県警備業協会",
+      "url": "http://www.nakeikyo.or.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 48,
+      "pref": "和歌山県",
+      "source": "和歌山県警備業協会",
+      "url": "http://www.w-keibi.or.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 51,
+      "pref": "福井県",
+      "source": "福井県警備業協会",
+      "url": "https://fukuikb.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:13:20.135634+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    },
+    {
+      "id": 53,
+      "pref": "長崎県",
+      "source": "長崎県警備業協会",
+      "url": "http://www.choukeikyo.or.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:13:20.135634+00:00",
+      "type": "html",
+      "reason": "日付データあり"
+    }
+  ],
+  "pdf": [
+    {
+      "id": 2,
+      "pref": "東京都",
+      "source": "東京都警備業協会",
+      "url": "https://www.toukeikyo.or.jp/education/leader_schedule_new.html",
+      "is_active": true,
+      "created_at": "2026-06-05T02:19:24.196519+00:00",
+      "type": "pdf",
+      "reason": "PDFリンクのみ"
+    },
+    {
+      "id": 3,
+      "pref": "東京都",
+      "source": "東京都警備業協会",
+      "url": "https://www.toukeikyo.or.jp/education/leader_schedule_add.html",
+      "is_active": true,
+      "created_at": "2026-06-05T02:19:24.196519+00:00",
+      "type": "pdf",
+      "reason": "PDFリンクのみ"
+    },
+    {
+      "id": 5,
+      "pref": "大阪府",
+      "source": "大阪府警本部",
+      "url": "https://www.police.pref.osaka.lg.jp/tetsuduki/kyoninka/3/2/9831.html",
+      "is_active": true,
+      "created_at": "2026-06-05T02:19:24.196519+00:00",
+      "type": "pdf",
+      "reason": "PDFリンクのみ"
+    },
+    {
+      "id": 6,
+      "pref": "愛知県",
+      "source": "愛知県警察",
+      "url": "https://www.pref.aichi.jp/police/shinsei/keibi/yotei.html",
+      "is_active": true,
+      "created_at": "2026-06-05T02:19:24.196519+00:00",
+      "type": "pdf",
+      "reason": "PDFリンクのみ"
+    },
+    {
+      "id": 10,
+      "pref": "宮城県",
+      "source": "宮城県警察",
+      "url": "https://www.police.pref.miyagi.jp/seian/kyoninka/keibiin/keibiinindex.html",
+      "is_active": true,
+      "created_at": "2026-06-05T02:19:24.196519+00:00",
+      "type": "pdf",
+      "reason": "PDFリンクのみ"
+    },
+    {
+      "id": 15,
+      "pref": "山口県",
+      "source": "山口県警備業協会",
+      "url": "https://www.yssa.or.jp/education/",
+      "is_active": true,
+      "created_at": "2026-06-05T06:17:43.5575+00:00",
+      "type": "pdf",
+      "reason": "PDFリンクのみ"
+    }
+  ],
+  "unknown": [
+    {
+      "id": 7,
+      "pref": "北海道",
+      "source": "北海道警察",
+      "url": "https://www.police.pref.hokkaido.lg.jp/info/seian/security_service/06_guard_class_schedule.html",
+      "is_active": true,
+      "created_at": "2026-06-05T02:19:24.196519+00:00",
+      "type": "unknown",
+      "reason": "日程キーワードあるが日付なし"
+    },
+    {
+      "id": 29,
+      "pref": "大分県",
+      "source": "大分県警備業協会",
+      "url": "https://oita-keikyo.com/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:06:46.774096+00:00",
+      "type": "unknown",
+      "reason": "日程キーワードあるが日付なし"
+    },
+    {
+      "id": 34,
+      "pref": "岩手県",
+      "source": "岩手県警備業協会",
+      "url": "http://iwakeikyo.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "unknown",
+      "reason": "日程キーワードあるが日付なし"
+    },
+    {
+      "id": 35,
+      "pref": "秋田県",
+      "source": "秋田県警備業協会",
+      "url": "http://www.akita-keibi-k.com/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "unknown",
+      "reason": "日程キーワードあるが日付なし"
+    }
+  ],
+  "no_schedule": [
+    {
+      "id": 39,
+      "pref": "群馬県",
+      "source": "群馬県警備業協会",
+      "url": "http://www.sunfield.ne.jp/~g-keibi/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "no_schedule",
+      "reason": "日程情報なし"
+    },
+    {
+      "id": 44,
+      "pref": "富山県",
+      "source": "富山県警備業協会",
+      "url": "http://www.security-toyama.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "no_schedule",
+      "reason": "日程情報なし"
+    },
+    {
+      "id": 46,
+      "pref": "三重県",
+      "source": "三重県警備業協会",
+      "url": "http://mie.r.ajssa.or.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "no_schedule",
+      "reason": "日程情報なし"
+    },
+    {
+      "id": 50,
+      "pref": "山梨県",
+      "source": "山梨県警備業協会",
+      "url": "http://www.eps4.comlink.ne.jp/~security/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:13:20.135634+00:00",
+      "type": "no_schedule",
+      "reason": "日程情報なし"
+    }
+  ],
+  "error": [
+    {
+      "id": 36,
+      "pref": "山形県",
+      "source": "山形県警備業協会",
+      "url": "http://www.yamakeikyo.com/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "error",
+      "reason": "fetch failed"
+    },
+    {
+      "id": 41,
+      "pref": "新潟県",
+      "source": "新潟県警備業協会",
+      "url": "http://www6.ocn.ne.jp/~nssa/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "error",
+      "reason": "fetch failed"
+    },
+    {
+      "id": 49,
+      "pref": "鹿児島県",
+      "source": "鹿児島県警備業協会",
+      "url": "http://www.kagoshima-keibi.jp/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:09:53.679582+00:00",
+      "type": "error",
+      "reason": "fetch failed"
+    },
+    {
+      "id": 52,
+      "pref": "滋賀県",
+      "source": "滋賀県警備業協会",
+      "url": "http://www9.ocn.ne.jp/~shigakei/",
+      "is_active": true,
+      "created_at": "2026-06-05T07:13:20.135634+00:00",
+      "type": "error",
+      "reason": "fetch failed"
+    }
+  ]
+}

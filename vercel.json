@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/crawl-supervisor?secret=keibi2026secure",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}

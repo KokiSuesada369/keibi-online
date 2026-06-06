@@ -59,6 +59,26 @@ export default async function HomePage() {
     .select('*', { count: 'exact', head: true })
   const totalCompanies = (count ?? 6873).toLocaleString()
 
+  // ランダムで会社を取得（SAIZEN固定＋ランダム11社）
+  // 各地方から1社ずつランダム取得（SAIZEN固定＋5社）
+  const regions = ['hokkaido','tokyo','osaka','fukuoka','aichi']
+  const regionCompanies = await Promise.all(
+    regions.map(async (pref_slug) => {
+      const { data } = await supabase
+        .from('companies')
+        .select('slug, name, pref, city, numbers')
+        .eq('pref_slug', pref_slug)
+        .limit(50)
+      if (!data || data.length === 0) return null
+      return data[Math.floor(Math.random() * data.length)]
+    })
+  )
+
+  const displayCompanies = [
+    { slug: 'saizen-666', name: 'SAIZEN警備保障株式会社', pref: '広島県', city: '広島市西区', numbers: [2] },
+    ...regionCompanies.filter(Boolean)
+  ]
+
   return (
     <main style={{ background: '#f5f6fa', minHeight: '100vh', fontFamily: "'Noto Sans JP', sans-serif" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -148,16 +168,22 @@ export default async function HomePage() {
           ))}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          {[
-           { name: 'SAIZEN警備保障株式会社', city: '広島県広島市西区', nums: [{label:'2号警備',bg:'#e6f7f4',color:'#0f6e56'}], slug: 'saizen-666' },
-           { name: '企業警備保障株式会社', city: '広島県広島市', nums: [{label:'1号警備',bg:'#eef2ff',color:'#3b4fa8'},{label:'2号警備',bg:'#e6f7f4',color:'#0f6e56'},{label:'4号警備',bg:'#fef3f2',color:'#b91c1c'}], slug: 'hiroshima-35' },
-          ].map(c => (
+          {displayCompanies.map(c => (
             <a key={c.slug} href={`/companies/${c.slug}`} style={{ textDecoration: 'none' }}>
               <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '8px', padding: '10px 12px' }}>
                 <div style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a2e', marginBottom: '2px' }}>{c.name}</div>
-                <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>{c.city}</div>
+                <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>{c.pref}{c.city}</div>
                 <div style={{ display: 'flex', gap: '4px' }}>
-                  {c.nums.map(n => <span key={n.label} style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: n.bg, color: n.color, fontWeight: 600 }}>{n.label}</span>)}
+                  {(c.numbers || []).map((n: number) => {
+                    const labels: Record<number,{label:string,bg:string,color:string}> = {
+                      1:{label:'1号警備',bg:'#eef2ff',color:'#3b4fa8'},
+                      2:{label:'2号警備',bg:'#e6f7f4',color:'#0f6e56'},
+                      3:{label:'3号警備',bg:'#fff4e6',color:'#854f0b'},
+                      4:{label:'4号警備',bg:'#fef3f2',color:'#b91c1c'},
+                    }
+                    const l = labels[n]
+                    return l ? <span key={n} style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: l.bg, color: l.color, fontWeight: 600 }}>{l.label}</span> : null
+                  })}
                 </div>
               </div>
             </a>

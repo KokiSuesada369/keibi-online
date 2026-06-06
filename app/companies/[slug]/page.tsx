@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { Metadata } from 'next'
+import { generateDescription } from '@/app/companies/description'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -137,6 +138,14 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
               </div>
             ))}
           </div>
+        </div>
+
+        {/* 会社紹介カード */}
+        <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.5rem', marginBottom: '1rem' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#222', margin: '0 0 1rem' }}>会社紹介</h2>
+          <p style={{ fontSize: '14px', color: '#444', lineHeight: '1.8', margin: 0 }}>
+            {generateDescription(company)}
+          </p>
         </div>
 
         {/* 都道府県リンクカード */}

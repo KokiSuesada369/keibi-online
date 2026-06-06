@@ -7,9 +7,10 @@ export default function Footer() {
       <div style={{ fontSize: '12px', color: '#888', marginBottom: '20px' }}>警備業界専門のポータルサイト</div>
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '20px' }}>
         {[
-          { label: '警備会社検索', href: '/prefecture' },
+          { label: '警備会社一覧', href: '/prefecture' },
           { label: 'ニュース', href: '/news' },
           { label: '資格情報', href: '/license' },
+          { label: '求人', href: '/jobs' },
           { label: 'コラム', href: '/column' },
           { label: 'お問い合わせ', href: '/contact' },
           { label: '修正依頼', href: '/contact' },

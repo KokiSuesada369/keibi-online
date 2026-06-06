@@ -11,9 +11,10 @@ export default function Header() {
           keibi<span style={{ color: '#f4820a' }}>.online</span>
         </a>
         <nav style={{ display: 'flex', gap: '20px', fontSize: '13px', flexWrap: 'wrap' }} className="pc-nav">
-          <a href="/prefecture" style={{ color: '#555', textDecoration: 'none' }}>都道府県から探す</a>
+          <a href="/prefecture" style={{ color: '#555', textDecoration: 'none' }}>警備会社一覧</a>
           <a href="/news" style={{ color: '#555', textDecoration: 'none' }}>ニュース</a>
           <a href="/license" style={{ color: '#555', textDecoration: 'none' }}>資格情報</a>
+          <a href="/jobs" style={{ color: '#555', textDecoration: 'none' }}>求人</a>
           <a href="/column" style={{ color: '#555', textDecoration: 'none' }}>コラム</a>
           <a href="/contact" style={{ color: '#555', textDecoration: 'none' }}>お問い合わせ</a>
         </nav>
@@ -26,9 +27,10 @@ export default function Header() {
       {open && (
         <nav style={{ background: 'white', borderTop: '1px solid #e8e8e8', padding: '8px 0' }}>
           {[
-            { label: '都道府県から探す', href: '/prefecture' },
+            { label: '警備会社一覧', href: '/prefecture' },
             { label: 'ニュース', href: '/news' },
             { label: '資格情報', href: '/license' },
+            { label: '求人', href: '/jobs' },
             { label: 'コラム', href: '/column' },
             { label: 'お問い合わせ', href: '/contact' },
           ].map(item => (

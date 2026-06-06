@@ -248,7 +248,7 @@ export default function LicensePage() {
                       {isPast && <span style={{ fontSize: '11px', color: '#aaa' }}>終了</span>}
                       {r.notes && r.notes.includes('中止') && <span style={{ fontSize: '11px', color: '#e63946', fontWeight: 700 }}>中止</span>}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'nowrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a2e', whiteSpace: 'nowrap' }}>
                         {r.start_date?.replace(/-/g, '/')} {r.end_date && r.end_date !== r.start_date ? `〜 ${r.end_date.replace(/-/g, '/')}` : ''}
                       </span>
@@ -320,7 +320,7 @@ export default function LicensePage() {
                       <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '4px', background: '#f5f6fa', color: '#555' }}>{r.type}</span>
                       {isPast && <span style={{ fontSize: '11px', color: '#aaa' }}>終了</span>}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'nowrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a2e', whiteSpace: 'nowrap' }}>
                         {r.date_start?.replace(/-/g, '/')} {r.date_end && r.date_end !== r.date_start ? `〜 ${r.date_end.replace(/-/g, '/')}` : ''}
                       </span>

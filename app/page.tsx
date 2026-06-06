@@ -76,7 +76,7 @@ export default async function HomePage() {
 
   const displayCompanies = [
     { slug: 'saizen-666', name: 'SAIZEN警備保障株式会社', pref: '広島県', city: '広島市西区', numbers: [2] },
-    ...regionCompanies.filter(Boolean)
+    ...regionCompanies.filter((c): c is NonNullable<typeof c> => c !== null)
   ]
 
   return (

@@ -59,9 +59,32 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
   const company = data as Company
   const services = company.numbers || []
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: company.name,
+    address: {
+      '@type': 'PostalAddress',
+      postalCode: company.zip,
+      addressPrefecture: company.pref,
+      addressLocality: company.city,
+      streetAddress: company.address,
+      addressCountry: 'JP',
+    },
+    telephone: company.tel || undefined,
+    url: company.url || undefined,
+    areaServed: company.pref,
+    description: `${company.name}は${company.pref}${company.city}の警備会社です。${services.map(n => SERVICE_NAMES[n]).filter(Boolean).join('・')}に対応しています。`,
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: '#f8f9fa', padding: '2rem 1rem' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
 
         {/* パンくず */}
         <div style={{ fontSize: '13px', color: '#999', marginBottom: '1.5rem' }}>

@@ -1,3 +1,5 @@
+'use client'
+
 export default function Footer() {
   return (
     <footer style={{ background: 'white', borderTop: '1px solid #e8e8e8', padding: '32px 24px' }}>
@@ -10,12 +12,19 @@ export default function Footer() {
           { label: '警備会社一覧', href: '/prefecture' },
           { label: 'ニュース', href: '/news' },
           { label: '資格情報', href: '/license' },
-          { label: '求人', href: '/jobs' },
+          { label: '警備求人', href: '#' },
           { label: 'コラム', href: '/column' },
           { label: 'お問い合わせ', href: '/contact' },
           { label: '修正依頼', href: '/contact' },
         ].map(l => (
-          <a key={l.label} href={l.href} style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>{l.label}</a>
+          <a
+            key={l.label}
+            href={l.href}
+            onClick={l.href === '#' ? (e) => { e.preventDefault(); alert('近日公開予定です') } : undefined}
+            style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}
+          >
+            {l.label}
+          </a>
         ))}
       </div>
       <div style={{ fontSize: '11px', color: '#bbb' }}>© 2026 keibi.online All rights reserved.</div>

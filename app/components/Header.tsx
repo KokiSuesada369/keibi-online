@@ -14,7 +14,7 @@ export default function Header() {
           <a href="/prefecture" style={{ color: '#555', textDecoration: 'none' }}>警備会社一覧</a>
           <a href="/news" style={{ color: '#555', textDecoration: 'none' }}>ニュース</a>
           <a href="/license" style={{ color: '#555', textDecoration: 'none' }}>資格情報</a>
-          <a href="/jobs" style={{ color: '#555', textDecoration: 'none' }}>求人</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); alert('近日公開予定です') }} style={{ color: '#555', textDecoration: 'none' }}>警備求人</a>
           <a href="/column" style={{ color: '#555', textDecoration: 'none' }}>コラム</a>
           <a href="/contact" style={{ color: '#555', textDecoration: 'none' }}>お問い合わせ</a>
         </nav>
@@ -30,11 +30,11 @@ export default function Header() {
             { label: '警備会社一覧', href: '/prefecture' },
             { label: 'ニュース', href: '/news' },
             { label: '資格情報', href: '/license' },
-            { label: '求人', href: '/jobs' },
+            { label: '警備求人', href: '#' },
             { label: 'コラム', href: '/column' },
             { label: 'お問い合わせ', href: '/contact' },
           ].map(item => (
-            <a key={item.href} href={item.href} onClick={() => setOpen(false)} style={{ display: 'block', padding: '14px 24px', color: '#1a1a2e', textDecoration: 'none', fontSize: '15px', borderBottom: '1px solid #f0f0f0' }}>
+            <a key={item.label} href={item.href} onClick={(e) => { if (item.href === '#') { e.preventDefault(); alert('近日公開予定です') } setOpen(false) }} style={{ display: 'block', padding: '14px 24px', color: '#1a1a2e', textDecoration: 'none', fontSize: '15px', borderBottom: '1px solid #f0f0f0' }}>
               {item.label}
             </a>
           ))}

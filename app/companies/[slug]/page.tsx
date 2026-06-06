@@ -105,7 +105,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
               </span>
             ))}
           </div>
-          <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>{company.name}</h1>
+          <h1 style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 'bold', color: '#111', margin: '0 0 4px', lineHeight: '1.4', wordBreak: 'break-all' }}>{company.name}</h1>
           <p style={{ fontSize: '14px', color: '#888', margin: '0 0 1.5rem' }}>{company.pref}{company.city}</p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>

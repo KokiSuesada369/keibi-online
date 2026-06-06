@@ -4,8 +4,8 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const metadata = {
-  title: '警備業界専門のポータルサイト | keibi.online',
-  description: '全国6,873社の警備会社検索・業界ニュース・資格情報・求人まで、警備業界に関する情報を一か所に集約したポータルサイトです。',
+  title: '警備会社検索・資格講習日程・求人｜全国6,875社掲載 | keibi.online',
+  description: '全国6,875社の警備会社を都道府県・業務別に検索。指導教育責任者講習・特別講習の日程も全国対応。警備業界のニュース・求人情報も掲載。',
 }
 
 const PREF_REGIONS = [
@@ -71,10 +71,10 @@ export default async function HomePage() {
             警備業界専門のポータルサイト
           </div>
           <h1 style={{ fontSize: 'clamp(22px, 5vw, 36px)', fontWeight: 800, color: 'white', lineHeight: 1.4, marginBottom: '12px' }}>
-            警備業界の情報が<br />すべてここに
+            全国6,875社の警備会社を検索<br />資格・講習・求人・ニュースも全国対応
           </h1>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '32px', lineHeight: 1.8 }}>
-            警備会社の検索・業界ニュース・資格情報・求人まで<br />警備業界に関する情報を一か所に集約
+            都道府県・業務別に警備会社を検索｜資格講習日程・求人・業界ニュースを一か所に集約
           </p>
           <a href="/prefecture" style={{ display: 'inline-block', background: '#f4820a', color: 'white', borderRadius: '8px', padding: '12px 32px', fontSize: '15px', fontWeight: 700, textDecoration: 'none' }}>
             警備会社を探す →

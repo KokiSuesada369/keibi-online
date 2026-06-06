@@ -1,18 +1,23 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
-import { generateDescription } from '@/app/companies/description'
+import Link from 'next/link'
+import { Metadata } from 'next'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-const NUMBER_LABELS: Record<number, string> = {
+const SERVICE_NAMES: Record<number, string> = {
   1: '1号警備（施設警備）',
-  2: '2号警備（交通誘導警備）',
-  3: '3号警備（貴重品運搬警備）',
+  2: '2号警備（交通誘導）',
+  3: '3号警備（貴重品運搬）',
   4: '4号警備（身辺警備）',
 }
-const NUMBER_COLORS: Record<number, string> = {
-  1: '#457b9d', 2: '#2a9d8f', 3: '#e76f51', 4: '#e63946',
+
+const SERVICE_COLORS: Record<number, string> = {
+  1: '#457b9d',
+  2: '#2a9d8f',
+  3: '#e76f51',
+  4: '#e63946',
 }
 
 export const revalidate = 86400
@@ -29,173 +34,97 @@ type Company = {
   tel: string
   url: string
   numbers: number[]
+  city_slug: string
+  featured: boolean
 }
 
-export async function generateStaticParams() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-  const allSlugs: { slug: string }[] = []
-  const pageSize = 1000
-  let from = 0
-  let hasMore = true
-  while (hasMore) {
-    const { data } = await supabase
-      .from('companies')
-      .select('slug')
-      .range(from, from + pageSize - 1)
-    if (!data || data.length === 0) {
-      hasMore = false
-    } else {
-      allSlugs.push(...data)
-      from += pageSize
-      if (data.length < pageSize) hasMore = false
-    }
-  }
-  return allSlugs.map(c => ({ slug: c.slug }))
-}
-
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const supabase = createClient(supabaseUrl, supabaseKey)
-  const { data: c } = await supabase
-    .from('companies')
-    .select('name, pref, city')
-    .eq('slug', slug)
-    .single()
-  if (!c) return {}
+  const { data } = await supabase.from('companies').select('*').eq('slug', slug).single()
+  if (!data) return { title: '会社が見つかりません | keibi.online' }
+  const company = data as Company
+  const services = (company.numbers || []).map(n => SERVICE_NAMES[n]).filter(Boolean).join('・')
   return {
-    title: `${c.name} | ${c.pref}${c.city}の警備会社 | keibi.online`,
-    description: `${c.name}（${c.pref}${c.city}）の警備会社情報。対応業務・所在地・電話番号を掲載。`,
+    title: `${company.name}｜${company.pref}${company.city}の警備会社 | keibi.online`,
+    description: `${company.name}は${company.pref}${company.city}の警備会社です。${services}に対応しています。住所：${company.pref}${company.city}${company.address}`,
   }
 }
 
 export default async function CompanyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const supabase = createClient(supabaseUrl, supabaseKey)
-  const { data: company } = await supabase
-    .from('companies')
-    .select('*')
-    .eq('slug', slug)
-    .single()
-
-  if (!company) notFound()
-  const c = company as Company
-
-  const description = generateDescription(c)
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
-    'name': c.name,
-    'description': description,
-    'address': {
-      '@type': 'PostalAddress',
-      'postalCode': c.zip,
-      'addressRegion': c.pref,
-      'addressLocality': c.city,
-      'streetAddress': c.address,
-      'addressCountry': 'JP',
-    },
-    ...(c.tel && { 'telephone': c.tel }),
-    ...(c.url && { 'url': c.url }),
-    'areaServed': c.pref,
-  }
+  const { data } = await supabase.from('companies').select('*').eq('slug', slug).single()
+  if (!data) notFound()
+  const company = data as Company
+  const services = company.numbers || []
 
   return (
-    <main style={{ background: '#f8f9fa', minHeight: '100vh' }}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 24px' }}>
-        <div style={{ fontSize: '13px', color: '#999', marginBottom: '20px' }}>
-          <a href="/" style={{ color: '#999' }}>トップ</a> &gt;{' '}
-          <a href="/prefecture" style={{ color: '#999' }}>都道府県一覧</a> &gt;{' '}
-          <a href={`/${c.pref_slug}`} style={{ color: '#999' }}>{c.pref}</a> &gt;{' '}
-          {c.name}
+    <div style={{ minHeight: '100vh', background: '#f8f9fa', padding: '2rem 1rem' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+
+        {/* パンくず */}
+        <div style={{ fontSize: '13px', color: '#999', marginBottom: '1.5rem' }}>
+          <Link href="/" style={{ color: '#999', textDecoration: 'none' }}>トップ</Link>
+          <span style={{ margin: '0 6px' }}>›</span>
+          <Link href={`/${company.pref_slug}`} style={{ color: '#999', textDecoration: 'none' }}>{company.pref}</Link>
+          <span style={{ margin: '0 6px' }}>›</span>
+          <span>{company.name}</span>
         </div>
 
-        <h1 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '24px', color: '#1a1a2e' }}>{c.name}</h1>
+        {/* メインカード */}
+        <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '2rem', marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '1rem' }}>
+            {services.map(n => (
+              <span key={n} style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '20px', background: `${SERVICE_COLORS[n]}20`, color: SERVICE_COLORS[n], border: `1px solid ${SERVICE_COLORS[n]}40`, fontWeight: 500 }}>
+                {SERVICE_NAMES[n] || `${n}号警備`}
+              </span>
+            ))}
+          </div>
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>{company.name}</h1>
+          <p style={{ fontSize: '14px', color: '#888', margin: '0 0 1.5rem' }}>{company.pref}{company.city}</p>
 
-        <div style={{ background: 'white', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-            <tbody>
-              <tr style={{ borderBottom: '1px solid #f0f0f0' }}>
-                <td style={{ padding: '12px 16px 12px 0', color: '#666', width: '100px', fontWeight: 600 }}>所在地</td>
-                <td style={{ padding: '12px 0', color: '#1a1a2e' }}>
-                  {c.zip && `〒${c.zip} `}{c.pref}{c.city}{c.address}
-                </td>
-              </tr>
-              <tr style={{ borderBottom: '1px solid #f0f0f0' }}>
-                <td style={{ padding: '12px 16px 12px 0', color: '#666', fontWeight: 600 }}>電話番号</td>
-                <td style={{ padding: '12px 0' }}>
-                  {c.tel
-                    ? <a href={`tel:${c.tel}`} style={{ color: '#e63946', fontWeight: 700, fontSize: '16px', textDecoration: 'none' }}>{c.tel}</a>
-                    : <span style={{ color: '#999' }}>—</span>}
-                </td>
-              </tr>
-              <tr>
-                <td style={{ padding: '12px 16px 12px 0', color: '#666', fontWeight: 600 }}>ウェブサイト</td>
-                <td style={{ padding: '12px 0' }}>
-                  {c.url
-                    ? <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ color: '#457b9d', wordBreak: 'break-all' }}>{c.url}</a>
-                    : <span style={{ color: '#999' }}>—</span>}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+              <span style={{ fontSize: '13px', color: '#aaa', width: '80px', flexShrink: 0 }}>所在地</span>
+              <span style={{ fontSize: '13px', color: '#444' }}>〒{company.zip} {company.pref}{company.city}{company.address}</span>
+            </div>
+            {company.tel && (
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                <span style={{ fontSize: '13px', color: '#aaa', width: '80px', flexShrink: 0 }}>電話番号</span>
+                <a href={`tel:${company.tel}`} style={{ fontSize: '13px', color: '#f97316', textDecoration: 'none' }}>{company.tel}</a>
+              </div>
+            )}
+            {company.url && (
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                <span style={{ fontSize: '13px', color: '#aaa', width: '80px', flexShrink: 0 }}>ウェブサイト</span>
+                <a href={company.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '13px', color: '#f97316', textDecoration: 'none', wordBreak: 'break-all' }}>{company.url}</a>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div style={{ background: 'white', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '16px', color: '#1a1a2e' }}>対応している警備業務</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {(c.numbers ?? []).map((num: number) => (
-              <div key={num} style={{ border: `1.5px solid ${NUMBER_COLORS[num]}`, borderRadius: '8px', padding: '14px 16px', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                <span style={{ background: NUMBER_COLORS[num], color: 'white', borderRadius: '6px', padding: '2px 8px', fontSize: '11px', fontWeight: 700, whiteSpace: 'nowrap', marginTop: '2px' }}>
-                  {NUMBER_LABELS[num].split('（')[0]}
-                </span>
-                <div>
-                  <div style={{ fontWeight: 600, color: NUMBER_COLORS[num], fontSize: '14px', marginBottom: '4px' }}>{NUMBER_LABELS[num]}</div>
-                  <div style={{ fontSize: '13px', color: '#666' }}>
-                    {num === 1 && '施設警備・巡回警備・機械警備・保安警備・空港保安警備などが含まれます'}
-                    {num === 2 && '交通誘導警備・雑踏警備などが含まれます'}
-                    {num === 3 && '現金・貴重品の輸送警備などが含まれます'}
-                    {num === 4 && '要人・個人の身辺警護などが含まれます'}
-                  </div>
-                </div>
+        {/* 対応業務カード */}
+        <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.5rem', marginBottom: '1rem' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#222', margin: '0 0 1rem' }}>対応業務</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            {[1, 2, 3, 4].map(n => (
+              <div key={n} style={{ padding: '12px', borderRadius: '8px', border: `1px solid ${services.includes(n) ? SERVICE_COLORS[n] + '40' : '#f3f4f6'}`, background: services.includes(n) ? `${SERVICE_COLORS[n]}10` : '#f9fafb', fontSize: '13px', color: services.includes(n) ? SERVICE_COLORS[n] : '#aaa', fontWeight: services.includes(n) ? 500 : 400 }}>
+                {services.includes(n) ? '✓ ' : ''}{SERVICE_NAMES[n]}
               </div>
             ))}
           </div>
         </div>
 
-        <div style={{ background: 'white', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '12px', color: '#1a1a2e' }}>会社紹介</h2>
-          <p style={{ fontSize: '14px', lineHeight: 1.9, color: '#444' }}>{description}</p>
+        {/* 都道府県リンクカード */}
+        <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.5rem' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#222', margin: '0 0 1rem' }}>{company.pref}の警備会社を探す</h2>
+          <Link href={`/${company.pref_slug}`} style={{ display: 'inline-block', fontSize: '13px', padding: '8px 16px', background: '#f97316', color: '#fff', borderRadius: '8px', textDecoration: 'none' }}>
+            {company.pref}の警備会社一覧 →
+          </Link>
         </div>
 
-        <div style={{ background: '#f0f4f8', borderRadius: '12px', padding: '20px', marginBottom: '32px' }}>
-          <p style={{ fontSize: '13px', color: '#666', marginBottom: '12px', fontWeight: 600 }}>
-            {c.pref}の他の警備会社
-          </p>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <a href={`/${c.pref_slug}`} style={{ padding: '6px 14px', borderRadius: '99px', border: '1px solid #1a1a2e', color: '#1a1a2e', fontSize: '13px', textDecoration: 'none', background: 'white' }}>
-              {c.pref}の警備会社一覧
-            </a>
-            {(c.numbers ?? []).map((num: number) => (
-              <a key={num} href={`/${c.pref_slug}/service/${num}`} style={{ padding: '6px 14px', borderRadius: '99px', border: `1px solid ${NUMBER_COLORS[num]}`, color: NUMBER_COLORS[num], fontSize: '13px', textDecoration: 'none', background: 'white' }}>
-                {c.pref}の{NUMBER_LABELS[num].split('（')[0]}
-              </a>
-            ))}
-          </div>
-        </div>
-
-        <a href={`/${c.pref_slug}`} style={{ color: '#457b9d', fontSize: '14px' }}>
-          ← {c.pref}の警備会社一覧に戻る
-        </a>
       </div>
-
-    </main>
+    </div>
   )
 }

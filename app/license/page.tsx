@@ -252,9 +252,9 @@ export default function LicensePage() {
                       <span style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a2e', whiteSpace: 'nowrap' }}>
                         {r.start_date?.replace(/-/g, '/')} {r.end_date && r.end_date !== r.start_date ? `〜 ${r.end_date.replace(/-/g, '/')}` : ''}
                       </span>
-                      <span style={{ fontSize: '13px', color: '#555', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                        📍<a href={`/license/${encodeURIComponent(r.pref)}`} style={{ color: '#457b9d', textDecoration: 'none' }}>{r.pref}</a>
-                        {r.venue && <span style={{ color: '#888' }}>･ {r.venue}</span>}
+                      <span style={{ fontSize: '13px', color: '#555', display: 'flex', alignItems: 'flex-start', gap: '3px', flexWrap: 'wrap' }}>
+                        📍<a href={`/license/${encodeURIComponent(r.pref)}`} style={{ color: '#457b9d', textDecoration: 'none', whiteSpace: 'nowrap' }}>{r.pref}</a>
+                        {r.venue && <span style={{ color: '#888', wordBreak: 'break-all' }}>･ {r.venue}</span>}
                       </span>
                       <a href="https://www.csst.jp/04/04.html" target="_blank" rel="noopener noreferrer" style={{ marginLeft: 'auto', flexShrink: 0, fontSize: '11px', color: '#457b9d', textDecoration: 'none', padding: '5px 10px', border: '1px solid #457b9d', borderRadius: '6px', whiteSpace: 'nowrap' }}>
                         詳細を確認 →

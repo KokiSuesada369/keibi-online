@@ -1,96 +1,65 @@
-export const metadata = {
-  title: '都道府県から警備会社を探す | keibi.online',
-  description: '全国47都道府県の警備会社一覧。お近くの施設警備・交通誘導警備・雑踏警備会社を都道府県別に検索できます。',
+const prefectures = [
+  { region: '北海道・東北', prefs: ['北海道', '青森県', '岩手県', '宮城県', '秋田県', '山形県', '福島県'] },
+  { region: '関東', prefs: ['東京都', '神奈川県', '埼玉県', '千葉県', '茨城県', '栃木県', '群馬県'] },
+  { region: '中部', prefs: ['新潟県', '富山県', '石川県', '福井県', '山梨県', '長野県', '岐阜県', '静岡県', '愛知県'] },
+  { region: '近畿', prefs: ['三重県', '滋賀県', '京都府', '大阪府', '兵庫県', '奈良県', '和歌山県'] },
+  { region: '中国・四国', prefs: ['鳥取県', '島根県', '岡山県', '広島県', '山口県', '徳島県', '香川県', '愛媛県', '高知県'] },
+  { region: '九州・沖縄', prefs: ['福岡県', '佐賀県', '長崎県', '熊本県', '大分県', '宮崎県', '鹿児島県', '沖縄県'] },
+]
+
+const slugMap: { [key: string]: string } = {
+  '北海道': 'hokkaido', '青森県': 'aomori', '岩手県': 'iwate', '宮城県': 'miyagi',
+  '秋田県': 'akita', '山形県': 'yamagata', '福島県': 'fukushima', '東京都': 'tokyo',
+  '神奈川県': 'kanagawa', '埼玉県': 'saitama', '千葉県': 'chiba', '茨城県': 'ibaraki',
+  '栃木県': 'tochigi', '群馬県': 'gunma', '新潟県': 'niigata', '富山県': 'toyama',
+  '石川県': 'ishikawa', '福井県': 'fukui', '山梨県': 'yamanashi', '長野県': 'nagano',
+  '岐阜県': 'gifu', '静岡県': 'shizuoka', '愛知県': 'aichi', '三重県': 'mie',
+  '滋賀県': 'shiga', '京都府': 'kyoto', '大阪府': 'osaka', '兵庫県': 'hyogo',
+  '奈良県': 'nara', '和歌山県': 'wakayama', '鳥取県': 'tottori', '島根県': 'shimane',
+  '岡山県': 'okayama', '広島県': 'hiroshima', '山口県': 'yamaguchi', '徳島県': 'tokushima',
+  '香川県': 'kagawa', '愛媛県': 'ehime', '高知県': 'kochi', '福岡県': 'fukuoka',
+  '佐賀県': 'saga', '長崎県': 'nagasaki', '熊本県': 'kumamoto', '大分県': 'oita',
+  '宮崎県': 'miyazaki', '鹿児島県': 'kagoshima', '沖縄県': 'okinawa',
 }
 
 export default function PrefecturePage() {
   return (
     <main>
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px' }}>
-        <div style={{ fontSize: '13px', color: '#999', marginBottom: '16px' }}>
-          <a href="/" style={{ color: '#999' }}>トップ</a> &gt; 都道府県一覧
-        </div>
+      <header style={{ background: '#1a1a2e', color: 'white', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <a href="/" style={{ fontWeight: 700, fontSize: '20px', color: 'white', textDecoration: 'none' }}>keibi.online</a>
+        <nav style={{ display: 'flex', gap: '24px', fontSize: '14px' }}>
+          <a href="/prefecture" style={{ color: 'white', textDecoration: 'none' }}>都道府県から探す</a>
+          <a href="/news" style={{ color: 'white', textDecoration: 'none' }}>ニュース</a>
+          <a href="/license" style={{ color: 'white', textDecoration: 'none' }}>資格情報</a>
+          <a href="/column" style={{ color: 'white', textDecoration: 'none' }}>コラム</a>
+        </nav>
+      </header>
+
+      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '48px 24px' }}>
         <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>都道府県から警備会社を探す</h1>
-        <p style={{ color: '#666', marginBottom: '40px' }}>全国6,874社の警備会社を都道府県別に掲載しています。</p>
-        
-            <div style={{ marginBottom: '32px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px', paddingBottom: '8px', borderBottom: '2px solid #1a1a2e' }}>北海道・東北</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px' }}>
-                <a href="/hokkaido" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>北海道</a>
-                <a href="/aomori" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>青森県</a>
-                <a href="/iwate" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>岩手県</a>
-                <a href="/miyagi" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>宮城県</a>
-                <a href="/akita" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>秋田県</a>
-                <a href="/yamagata" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>山形県</a>
-                <a href="/fukushima" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>福島県</a>
-              </div>
+        <p style={{ color: '#666', marginBottom: '40px' }}>全国47都道府県の警備会社を掲載しています。</p>
+
+        {prefectures.map((group) => (
+          <div key={group.region} style={{ marginBottom: '40px' }}>
+            <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#666', borderBottom: '1px solid #e5e5e5', paddingBottom: '8px', marginBottom: '16px' }}>
+              {group.region}
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px' }}>
+              {group.prefs.map((pref) => (
+                <a key={pref} href={`/prefecture/${slugMap[pref]}`} style={{ textDecoration: 'none' }}>
+                  <div style={{ border: '1px solid #e5e5e5', borderRadius: '8px', padding: '14px 16px', background: 'white', fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}>
+                    {pref}
+                  </div>
+                </a>
+              ))}
             </div>
-            <div style={{ marginBottom: '32px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px', paddingBottom: '8px', borderBottom: '2px solid #1a1a2e' }}>関東</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px' }}>
-                <a href="/ibaraki" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>茨城県</a>
-                <a href="/tochigi" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>栃木県</a>
-                <a href="/gunma" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>群馬県</a>
-                <a href="/saitama" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>埼玉県</a>
-                <a href="/chiba" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>千葉県</a>
-                <a href="/tokyo" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>東京都</a>
-                <a href="/kanagawa" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>神奈川県</a>
-              </div>
-            </div>
-            <div style={{ marginBottom: '32px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px', paddingBottom: '8px', borderBottom: '2px solid #1a1a2e' }}>中部</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px' }}>
-                <a href="/niigata" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>新潟県</a>
-                <a href="/toyama" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>富山県</a>
-                <a href="/ishikawa" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>石川県</a>
-                <a href="/fukui" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>福井県</a>
-                <a href="/yamanashi" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>山梨県</a>
-                <a href="/nagano" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>長野県</a>
-                <a href="/gifu" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>岐阜県</a>
-                <a href="/shizuoka" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>静岡県</a>
-                <a href="/aichi" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>愛知県</a>
-              </div>
-            </div>
-            <div style={{ marginBottom: '32px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px', paddingBottom: '8px', borderBottom: '2px solid #1a1a2e' }}>近畿</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px' }}>
-                <a href="/mie" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>三重県</a>
-                <a href="/shiga" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>滋賀県</a>
-                <a href="/kyoto" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>京都府</a>
-                <a href="/osaka" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>大阪府</a>
-                <a href="/hyogo" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>兵庫県</a>
-                <a href="/nara" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>奈良県</a>
-                <a href="/wakayama" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>和歌山県</a>
-              </div>
-            </div>
-            <div style={{ marginBottom: '32px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px', paddingBottom: '8px', borderBottom: '2px solid #1a1a2e' }}>中国・四国</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px' }}>
-                <a href="/tottori" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>鳥取県</a>
-                <a href="/shimane" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>島根県</a>
-                <a href="/okayama" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>岡山県</a>
-                <a href="/hiroshima" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>広島県</a>
-                <a href="/yamaguchi" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>山口県</a>
-                <a href="/tokushima" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>徳島県</a>
-                <a href="/kagawa" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>香川県</a>
-                <a href="/ehime" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>愛媛県</a>
-                <a href="/kochi" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>高知県</a>
-              </div>
-            </div>
-            <div style={{ marginBottom: '32px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px', paddingBottom: '8px', borderBottom: '2px solid #1a1a2e' }}>九州・沖縄</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px' }}>
-                <a href="/fukuoka" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>福岡県</a>
-                <a href="/saga" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>佐賀県</a>
-                <a href="/nagasaki" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>長崎県</a>
-                <a href="/kumamoto" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>熊本県</a>
-                <a href="/oita" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>大分県</a>
-                <a href="/miyazaki" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>宮崎県</a>
-                <a href="/kagoshima" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>鹿児島県</a>
-                <a href="/okinawa" style={{ padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', background: 'white', fontSize: '14px', color: '#1a1a2e', textDecoration: 'none', textAlign: 'center' }}>沖縄県</a>
-              </div>
-            </div>
+          </div>
+        ))}
       </div>
+
+      <footer style={{ background: '#1a1a2e', color: 'white', textAlign: 'center', padding: '32px 24px', fontSize: '14px', opacity: 0.7 }}>
+        © 2026 keibi.online
+      </footer>
     </main>
   )
 }

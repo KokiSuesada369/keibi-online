@@ -20,6 +20,17 @@ export default async function Image({ params }: { params: Promise<{ pref: string
   const { pref } = await params
   const prefName = PREF_MAP[pref] ?? '全国'
 
+  const fontRes = await fetch(
+    'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700&display=swap'
+  )
+  const css = await fontRes.text()
+  const fontUrl = css.match(/src: url\((.+?)\) format/)?.[1]
+  let fontData: ArrayBuffer | undefined
+  if (fontUrl) {
+    const fontFile = await fetch(fontUrl)
+    fontData = await fontFile.arrayBuffer()
+  }
+
   return new ImageResponse(
     (
       <div
@@ -29,7 +40,7 @@ export default async function Image({ params }: { params: Promise<{ pref: string
           background: 'white',
           display: 'flex',
           flexDirection: 'row',
-          fontFamily: 'sans-serif',
+          fontFamily: 'NotoSansJP',
         }}
       >
         {/* left orange bar */}
@@ -64,6 +75,17 @@ export default async function Image({ params }: { params: Promise<{ pref: string
         </div>
       </div>
     ),
-    { width: 1200, height: 630 }
+    {
+      width: 1200,
+      height: 630,
+      ...(fontData ? {
+        fonts: [{
+          name: 'NotoSansJP',
+          data: fontData,
+          weight: 700,
+          style: 'normal',
+        }]
+      } : {}),
+    }
   )
 }

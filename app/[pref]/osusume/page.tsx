@@ -2,11 +2,10 @@ import { createClient } from '@supabase/supabase-js'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { generateIntro } from '@/data/companyIntro'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 const PREF_MAP: Record<string, string> = {
   hokkaido:'北海道',aomori:'青森県',iwate:'岩手県',miyagi:'宮城県',akita:'秋田県',
@@ -18,21 +17,7 @@ const PREF_MAP: Record<string, string> = {
   tottori:'鳥取県',shimane:'島根県',okayama:'岡山県',hiroshima:'広島県',yamaguchi:'山口県',
   tokushima:'徳島県',kagawa:'香川県',ehime:'愛媛県',kochi:'高知県',fukuoka:'福岡県',
   saga:'佐賀県',nagasaki:'長崎県',kumamoto:'熊本県',oita:'大分県',miyazaki:'宮崎県',
-  kagoshima:'鹿児島県',okinawa:'沖縄県'
-}
-
-const SERVICE_NAMES: Record<number, string> = {
-  1: '1号警備（施設警備）',
-  2: '2号警備（交通誘導）',
-  3: '3号警備（貴重品運搬）',
-  4: '4号警備（身辺警備）',
-}
-
-const SERVICE_COLORS: Record<number, {bg:string,color:string}> = {
-  1: {bg:'#eef2ff',color:'#3b4fa8'},
-  2: {bg:'#e6f7f4',color:'#0f6e56'},
-  3: {bg:'#fff4e6',color:'#854f0b'},
-  4: {bg:'#fef3f2',color:'#b91c1c'},
+  kagoshima:'鹿児島県',okinawa:'沖縄県',
 }
 
 const PREF_FEATURES: Record<string, string> = {
@@ -85,15 +70,50 @@ const PREF_FEATURES: Record<string, string> = {
   okinawa: '沖縄県は観光業が盛んな地域で、リゾートホテル・観光施設での警備需要が高い地域です。米軍基地関連施設の警備など特殊なニーズにも対応できる会社が揃っています。',
 }
 
+type Company = {
+  slug: string
+  name: string
+  pref: string
+  city: string | null
+  tel: string | null
+  numbers: number[]
+}
+
+const NUM_LABELS: Record<number, string> = {
+  1: '1号警備', 2: '2号警備', 3: '3号警備', 4: '4号警備',
+}
+const NUM_COLORS: Record<number, { bg: string; color: string }> = {
+  1: { bg: '#eef2ff', color: '#3b4fa8' },
+  2: { bg: '#e6f7f4', color: '#0f6e56' },
+  3: { bg: '#fff4e6', color: '#854f0b' },
+  4: { bg: '#fef3f2', color: '#b91c1c' },
+}
+
+function deterministicShuffle<T>(arr: T[], seed: string): T[] {
+  const copy = [...arr]
+  let h = 0
+  for (const ch of seed) h = (h * 31 + ch.charCodeAt(0)) % 0x7fffffff
+  for (let i = copy.length - 1; i > 0; i--) {
+    h = (h * 1664525 + 1013904223) % 0x7fffffff
+    const j = h % (i + 1)
+    ;[copy[i], copy[j]] = [copy[j], copy[i]]
+  }
+  return copy
+}
+
 export const revalidate = 86400
+
+export async function generateStaticParams() {
+  return Object.keys(PREF_MAP).map(pref => ({ pref }))
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ pref: string }> }): Promise<Metadata> {
   const { pref } = await params
   const prefName = PREF_MAP[pref]
   if (!prefName) return { title: 'ページが見つかりません | keibi.online' }
   return {
-    title: `${prefName}のおすすめ警備会社5選｜地域密着の優良企業を厳選 | keibi.online`,
-    description: `${prefName}のおすすめ警備会社を厳選してご紹介。施設警備・交通誘導警備など業務別の特徴と選び方のポイントも解説します。`,
+    title: `${prefName}のおすすめ警備会社ランキング【2026年最新版】｜業務別に厳選 | keibi.online`,
+    description: `${prefName}のおすすめ警備会社を業務別に厳選。交通誘導・施設警備・イベント警備・駐車場警備ごとにランキング形式でご紹介。失敗しない警備会社の選び方も解説。`,
   }
 }
 
@@ -102,34 +122,82 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
   const prefName = PREF_MAP[pref]
   if (!prefName) notFound()
 
-  const { data: companies } = await supabase
-    .from('companies')
-    .select('slug, name, pref, city, address, tel, url, numbers')
-    .eq('pref_slug', pref)
-    .neq('slug', 'saizen-666')
-    .limit(100)
+  const supabase = createClient(supabaseUrl, supabaseKey)
 
-  const shuffled = (companies || []).sort(() => Math.random() - 0.5).slice(0, 4)
+  const [{ data: raw2 }, { data: raw1 }] = await Promise.all([
+    supabase
+      .from('companies')
+      .select('slug, name, pref, city, tel, numbers')
+      .eq('pref_slug', pref)
+      .contains('numbers', [2])
+      .neq('slug', 'saizen-666')
+      .limit(30),
+    supabase
+      .from('companies')
+      .select('slug, name, pref, city, tel, numbers')
+      .eq('pref_slug', pref)
+      .contains('numbers', [1])
+      .limit(10),
+  ])
 
-  const saizen = {
-    slug: 'saizen-666',
-    name: 'SAIZEN警備保障株式会社',
-    pref: '広島県',
-    city: '広島市西区',
-    address: '横川町3丁目1-9-305',
-    tel: '080-5624-1393',
-    url: 'https://saizen.one',
-    numbers: [2],
+  const shuffled2 = deterministicShuffle((raw2 ?? []) as Company[], pref)
+  const shuffled1 = deterministicShuffle((raw1 ?? []) as Company[], pref)
+
+  const kotsuTop3 = shuffled2.slice(0, 3)
+  const zattsuTop3 = shuffled2.slice(3, 6)
+  const parkingTop3 = shuffled2.slice(6, 9)
+  const shisetsuTop3 = shuffled1.slice(0, 3)
+
+  let saizen: Company | null = null
+  if (pref === 'hiroshima') {
+    const { data } = await supabase
+      .from('companies')
+      .select('slug, name, pref, city, tel, numbers')
+      .eq('slug', 'saizen-666')
+      .single()
+    saizen = data
   }
 
-  const displayCompanies = pref === 'hiroshima'
-    ? [saizen, ...shuffled]
-    : shuffled.slice(0, 5)
+  const injectSaizen = (arr: Company[]): Company[] => {
+    if (!saizen) return arr
+    return [saizen, ...arr.filter(c => c.slug !== 'saizen-666').slice(0, 2)]
+  }
 
-  const feature = PREF_FEATURES[pref] || `${prefName}の警備会社を選ぶ際は、対応業務・実績・料金体系・緊急時の対応体制を確認することが重要です。複数社から見積もりを取り、自社のニーズに最適な会社を選びましょう。`
+  const finalKotsu = pref === 'hiroshima' ? injectSaizen(kotsuTop3) : kotsuTop3
+  const finalZattsu = pref === 'hiroshima' ? injectSaizen(zattsuTop3) : zattsuTop3
+  const finalParking = pref === 'hiroshima' ? injectSaizen(parkingTop3) : parkingTop3
+
+  const feature = PREF_FEATURES[pref] ?? `${prefName}の警備会社を選ぶ際は、対応業務・実績・料金体系・緊急時の対応体制を確認することが重要です。複数社から見積もりを取り、自社のニーズに最適な会社を選びましょう。`
+
+  const allDisplayed = [...finalKotsu, ...shisetsuTop3, ...finalZattsu, ...finalParking]
+  const uniqueCompanies = allDisplayed.filter((c, i, arr) => arr.findIndex(x => x.slug === c.slug) === i).slice(0, 10)
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `${prefName}のおすすめ警備会社ランキング`,
+    description: `${prefName}のおすすめ警備会社を業務別に厳選`,
+    itemListElement: uniqueCompanies.map((c, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: c.name,
+      url: `https://keibi.online/companies/${c.slug}`,
+    })),
+  }
+
+  const sections = [
+    { id: 'kotsu', label: '交通誘導警備', desc: '道路工事・建設現場での交通誘導を専門とする会社', companies: finalKotsu },
+    { id: 'shisetsu', label: '施設警備', desc: 'ビル・商業施設・病院などの常駐・巡回警備', companies: shisetsuTop3 },
+    { id: 'zattsu', label: '雑踏警備（イベント）', desc: '花火大会・スポーツイベント・商業イベントの警備', companies: finalZattsu },
+    { id: 'parking', label: '駐車場警備', desc: '駐車場・商業施設・工場の車両誘導・管理', companies: finalParking },
+  ]
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8f9fa' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '2rem 1rem' }}>
 
         {/* パンくず */}
@@ -138,47 +206,162 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
           <span style={{ margin: '0 6px' }}>›</span>
           <Link href={`/${pref}`} style={{ color: '#999', textDecoration: 'none' }}>{prefName}</Link>
           <span style={{ margin: '0 6px' }}>›</span>
-          <span>おすすめ警備会社</span>
+          <span>おすすめ警備会社ランキング</span>
         </div>
 
         <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111', margin: '0 0 8px' }}>
-          {prefName}のおすすめ警備会社5選
+          {prefName}のおすすめ警備会社ランキング【2026年最新版】
         </h1>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '2rem', lineHeight: 1.7 }}>
-          地域密着の優良企業を厳選してご紹介します。
+          交通誘導・施設警備・イベント・駐車場など業務別に厳選。失敗しない選び方のポイントも解説します。
         </p>
 
-        {/* 会社一覧 */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '2.5rem' }}>
-          {displayCompanies.map((company, index) => (
-            <Link key={company.slug} href={`/companies/${company.slug}`} style={{ textDecoration: 'none' }}>
-              <div style={{ background: '#fff', borderRadius: '12px', border: index === 0 ? '2px solid #f97316' : '1px solid #e5e7eb', padding: '1.5rem', position: 'relative' }}>
-                {index === 0 && (
-                  <div style={{ position: 'absolute', top: '-12px', left: '16px', background: '#f97316', color: '#fff', fontSize: '11px', fontWeight: 'bold', padding: '3px 12px', borderRadius: '20px' }}>
-                    おすすめ No.1
-                  </div>
-                )}
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                      <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#f97316' }}>{index + 1}</span>
-                      <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#111', margin: 0 }}>{company.name}</h2>
+        {/* 業務別セクション */}
+        {sections.map(section => (
+          <div key={section.id} style={{ marginBottom: '2.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 500, padding: '3px 10px', borderRadius: '20px', background: section.id === 'shisetsu' ? '#eff6ff' : '#f0fdf4', color: section.id === 'shisetsu' ? '#1d4ed8' : '#16a34a' }}>
+                  {section.id === 'shisetsu' ? '1号警備' : '2号警備'}
+                </span>
+                <span style={{ fontSize: '15px', fontWeight: 500, color: '#111' }}>{section.label}</span>
+              </div>
+              <Link href={`/columns/ranking/${pref}/${section.id === 'kotsu' ? 'kotsu' : section.id === 'shisetsu' ? 'shisetsu' : section.id === 'zattsu' ? 'event' : 'parking'}`} style={{ fontSize: '12px', color: '#457b9d', textDecoration: 'none' }}>
+                もっと見る →
+              </Link>
+            </div>
+
+            {section.companies.length === 0 ? (
+              <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1.5rem', textAlign: 'center', color: '#888', fontSize: '14px' }}>
+                現在掲載中の会社はありません
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {section.companies.map((company, index) => (
+                  <div
+                    key={company.slug}
+                    style={{
+                      background: '#fff',
+                      border: index === 0 ? '2px solid #f97316' : '0.5px solid #e5e7eb',
+                      borderRadius: '8px',
+                      padding: '1.25rem',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                      {/* ランクバッジ */}
+                      <div style={{
+                        flexShrink: 0,
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        background: index === 0 ? '#f97316' : index === 1 ? '#9ca3af' : '#d1a054',
+                        color: '#fff',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                        {index + 1}
+                      </div>
+
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '4px' }}>
+                          <Link
+                            href={`/companies/${company.slug}`}
+                            style={{ fontSize: '15px', fontWeight: 'bold', color: '#1a1a2e', textDecoration: 'none' }}
+                          >
+                            {company.name}
+                          </Link>
+                          {index === 0 && (
+                            <span style={{ fontSize: '10px', background: '#fff7ed', color: '#f97316', border: '1px solid #fed7aa', borderRadius: '4px', padding: '2px 6px', whiteSpace: 'nowrap', fontWeight: 700 }}>
+                              おすすめ No.1
+                            </span>
+                          )}
+                        </div>
+
+                        <p style={{ fontSize: '12px', color: '#888', margin: '0 0 6px' }}>
+                          {company.pref}{company.city ?? ''}
+                          {company.tel && <span style={{ marginLeft: '10px' }}>📞 {company.tel}</span>}
+                        </p>
+
+                        {company.numbers && company.numbers.length > 0 && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '8px' }}>
+                            {company.numbers.map(n => {
+                              const c = NUM_COLORS[n]
+                              return c ? (
+                                <span key={n} style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '4px', background: c.bg, color: c.color, fontWeight: 600 }}>
+                                  {NUM_LABELS[n]}
+                                </span>
+                              ) : null
+                            })}
+                          </div>
+                        )}
+
+                        <p style={{ fontSize: '12px', color: '#555', lineHeight: 1.7, margin: 0 }}>
+                          {generateIntro({ slug: company.slug, name: company.name, pref: company.pref, city: company.city, numbers: company.numbers })}
+                        </p>
+
+                        <div style={{ marginTop: '10px' }}>
+                          <Link href={`/companies/${company.slug}`} style={{ fontSize: '12px', color: '#f97316', textDecoration: 'none', fontWeight: 600 }}>
+                            詳細を見る →
+                          </Link>
+                        </div>
+                      </div>
                     </div>
-                    <p style={{ fontSize: '13px', color: '#666', margin: '0 0 8px' }}>{company.pref}{company.city}</p>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
-                      {(company.numbers || []).map((n: number) => {
-                        const c = { 1:{bg:'#eef2ff',color:'#3b4fa8'}, 2:{bg:'#e6f7f4',color:'#0f6e56'}, 3:{bg:'#fff4e6',color:'#854f0b'}, 4:{bg:'#fef3f2',color:'#b91c1c'} }[n]
-                        return c ? <span key={n} style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '4px', background: c.bg, color: c.color, fontWeight: 600 }}>{SERVICE_NAMES[n]}</span> : null
-                      })}
-                    </div>
-                    {company.tel && (
-                      <p style={{ fontSize: '13px', color: '#888', margin: 0 }}>📞 {company.tel}</p>
-                    )}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#f97316', whiteSpace: 'nowrap' }}>詳細を見る →</div>
+                ))}
+                <div style={{ textAlign: 'right', marginTop: '6px' }}>
+                  <Link
+                    href={`/columns/ranking/${pref}/${section.id === 'kotsu' ? 'kotsu' : section.id === 'shisetsu' ? 'shisetsu' : section.id === 'zattsu' ? 'event' : 'parking'}`}
+                    style={{ fontSize: '12px', color: '#457b9d', textDecoration: 'none' }}
+                  >
+                    {prefName}の{section.label}会社ランキング10選を見る →
+                  </Link>
                 </div>
               </div>
+            )}
+          </div>
+        ))}
+
+        {/* 3号・4号はリンクボックスのみ */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px', marginBottom: '2.5rem' }}>
+          {[
+            { label: '3号警備（貴重品運搬）', desc: '現金輸送・貴重品配送に対応できる警備会社', href: `/${pref}` },
+            { label: '4号警備（身辺警備）', desc: '要人警護・ボディーガードに対応できる警備会社', href: `/${pref}` },
+          ].map(item => (
+            <Link key={item.label} href={item.href} style={{ textDecoration: 'none' }}>
+              <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '10px', padding: '1.25rem' }}>
+                <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#1a1a2e', marginBottom: '4px' }}>{item.label}</div>
+                <div style={{ fontSize: '12px', color: '#888', marginBottom: '10px' }}>{item.desc}</div>
+                <div style={{ fontSize: '12px', color: '#f97316', fontWeight: 600 }}>{prefName}で対応会社を探す →</div>
+              </div>
             </Link>
+          ))}
+        </div>
+
+        {/* FAQ */}
+        <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.5rem', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#111', margin: '0 0 16px' }}>よくある質問</h2>
+          {[
+            {
+              q: '警備会社を選ぶ際の重要なポイントは何ですか？',
+              a: '認定証・警備業許可の有無、対応できる業務の範囲、緊急時の連絡体制、実績と評判の4点を確認することが重要です。また、複数社から見積もりを取り、料金体系が明確な会社を選びましょう。',
+            },
+            {
+              q: '相見積もりは必要ですか？',
+              a: '相見積もりは強くおすすめします。警備会社によって料金・サービス内容・対応エリアが大きく異なります。最低でも3社以上から見積もりを取ることで、適正価格と優良な会社を見極めることができます。',
+            },
+            {
+              q: '急な依頼にも対応してもらえますか？',
+              a: '会社によって異なりますが、多くの警備会社では前日や当日の急な依頼にも対応しています。ただし、警備員の確保には時間が必要なため、余裕を持って依頼することをおすすめします。',
+            },
+          ].map((faq, i) => (
+            <div key={i} style={{ marginBottom: i < 2 ? '16px' : 0, paddingBottom: i < 2 ? '16px' : 0, borderBottom: i < 2 ? '1px solid #f3f4f6' : 'none' }}>
+              <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#1a1a2e', marginBottom: '6px' }}>Q. {faq.q}</div>
+              <div style={{ fontSize: '13px', color: '#555', lineHeight: 1.7 }}>A. {faq.a}</div>
+            </div>
           ))}
         </div>
 
@@ -186,17 +369,6 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
         <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.5rem', marginBottom: '1.5rem' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#111', margin: '0 0 12px' }}>{prefName}の警備業界の特徴</h2>
           <p style={{ fontSize: '14px', color: '#444', lineHeight: 1.8, margin: 0 }}>{feature}</p>
-        </div>
-
-        {/* 選び方リンク */}
-        <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.5rem', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#111', margin: '0 0 12px' }}>警備会社の選び方</h2>
-          <p style={{ fontSize: '14px', color: '#444', lineHeight: 1.8, margin: '0 0 12px' }}>
-            警備会社を選ぶ際は、認定証の有無・対応業務・実績・料金体系・緊急時の対応体制を確認することが重要です。
-          </p>
-          <Link href="/column/guide-001" style={{ fontSize: '13px', color: '#f97316', textDecoration: 'none' }}>
-            警備会社の選び方を詳しく読む →
-          </Link>
         </div>
 
         {/* 関連リンク */}

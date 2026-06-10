@@ -1,5 +1,5 @@
 'use client'
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 
 const COMING_SOON = '近日公開予定です'
 
@@ -30,15 +30,35 @@ export default function ServiceCards({ totalCompanies }: { totalCompanies: strin
     { icon: '🎖️', name: '資格・検定情報', desc: '警備業務検定・資格取得ガイド', count: '講習日程掲載中', href: '/license' },
     { icon: '💼', name: '警備求人', desc: '全国の警備員・管理職の求人', count: '近日公開', href: '#' },
     { icon: '📝', name: '警備業界コラム', desc: '選び方・業界知識・ランキング', count: 'コラム掲載中', href: '/column' },
-    { icon: '📍', name: '近くの警備会社を探す', desc: '都道府県・市区町村から警備会社を検索', count: 'エリアから探す →', href: '/nearby' },
+    { icon: '📍', name: '近くの警備会社を探す', desc: 'エリアを指定して検索', count: 'エリアから探す →', href: '/nearby' },
     { icon: '📋', name: 'かんたん警備依頼', desc: 'エリア・業務・予算を選ぶだけ', count: '無料で依頼する →', href: '/request' },
   ]
+
+  const tripled = [...services, ...services, ...services]
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (el) {
+      el.scrollLeft = el.scrollWidth / 3
+    }
+  }, [])
+
+  const handleScroll = () => {
+    const el = scrollRef.current
+    if (!el) return
+    const oneSetWidth = el.scrollWidth / 3
+    if (el.scrollLeft < oneSetWidth * 0.3) {
+      el.scrollLeft += oneSetWidth
+    } else if (el.scrollLeft > oneSetWidth * 2 - 200) {
+      el.scrollLeft -= oneSetWidth
+    }
+  }
 
   return (
     <div style={{ position: 'relative' }}>
       {/* 左矢印 */}
       <button
-        onClick={() => scrollRef.current?.scrollBy({ left: -180, behavior: 'smooth' })}
+        onClick={() => scrollRef.current?.scrollBy({ left: -220, behavior: 'smooth' })}
         style={{ ...arrowBtnStyle, left: '-16px' }}
         className="scroll-arrow"
         aria-label="前へ"
@@ -49,19 +69,19 @@ export default function ServiceCards({ totalCompanies }: { totalCompanies: strin
       {/* カード列 */}
       <div
         ref={scrollRef}
+        onScroll={handleScroll}
         style={{
           display: 'flex',
           overflowX: 'auto',
-          scrollBehavior: 'smooth',
           gap: '10px',
           paddingBottom: '8px',
           scrollbarWidth: 'none',
         }}
         className="hide-scrollbar"
       >
-        {services.map(s => (
+        {tripled.map((s, i) => (
           <a
-            key={s.name}
+            key={`${s.name}-${i}`}
             href={s.href === '#' ? '#' : s.href}
             onClick={s.href === '#' ? (e) => { e.preventDefault(); alert(COMING_SOON) } : undefined}
             style={{ textDecoration: 'none', flexShrink: 0, width: '200px' }}
@@ -78,7 +98,7 @@ export default function ServiceCards({ totalCompanies }: { totalCompanies: strin
 
       {/* 右矢印 */}
       <button
-        onClick={() => scrollRef.current?.scrollBy({ left: 180, behavior: 'smooth' })}
+        onClick={() => scrollRef.current?.scrollBy({ left: 220, behavior: 'smooth' })}
         style={{ ...arrowBtnStyle, right: '-16px' }}
         className="scroll-arrow"
         aria-label="次へ"

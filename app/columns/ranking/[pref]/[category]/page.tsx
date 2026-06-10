@@ -65,8 +65,8 @@ export async function generateMetadata({
   const cat = data?.categories[category as RankingCategory]
   if (!prefName || !cat) return { title: 'ページが見つかりません | keibi.online' }
   return {
-    title: `${prefName}${cat.label}ランキング｜おすすめ警備会社を厳選 | keibi.online`,
-    description: `${prefName}の${cat.label}（${cat.certLabel}）対応警備会社ランキング。地域密着の優良警備会社を実績・対応力で厳選しご紹介します。`,
+    title: `${prefName}の${cat.label}会社おすすめランキング10選【${data!.updatedYear}年】 | keibi.online`,
+    description: `${prefName}で${cat.label}会社をお探しの方へ。${cat.certLabel}に対応する地元優良警備会社をランキング形式で厳選。料金相場・失敗しない選び方も解説します。`,
   }
 }
 
@@ -103,6 +103,24 @@ export default async function RankingPage({
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8f9fa' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            name: `${prefName}の${cat.label}会社おすすめランキング`,
+            description: cat.description,
+            numberOfItems: cat.companies.length,
+            itemListElement: cat.companies.map(company => ({
+              '@type': 'ListItem',
+              position: company.rank,
+              name: company.name,
+              url: company.slug ? `https://keibi.online/companies/${company.slug}` : `https://keibi.online/${pref}`,
+            }))
+          })
+        }}
+      />
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '2rem 1rem' }}>
 
         {/* パンくず */}
@@ -115,7 +133,7 @@ export default async function RankingPage({
         </div>
 
         <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111', margin: '0 0 8px' }}>
-          {prefName}{cat.label}ランキング {rankingData.updatedYear}年版
+          {prefName}の{cat.label}会社おすすめランキング10選【{rankingData.updatedYear}年最新版】
         </h1>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '1rem', lineHeight: 1.7 }}>
           {cat.description}
@@ -142,6 +160,25 @@ export default async function RankingPage({
               <li key={i} style={{ fontSize: '13px', color: '#444', lineHeight: 1.7 }}>{p}</li>
             ))}
           </ol>
+        </div>
+
+        {/* FAQ */}
+        <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.25rem 1.5rem', marginBottom: '2rem' }}>
+          <h2 style={{ fontSize: '15px', fontWeight: 'bold', color: '#111', margin: '0 0 10px' }}>よくある質問</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div>
+              <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. {prefName}で{cat.label}会社を選ぶ際のポイントは？</p>
+              <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. {cat.points[0]}</p>
+            </div>
+            <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '14px' }}>
+              <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. {cat.label}の料金相場はどのくらいですか？</p>
+              <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. {cat.certLabel}の料金は依頼内容・時間帯・人数によって異なります。複数社から見積もりを取り比較することを推奨します。まずはお気軽にお問い合わせください。</p>
+            </div>
+            <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '14px' }}>
+              <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. 急ぎで{cat.label}を依頼したい場合はどうすれば良いですか？</p>
+              <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. 対応スピードの早い地域密着型の警備会社への直接問い合わせが最も早い方法です。このページのランキング上位の会社は対応力が高い会社を厳選しています。</p>
+            </div>
+          </div>
         </div>
 
         {/* ランキング一覧 */}
@@ -307,7 +344,10 @@ export default async function RankingPage({
               {prefName}の警備会社一覧を見る →
             </Link>
             <Link href={`/${pref}/osusume`} style={{ fontSize: '13px', color: '#f97316', textDecoration: 'none' }}>
-              {prefName}のおすすめ警備会社5選を見る →
+              {prefName}のおすすめ警備会社ランキングを見る →
+            </Link>
+            <Link href="/request" style={{ fontSize: '13px', color: '#f97316', textDecoration: 'none' }}>
+              かんたん警備依頼・無料で問い合わせる →
             </Link>
           </div>
         </div>

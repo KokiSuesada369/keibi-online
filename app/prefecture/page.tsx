@@ -46,7 +46,7 @@ export default function PrefecturePage() {
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px' }}>
               {group.prefs.map((pref) => (
-                <a key={pref} href={`/prefecture/${slugMap[pref]}`} style={{ textDecoration: 'none' }}>
+                <a key={pref} href={`/${slugMap[pref]}`} style={{ textDecoration: 'none' }}>
                   <div style={{ border: '1px solid #e5e5e5', borderRadius: '8px', padding: '14px 16px', background: 'white', fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}>
                     {pref}
                   </div>

@@ -233,8 +233,8 @@ export default function RequestPage() {
               🔗 警備求人をお探しの方へ
             </div>
             <p style={{ fontSize: '13px', color: '#7c2d12', margin: '0 0 12px', lineHeight: 1.7 }}>
-              警備員・管理職の求人情報は <strong>nextkb.jp</strong> をご利用ください。
-              全国の警備求人を掲載しています。
+              警備会社への依頼・見積もり依頼は<strong>nextkb.jp</strong>をご利用ください。
+              全国の警備会社を掲載しています。
             </p>
             <a
               href="https://nextkb.jp"
@@ -251,7 +251,7 @@ export default function RequestPage() {
                 textDecoration: 'none',
               }}
             >
-              nextkb.jp で求人を探す →
+              nextkb.jp で警備会社を探す →
             </a>
           </div>
 

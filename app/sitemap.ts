@@ -26,6 +26,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/news`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${baseUrl}/license`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${baseUrl}/nearby`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/request`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.7 },
   ]
 
   const prefPages: MetadataRoute.Sitemap = PREF_SLUGS.map(pref => ({
@@ -71,6 +73,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
+  const osusumePages: MetadataRoute.Sitemap = PREF_SLUGS.map(pref => ({
+    url: `${baseUrl}/${pref}/osusume`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  }))
+
+  const rankingPages: MetadataRoute.Sitemap = ['hiroshima'].flatMap(pref =>
+    ['kotsu', 'event', 'shisetsu', 'parking'].map(cat => ({
+      url: `${baseUrl}/columns/ranking/${pref}/${cat}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    }))
+  )
+
   const companyPages: MetadataRoute.Sitemap = []
   const pageSize = 1000
   let from = 0
@@ -102,6 +120,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticPages,
     ...prefPages,
     ...prefServicePages,
+    ...osusumePages,
+    ...rankingPages,
     ...columnPages,
     ...licensePages,
     ...cityPages,

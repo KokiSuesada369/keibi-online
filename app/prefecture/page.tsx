@@ -25,16 +25,6 @@ const slugMap: { [key: string]: string } = {
 export default function PrefecturePage() {
   return (
     <main>
-      <header style={{ background: '#1a1a2e', color: 'white', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <a href="/" style={{ fontWeight: 700, fontSize: '20px', color: 'white', textDecoration: 'none' }}>keibi.online</a>
-        <nav style={{ display: 'flex', gap: '24px', fontSize: '14px' }}>
-          <a href="/prefecture" style={{ color: 'white', textDecoration: 'none' }}>都道府県から探す</a>
-          <a href="/news" style={{ color: 'white', textDecoration: 'none' }}>ニュース</a>
-          <a href="/license" style={{ color: 'white', textDecoration: 'none' }}>資格情報</a>
-          <a href="/column" style={{ color: 'white', textDecoration: 'none' }}>コラム</a>
-        </nav>
-      </header>
-
       <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '48px 24px' }}>
         <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>都道府県から警備会社を探す</h1>
         <p style={{ color: '#666', marginBottom: '40px' }}>全国47都道府県の警備会社を掲載しています。</p>
@@ -56,10 +46,6 @@ export default function PrefecturePage() {
           </div>
         ))}
       </div>
-
-      <footer style={{ background: '#1a1a2e', color: 'white', textAlign: 'center', padding: '32px 24px', fontSize: '14px', opacity: 0.7 }}>
-        © 2026 keibi.online
-      </footer>
     </main>
   )
 }

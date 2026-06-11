@@ -177,6 +177,22 @@ export default async function PrefecturePage({ params }: { params: Promise<{ pre
             </a>
           ))}
         </div>
+
+        <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.25rem 1.5rem', margin: '1.5rem 0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontSize: '15px', fontWeight: 'bold', color: '#111', marginBottom: '4px' }}>
+                {prefName}のおすすめ警備会社ランキング
+              </div>
+              <div style={{ fontSize: '13px', color: '#666' }}>
+                交通誘導・施設・イベント・駐車場 業務別に厳選
+              </div>
+            </div>
+            <a href={`/${pref}/osusume`} style={{ fontSize: '13px', color: '#f97316', textDecoration: 'none', whiteSpace: 'nowrap', marginLeft: '12px' }}>
+              ランキングを見る →
+            </a>
+          </div>
+        </div>
       </div>
     </main>
   )

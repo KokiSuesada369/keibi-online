@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://keibi.online/ogp.svg',
+        url: 'https://keibi.online/ogp.png',
         width: 1200,
         height: 630,
         alt: 'keibi.online - 警備業界専門のポータルサイト',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: '警備会社検索・資格講習日程・求人｜全国6,875社掲載 | keibi.online',
     description: '全国6,875社の警備会社を都道府県・業務別に検索。指導教育責任者講習・特別講習の日程も全国対応。',
-    images: ['https://keibi.online/ogp.svg'],
+    images: ['https://keibi.online/ogp.png'],
   },
 }
 

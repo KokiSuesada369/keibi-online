@@ -230,7 +230,7 @@ export default function RequestPage() {
           {/* nextkb.jp 誘導ボックス */}
           <div style={{ background: '#fff7ed', borderRadius: '12px', border: '1px solid #fed7aa', padding: '1.25rem' }}>
             <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#c2410c', marginBottom: '6px' }}>
-              🔗 警備求人をお探しの方へ
+              🔗 警備会社への依頼・見積もりはnextkb.jpへ
             </div>
             <p style={{ fontSize: '13px', color: '#7c2d12', margin: '0 0 12px', lineHeight: 1.7 }}>
               警備会社への依頼・見積もり依頼は<strong>nextkb.jp</strong>をご利用ください。

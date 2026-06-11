@@ -118,6 +118,20 @@ export default async function PrefecturePage({ params }: { params: Promise<{ pre
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px' }}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'トップ', item: 'https://keibi.online' },
+                { '@type': 'ListItem', position: 2, name: '警備会社一覧', item: 'https://keibi.online/prefecture' },
+                { '@type': 'ListItem', position: 3, name: `${prefName}の警備会社`, item: `https://keibi.online/${pref}` },
+              ]
+            })
+          }}
+        />
         <div style={{ fontSize: '13px', color: '#999', marginBottom: '16px' }}>
           <a href="/" style={{ color: '#999' }}>トップ</a> &gt;{' '}
           <a href="/prefecture" style={{ color: '#999' }}>都道府県一覧</a> &gt; {prefName}

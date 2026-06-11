@@ -57,11 +57,11 @@ export default async function Image({ params }: { params: Promise<{ pref: string
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ fontSize: '20px', color: '#888', display: 'flex' }}>{prefName}</div>
-            <div style={{ fontSize: '52px', fontWeight: 700, color: '#111', lineHeight: 1.2, display: 'flex', flexWrap: 'wrap' }}>
-              おすすめ<span style={{ color: '#f97316' }}>警備会社</span>ランキング
+            <div style={{ fontSize: '52px', fontWeight: 700, color: '#111', lineHeight: '1.2', display: 'flex', flexWrap: 'wrap' }}>
+              <span>おすすめ</span><span style={{ color: '#f97316' }}>警備会社</span><span>ランキング</span>
             </div>
             <div style={{ fontSize: '18px', color: '#666', display: 'flex' }}>
-              交通誘導・施設・イベント・駐車場　業務別に厳選
+              <span>交通誘導・施設・イベント・駐車場　業務別に厳選</span>
             </div>
           </div>
 

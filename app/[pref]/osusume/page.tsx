@@ -114,6 +114,11 @@ export async function generateMetadata({ params }: { params: Promise<{ pref: str
   return {
     title: `${prefName}のおすすめ警備会社ランキング【2026年最新版】｜業務別に厳選 | keibi.online`,
     description: `${prefName}のおすすめ警備会社を業務別に厳選。交通誘導・施設警備・イベント警備・駐車場警備ごとにランキング形式でご紹介。失敗しない警備会社の選び方も解説。`,
+    twitter: {
+      card: 'summary_large_image',
+      title: `${prefName}のおすすめ警備会社ランキング【2026年最新版】`,
+      description: `${prefName}のおすすめ警備会社を業務別に厳選。交通誘導・施設警備・イベント・駐車場ごとにランキング形式でご紹介。`,
+    },
   }
 }
 

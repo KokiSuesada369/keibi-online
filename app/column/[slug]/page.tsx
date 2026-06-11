@@ -40,6 +40,20 @@ export default async function ColumnArticlePage({ params }: { params: Promise<{ 
           })
         }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'トップ', item: 'https://keibi.online' },
+              { '@type': 'ListItem', position: 2, name: 'コラム', item: 'https://keibi.online/column' },
+              { '@type': 'ListItem', position: 3, name: article!.title, item: `https://keibi.online/column/${article!.slug}` },
+            ],
+          })
+        }}
+      />
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '48px 24px' }}>
         <div style={{ fontSize: '13px', color: '#999', marginBottom: '16px' }}>
           <a href="/" style={{ color: '#999' }}>トップ</a> &gt;{' '}

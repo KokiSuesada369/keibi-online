@@ -67,6 +67,11 @@ export async function generateMetadata({
   return {
     title: `${prefName}の${cat.label}会社おすすめランキング10選【${data!.updatedYear}年】 | keibi.online`,
     description: `${prefName}で${cat.label}会社をお探しの方へ。${cat.certLabel}に対応する地元優良警備会社をランキング形式で厳選。料金相場・失敗しない選び方も解説します。`,
+    twitter: {
+      card: 'summary_large_image',
+      title: `${prefName}の${cat.label}会社おすすめランキング10選【${data!.updatedYear}年】`,
+      description: `${prefName}で${cat.label}会社をお探しの方へ。${cat.certLabel}に対応する地元優良警備会社をランキング形式で厳選。`,
+    },
   }
 }
 

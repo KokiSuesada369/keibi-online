@@ -5,7 +5,7 @@ import Script from 'next/script'
 
 export const metadata: Metadata = {
   title: 'keibi.online - 警備業界の総合情報サイト',
-  description: '全国の警備会社・資格・ニュースをまとめて探せる',
+  description: '全国6,875社の警備会社を都道府県・業務別に無料検索。交通誘導・施設警備・イベント警備・駐車場警備に対応する地域の警備会社をすぐに見つけられます。資格講習日程・警備求人・業界ニュースも掲載。',
   openGraph: {
     title: '警備会社検索・資格講習日程・求人｜全国6,875社掲載 | keibi.online',
     description: '全国6,875社の警備会社を都道府県・業務別に検索。指導教育責任者講習・特別講習の日程も全国対応。',

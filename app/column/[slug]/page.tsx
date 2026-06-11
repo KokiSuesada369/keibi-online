@@ -22,6 +22,24 @@ export default async function ColumnArticlePage({ params }: { params: Promise<{ 
 
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: article!.title,
+            description: article!.description,
+            url: `https://keibi.online/column/${article!.slug}`,
+            publisher: {
+              '@type': 'Organization',
+              name: 'keibi.online',
+              url: 'https://keibi.online',
+            },
+            dateModified: new Date().toISOString(),
+          })
+        }}
+      />
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '48px 24px' }}>
         <div style={{ fontSize: '13px', color: '#999', marginBottom: '16px' }}>
           <a href="/" style={{ color: '#999' }}>トップ</a> &gt;{' '}

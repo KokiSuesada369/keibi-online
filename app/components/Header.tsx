@@ -15,6 +15,9 @@ export default function Header() {
           <a href="/news" style={{ color: '#555', textDecoration: 'none' }}>ニュース</a>
           <a href="/license" style={{ color: '#555', textDecoration: 'none' }}>資格情報</a>
           <a href="#" onClick={(e) => { e.preventDefault(); alert('近日公開予定です') }} style={{ color: '#555', textDecoration: 'none' }}>警備求人</a>
+          <a href="/hiroshima/osusume" style={{ color: '#555', textDecoration: 'none' }}>おすすめ警備会社</a>
+          <a href="/nearby" style={{ color: '#555', textDecoration: 'none' }}>近くの警備会社</a>
+          <a href="/request" style={{ color: '#555', textDecoration: 'none' }}>警備依頼</a>
           <a href="/column" style={{ color: '#555', textDecoration: 'none' }}>コラム</a>
           <a href="/contact" style={{ color: '#555', textDecoration: 'none' }}>お問い合わせ</a>
         </nav>
@@ -31,6 +34,9 @@ export default function Header() {
             { label: 'ニュース', href: '/news' },
             { label: '資格情報', href: '/license' },
             { label: '警備求人', href: '#' },
+            { label: 'おすすめ警備会社', href: '/hiroshima/osusume' },
+            { label: '近くの警備会社', href: '/nearby' },
+            { label: '警備依頼', href: '/request' },
             { label: 'コラム', href: '/column' },
             { label: 'お問い合わせ', href: '/contact' },
           ].map(item => (

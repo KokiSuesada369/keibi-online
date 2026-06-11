@@ -13,6 +13,8 @@ export default function Footer() {
           { label: 'ニュース', href: '/news' },
           { label: '資格情報', href: '/license' },
           { label: '警備求人', href: '#' },
+          { label: '近くの警備会社を探す', href: '/nearby' },
+          { label: 'かんたん警備依頼', href: '/request' },
           { label: 'コラム', href: '/column' },
           { label: 'お問い合わせ', href: '/contact' },
           { label: '修正依頼', href: '/contact' },

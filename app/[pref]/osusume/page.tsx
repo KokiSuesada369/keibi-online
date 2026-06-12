@@ -275,7 +275,7 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
                       </div>
 
                       <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                           <Link
                             href={`/companies/${company.slug}`}
                             style={{ fontSize: '15px', fontWeight: 'bold', color: '#1a1a2e', textDecoration: 'none' }}
@@ -310,13 +310,13 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
                         <p style={{ fontSize: '12px', color: '#555', lineHeight: 1.7, margin: 0 }}>
                           {generateIntro({ slug: company.slug, name: company.name, pref: company.pref, city: company.city, numbers: company.numbers })}
                         </p>
-
-                        <div style={{ marginTop: '10px' }}>
-                          <Link href={`/companies/${company.slug}`} style={{ fontSize: '12px', color: '#f97316', textDecoration: 'none', fontWeight: 600 }}>
-                            詳細を見る →
-                          </Link>
-                        </div>
                       </div>
+                    </div>
+
+                    <div style={{ marginTop: '10px', textAlign: 'right' }}>
+                      <Link href={`/companies/${company.slug}`} style={{ fontSize: '12px', color: '#f97316', textDecoration: 'none', fontWeight: 600 }}>
+                        詳細を見る →
+                      </Link>
                     </div>
                   </div>
                 ))}

@@ -142,30 +142,36 @@ export default function LicensePage() {
   const [showSupervisorPrefDropdown, setShowSupervisorPrefDropdown] = useState(false)
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchData = async () => {
       setSpecialLoading(true)
-      let query = supabase.from('training_schedules').select('*').order('start_date', { ascending: true })
-      if (serviceType !== 'すべて') query = query.eq('service_type', serviceType)
-      if (grade !== 'すべて') query = query.eq('grade', grade)
-      if (target !== 'すべて') query = query.eq('target', target)
-      const { data } = await query
-      setSpecialRecords(data ?? [])
-      setSpecialLoading(false)
+      try {
+        let query = supabase.from('training_schedules').select('*').order('start_date', { ascending: true })
+        if (serviceType !== 'すべて') query = query.eq('service_type', serviceType)
+        if (grade !== 'すべて') query = query.eq('grade', grade)
+        if (target !== 'すべて') query = query.eq('target', target)
+        const { data } = await query
+        setSpecialRecords(data ?? [])
+      } finally {
+        setSpecialLoading(false)
+      }
     }
-    fetch()
+    fetchData()
   }, [serviceType, grade, target])
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchData = async () => {
       setSupervisorLoading(true)
-      let query = supabase.from('supervisor_schedules').select('*').order('date_start', { ascending: true })
-      if (qualification !== 'すべて') query = query.eq('qualification', qualification)
-      if (lectureType !== 'すべて') query = query.eq('type', lectureType)
-      const { data } = await query
-      setSupervisorRecords(data ?? [])
-      setSupervisorLoading(false)
+      try {
+        let query = supabase.from('supervisor_schedules').select('*').order('date_start', { ascending: true })
+        if (qualification !== 'すべて') query = query.eq('qualification', qualification)
+        if (lectureType !== 'すべて') query = query.eq('type', lectureType)
+        const { data } = await query
+        setSupervisorRecords(data ?? [])
+      } finally {
+        setSupervisorLoading(false)
+      }
     }
-    fetch()
+    fetchData()
   }, [qualification, lectureType])
 
   const filteredSpecial = specialRecords.filter(r => {

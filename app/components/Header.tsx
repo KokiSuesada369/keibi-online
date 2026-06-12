@@ -27,7 +27,7 @@ export default function Header() {
               </span>
             )}
           </span>
-          <a href="/prefecture" style={{ color: '#555', textDecoration: 'none' }}>おすすめ警備会社</a>
+          <a href="/osusume" style={{ color: '#555', textDecoration: 'none' }}>おすすめ警備会社</a>
           <a href="/nearby" style={{ color: '#555', textDecoration: 'none' }}>近くの警備会社</a>
           <a href="/request" style={{ color: '#555', textDecoration: 'none' }}>警備依頼</a>
           <a href="/column" style={{ color: '#555', textDecoration: 'none' }}>コラム</a>
@@ -46,7 +46,7 @@ export default function Header() {
             { label: 'ニュース', href: '/news' },
             { label: '資格情報', href: '/license' },
             { label: '警備求人（近日公開）', href: '#', disabled: true },
-            { label: 'おすすめ警備会社', href: '/prefecture' },
+            { label: 'おすすめ警備会社', href: '/osusume' },
             { label: '近くの警備会社', href: '/nearby' },
             { label: '警備依頼', href: '/request' },
             { label: 'コラム', href: '/column' },

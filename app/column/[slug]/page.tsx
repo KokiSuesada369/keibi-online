@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { articles } from '@/app/column/data'
+import { safeJsonLd } from '@/app/lib/jsonld'
 
 export async function generateStaticParams() {
   return articles.map(a => ({ slug: a.slug }))
@@ -25,7 +26,7 @@ export default async function ColumnArticlePage({ params }: { params: Promise<{ 
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             '@context': 'https://schema.org',
             '@type': 'Article',
             headline: article!.title,
@@ -36,14 +37,14 @@ export default async function ColumnArticlePage({ params }: { params: Promise<{ 
               name: 'keibi.online',
               url: 'https://keibi.online',
             },
-            dateModified: new Date().toISOString(),
+            dateModified: '2026-06-12T00:00:00.000Z',
           })
         }}
       />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             itemListElement: [
@@ -85,7 +86,7 @@ export default async function ColumnArticlePage({ params }: { params: Promise<{ 
         </div>
         <div style={{ marginTop: '48px', padding: '24px', background: '#1a1a2e', borderRadius: '12px', color: 'white', textAlign: 'center' }}>
           <p style={{ fontSize: '16px', fontWeight: 700, marginBottom: '8px' }}>お近くの警備会社を探す</p>
-          <p style={{ fontSize: '14px', opacity: 0.7, marginBottom: '16px' }}>全国6,874社の警備会社から地域・業務別に検索できます</p>
+          <p style={{ fontSize: '14px', opacity: 0.7, marginBottom: '16px' }}>全国6,875社の警備会社から地域・業務別に検索できます</p>
           <a href="/prefecture" style={{ display: 'inline-block', padding: '12px 32px', background: 'white', color: '#1a1a2e', borderRadius: '8px', fontWeight: 700, textDecoration: 'none' }}>
             都道府県から探す
           </a>

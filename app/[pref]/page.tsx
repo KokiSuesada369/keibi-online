@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
+import { safeJsonLd } from '@/app/lib/jsonld'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -50,10 +51,11 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ pref: string }> }) {
   const { pref } = await params
   const prefName = PREF_MAP[pref]
-  if (!prefName) return {}
+  if (!prefName) return { title: 'ページが見つかりません | keibi.online' }
   return {
     title: `${prefName}の警備会社一覧 | keibi.online`,
     description: `${prefName}の警備会社を掲載。施設警備・交通誘導・雑踏警備・機械警備など業務別に検索できます。`,
+    twitter: { card: 'summary_large_image' as const },
   }
 }
 
@@ -115,13 +117,13 @@ export default async function PrefecturePage({ params }: { params: Promise<{ pre
     <main>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px' }}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            __html: safeJsonLd({
               '@context': 'https://schema.org',
               '@type': 'BreadcrumbList',
               itemListElement: [

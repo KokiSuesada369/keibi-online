@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { generateDescription } from '@/app/companies/description'
+import { safeJsonLd } from '@/app/lib/jsonld'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -84,7 +85,19 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
 
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: safeJsonLd({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'トップ', item: 'https://keibi.online' },
+              { '@type': 'ListItem', position: 2, name: company.pref, item: `https://keibi.online/${company.pref_slug}` },
+              { '@type': 'ListItem', position: 3, name: company.name, item: `https://keibi.online/companies/${company.slug}` },
+            ],
+          })}}
         />
 
         {/* パンくず */}

@@ -23,7 +23,7 @@ function templateSaizen(c: Company): string {
 }
 
 function templateA(c: Company): string {
-  return `${c.name}は、${c.pref}${c.city ?? ''}に拠点を置く警備会社です。${NUMBER_DETAIL[1]}を主な業務としています。ビルオーナー・施設管理者・病院・商業施設など、幅広い顧客の安全管理をサポートしています。${c.pref}内での実績を活かし、地域密着型の警備サービスを提供しています。`
+  return `${c.name}は、${c.pref}${c.city ?? ''}に拠点を置く施設警備専門の警備会社です。ビル・商業施設・病院などの施設に常駐し、巡回・監視・入退館管理を主な業務としています。ビルオーナー・施設管理者・病院・商業施設など、幅広い顧客の安全管理をサポートしています。${c.pref}内での実績を活かし、地域密着型の警備サービスを提供しています。`
 }
 
 function templateB(c: Company): string {

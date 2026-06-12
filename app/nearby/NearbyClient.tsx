@@ -67,9 +67,11 @@ export default function NearbyClient() {
   const [results, setResults] = useState<Company[] | null>(null)
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
+  const [formError, setFormError] = useState('')
 
   const handleSearch = async () => {
-    if (!pref) { alert('都道府県を選択してください'); return }
+    if (!pref) { setFormError('都道府県を選択してください'); return }
+    setFormError('')
     setLoading(true)
     setSearched(true)
 
@@ -129,6 +131,11 @@ export default function NearbyClient() {
             </div>
           </div>
         </div>
+        {formError && (
+          <p style={{ color: '#ef4444', fontSize: '13px', margin: '0 0 8px', padding: '8px 12px', background: '#fef2f2', borderRadius: '6px', border: '1px solid #fecaca' }}>
+            {formError}
+          </p>
+        )}
         <button onClick={handleSearch} disabled={loading} style={{
           width: '100%', padding: '14px', background: loading ? '#fdba74' : '#f97316',
           color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px',

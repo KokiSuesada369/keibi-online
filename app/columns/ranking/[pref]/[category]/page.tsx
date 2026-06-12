@@ -5,11 +5,7 @@ import { notFound } from 'next/navigation'
 import hiroshimaRanking from '@/data/ranking/hiroshima'
 import type { PrefRankingData, RankingCategory } from '@/data/ranking/hiroshima'
 import { generateIntro } from '@/data/companyIntro'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { safeJsonLd } from '@/app/lib/jsonld'
 
 const PREF_MAP: Record<string, string> = {
   hokkaido: '北海道', aomori: '青森県', iwate: '岩手県', miyagi: '宮城県',
@@ -115,10 +111,15 @@ export default async function RankingPage({
   const prefName = PREF_MAP[pref]
   if (!prefName) notFound()
 
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
   const rankingData = RANKINGS_BY_PREF[pref]
   const cat = rankingData?.categories[category as RankingCategory]
 
-  let companies: any[] = []
+  let companies: SupabaseCompany[] = []
   let isStatic = false
   let supabaseMap: Record<string, SupabaseCompany> = {}
 
@@ -165,7 +166,7 @@ export default async function RankingPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             '@context': 'https://schema.org',
             '@type': 'ItemList',
             name: `${prefName}の${catLabel}会社おすすめランキング`,
@@ -372,7 +373,7 @@ export default async function RankingPage({
           {!isStatic && companies.map((company, index) => {
             const isTop = index === 0
             return (
-              <a key={company.slug} href={`/companies/${company.slug}`} style={{ textDecoration: 'none' }}>
+              <Link key={company.slug} href={`/companies/${company.slug}`} style={{ textDecoration: 'none' }}>
                 <div style={{
                   background: '#fff',
                   borderRadius: '12px',
@@ -419,10 +420,31 @@ export default async function RankingPage({
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             )
           })}
         </div>
+
+        {/* FAQ（動的データ） */}
+        {!isStatic && (
+          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.25rem 1.5rem', marginBottom: '2rem' }}>
+            <h2 style={{ fontSize: '15px', fontWeight: 'bold', color: '#111', margin: '0 0 10px' }}>よくある質問</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. {prefName}で{catLabel}会社を選ぶ際のポイントは？</p>
+                <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. {prefName}公安委員会の認定を受けた{catLabel}業者かどうかを確認し、対応エリア・実績・料金体系の明確さを複数社で比較することが重要です。</p>
+              </div>
+              <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '14px' }}>
+                <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. {catLabel}の料金相場はどのくらいですか？</p>
+                <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. 料金は依頼内容・時間帯・人数によって異なります。複数社から見積もりを取り比較することを強くおすすめします。</p>
+              </div>
+              <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '14px' }}>
+                <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. 急ぎで{catLabel}を依頼したい場合はどうすれば良いですか？</p>
+                <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. 地域密着型の警備会社への直接問い合わせが最も早い方法です。このページに掲載している会社に直接ご連絡ください。</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* 他カテゴリへのリンク */}
         <div

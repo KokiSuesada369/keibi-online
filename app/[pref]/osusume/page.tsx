@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { generateIntro } from '@/data/companyIntro'
+import { safeJsonLd } from '@/app/lib/jsonld'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -136,22 +137,17 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
       .eq('pref_slug', pref)
       .contains('numbers', [2])
       .neq('slug', 'saizen-666')
-      .limit(30),
+      .limit(50),
     supabase
       .from('companies')
       .select('slug, name, pref, city, tel, numbers')
       .eq('pref_slug', pref)
       .contains('numbers', [1])
-      .limit(10),
+      .limit(20),
   ])
 
   const shuffled2 = deterministicShuffle((raw2 ?? []) as Company[], pref)
   const shuffled1 = deterministicShuffle((raw1 ?? []) as Company[], pref)
-
-  const kotsuTop3 = shuffled2.slice(0, 3)
-  const zattsuTop3 = shuffled2.slice(3, 6)
-  const parkingTop3 = shuffled2.slice(6, 9)
-  const shisetsuTop3 = shuffled1.slice(0, 3)
 
   let saizen: Company | null = null
   if (pref === 'hiroshima') {
@@ -163,18 +159,38 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
     saizen = data
   }
 
-  const injectSaizen = (arr: Company[]): Company[] => {
-    if (!saizen) return arr
-    return [saizen, ...arr.filter(c => c.slug !== 'saizen-666').slice(0, 2)]
+  const usedSlugs = new Set<string>()
+  if (saizen) usedSlugs.add('saizen-666')
+
+  const pickUnique = (arr: Company[], n: number): Company[] => {
+    const result: Company[] = []
+    for (const c of arr) {
+      if (!usedSlugs.has(c.slug) && result.length < n) {
+        usedSlugs.add(c.slug)
+        result.push(c)
+      }
+    }
+    return result
   }
 
-  const finalKotsu = pref === 'hiroshima' ? injectSaizen(kotsuTop3) : kotsuTop3
-  const finalZattsu = pref === 'hiroshima' ? injectSaizen(zattsuTop3) : zattsuTop3
-  const finalParking = pref === 'hiroshima' ? injectSaizen(parkingTop3) : parkingTop3
+  let finalKotsu: Company[]
+  let finalEvent: Company[]
+  let finalParking: Company[]
+
+  if (pref === 'hiroshima' && saizen) {
+    finalKotsu = [saizen, ...pickUnique(shuffled2, 2)]
+    finalEvent = [saizen, ...pickUnique(shuffled2, 2)]
+    finalParking = [saizen, ...pickUnique(shuffled2, 2)]
+  } else {
+    finalKotsu = pickUnique(shuffled2, 3)
+    finalEvent = pickUnique(shuffled2, 3)
+    finalParking = pickUnique(shuffled2, 3)
+  }
+  const shisetsuTop3 = pickUnique(shuffled1, 3)
 
   const feature = PREF_FEATURES[pref] ?? `${prefName}の警備会社を選ぶ際は、対応業務・実績・料金体系・緊急時の対応体制を確認することが重要です。複数社から見積もりを取り、自社のニーズに最適な会社を選びましょう。`
 
-  const allDisplayed = [...finalKotsu, ...shisetsuTop3, ...finalZattsu, ...finalParking]
+  const allDisplayed = [...finalKotsu, ...shisetsuTop3, ...finalEvent, ...finalParking]
   const uniqueCompanies = allDisplayed.filter((c, i, arr) => arr.findIndex(x => x.slug === c.slug) === i).slice(0, 10)
 
   const jsonLd = {
@@ -193,7 +209,7 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
   const sections = [
     { id: 'kotsu', label: '交通誘導警備', desc: '道路工事・建設現場での交通誘導を専門とする会社', companies: finalKotsu },
     { id: 'shisetsu', label: '施設警備', desc: 'ビル・商業施設・病院などの常駐・巡回警備', companies: shisetsuTop3 },
-    { id: 'zattsu', label: '雑踏警備（イベント）', desc: '花火大会・スポーツイベント・商業イベントの警備', companies: finalZattsu },
+    { id: 'event', label: '雑踏警備（イベント）', desc: '花火大会・スポーツイベント・商業イベントの警備', companies: finalEvent },
     { id: 'parking', label: '駐車場警備', desc: '駐車場・商業施設・工場の車両誘導・管理', companies: finalParking },
   ]
 
@@ -201,7 +217,7 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
     <div style={{ minHeight: '100vh', background: '#f8f9fa' }}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '2rem 1rem' }}>
 
@@ -231,7 +247,7 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
                 </span>
                 <span style={{ fontSize: '15px', fontWeight: 500, color: '#111' }}>{section.label}</span>
               </div>
-              <Link href={`/columns/ranking/${pref}/${section.id === 'kotsu' ? 'kotsu' : section.id === 'shisetsu' ? 'shisetsu' : section.id === 'zattsu' ? 'event' : 'parking'}`} style={{ fontSize: '12px', color: '#457b9d', textDecoration: 'none' }}>
+              <Link href={`/columns/ranking/${pref}/${section.id}`} style={{ fontSize: '12px', color: '#457b9d', textDecoration: 'none' }}>
                 もっと見る →
               </Link>
             </div>
@@ -319,7 +335,7 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
                 ))}
                 <div style={{ textAlign: 'right', marginTop: '6px' }}>
                   <Link
-                    href={`/columns/ranking/${pref}/${section.id === 'kotsu' ? 'kotsu' : section.id === 'shisetsu' ? 'shisetsu' : section.id === 'zattsu' ? 'event' : 'parking'}`}
+                    href={`/columns/ranking/${pref}/${section.id}`}
                     style={{ fontSize: '12px', color: '#457b9d', textDecoration: 'none' }}
                   >
                     {prefName}の{section.label}会社ランキング10選を見る →

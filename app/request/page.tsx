@@ -59,6 +59,7 @@ export default function RequestPage() {
   const [services, setServices] = useState<string[]>([])
   const [name, setName] = useState('')
   const [contact, setContact] = useState('')
+  const [searchError, setSearchError] = useState('')
 
   const toggleService = (s: string) => {
     setServices(prev =>
@@ -78,8 +79,8 @@ export default function RequestPage() {
 
   const handleSearch = () => {
     const slug = PREF_SLUG[pref]
-    if (slug) router.push(`/${slug}`)
-    else alert('都道府県を選択してください')
+    if (slug) { setSearchError(''); router.push(`/${slug}`) }
+    else setSearchError('都道府県を選択してください')
   }
 
   return (
@@ -210,6 +211,11 @@ export default function RequestPage() {
             この条件で問い合わせる
           </button>
 
+          {searchError && (
+            <p style={{ color: '#ef4444', fontSize: '13px', margin: '-8px 0 0', padding: '8px 12px', background: '#fef2f2', borderRadius: '6px', border: '1px solid #fecaca' }}>
+              {searchError}
+            </p>
+          )}
           <button
             onClick={handleSearch}
             style={{
@@ -239,7 +245,7 @@ export default function RequestPage() {
             <a
               href="https://nextkb.jp"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="nofollow noopener noreferrer"
               style={{
                 display: 'inline-block',
                 padding: '8px 16px',

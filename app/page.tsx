@@ -4,10 +4,7 @@ import ServiceCards from '@/app/components/ServiceCards'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-export const metadata = {
-  title: '警備会社検索・資格講習日程・求人｜全国6,875社掲載 | keibi.online',
-  description: '全国6,875社の警備会社を都道府県・業務別に検索。指導教育責任者講習・特別講習の日程も全国対応。警備業界のニュース・求人情報も掲載。',
-}
+export const revalidate = 3600
 
 const PREF_REGIONS = [
   { name: '北海道・東北', prefs: [
@@ -86,13 +83,13 @@ export default async function HomePage() {
 
       {/* ヒーロー */}
       <section style={{ position: 'relative', padding: '56px 24px 48px', textAlign: 'center', background: '#0f172a', overflow: 'hidden' }}>
-        <canvas id="particle-canvas" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
+        <canvas id="particle-canvas" width="1" height="1" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'inline-block', background: '#f4820a', color: 'white', fontSize: '12px', fontWeight: 700, padding: '5px 16px', borderRadius: '99px', marginBottom: '20px', letterSpacing: '0.5px' }}>
             警備業界専門のポータルサイト
           </div>
           <h1 style={{ fontSize: 'clamp(22px, 5vw, 36px)', fontWeight: 800, color: 'white', lineHeight: 1.4, marginBottom: '12px' }}>
-            全国6,875社の警備会社を検索<br />資格・講習・求人・ニュースも全国対応
+            全国{totalCompanies}社の警備会社を検索<br />資格・講習・求人・ニュースも全国対応
           </h1>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '32px', lineHeight: 1.8 }}>
             都道府県・業務別に警備会社を検索｜資格講習日程・求人・業界ニュースを一か所に集約

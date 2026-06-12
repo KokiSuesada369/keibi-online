@@ -37,14 +37,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }))
 
-  const prefServicePages: MetadataRoute.Sitemap = PREF_SLUGS.flatMap(pref =>
-    [1, 2, 3, 4].map(service => ({
-      url: `${baseUrl}/${pref}/service/${service}`,
-      lastModified: new Date('2026-06-11'),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    }))
-  )
 
   const columnPages: MetadataRoute.Sitemap = articles.map(a => ({
     url: `${baseUrl}/column/${a.slug}`,
@@ -80,7 +72,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  const rankingPages: MetadataRoute.Sitemap = ['hiroshima'].flatMap(pref =>
+  const rankingPages: MetadataRoute.Sitemap = PREF_SLUGS.flatMap(pref =>
     ['kotsu', 'event', 'shisetsu', 'parking'].map(cat => ({
       url: `${baseUrl}/columns/ranking/${pref}/${cat}`,
       lastModified: new Date('2026-06-11'),
@@ -119,7 +111,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...staticPages,
     ...prefPages,
-    ...prefServicePages,
     ...osusumePages,
     ...rankingPages,
     ...columnPages,

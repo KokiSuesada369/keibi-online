@@ -37,17 +37,19 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
         </div>
 
         <div style={{ background: 'white', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '40px' }}>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '16px' }}>
-            {news.category && (
-              <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '20px', background: '#fff3e0', color: '#f97316', border: '1px solid #fed7aa', fontWeight: 500 }}>
+          {news.category && (
+            <div style={{ marginBottom: '10px' }}>
+              <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '20px', background: '#fff3e0', color: '#f97316', border: '1px solid #fed7aa', fontWeight: 500, display: 'inline-block' }}>
                 {news.category}
               </span>
-            )}
+            </div>
+          )}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', marginBottom: '20px' }}>
             <span style={{ fontSize: '12px', color: '#999' }}>
               {news.published_at ? new Date(news.published_at).toLocaleDateString('ja-JP') : ''}
             </span>
             {news.source && (
-              <span style={{ fontSize: '12px', color: '#999', whiteSpace: 'nowrap' }}>出典：{news.source_url ? <a href={news.source_url} target="_blank" rel="noopener noreferrer" style={{ color: '#f97316' }}>{news.source}</a> : news.source}</span>
+              <span style={{ fontSize: '12px', color: '#999' }}>出典：{news.source_url ? <a href={news.source_url} target="_blank" rel="noopener noreferrer" style={{ color: '#f97316' }}>{news.source}</a> : news.source}</span>
             )}
           </div>
 

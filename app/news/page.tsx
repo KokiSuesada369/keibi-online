@@ -39,15 +39,15 @@ export default async function NewsPage() {
             {newsList.map(news => (
               <Link key={news.id} href={`/news/${news.slug}`} style={{ textDecoration: 'none' }}>
                 <div style={{ background: 'white', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', transition: 'box-shadow 0.2s' }}>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
-                    {news.category && (
-                      <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '20px', background: '#fff3e0', color: '#f97316', border: '1px solid #fed7aa', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                  {news.category && (
+                    <div style={{ marginBottom: '8px' }}>
+                      <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '20px', background: '#fff3e0', color: '#f97316', border: '1px solid #fed7aa', fontWeight: 500, display: 'inline-block' }}>
                         {news.category}
                       </span>
-                    )}
-                    <span style={{ fontSize: '12px', color: '#999' }}>
-                      {news.published_at ? new Date(news.published_at).toLocaleDateString('ja-JP') : ''}
-                    </span>
+                    </div>
+                  )}
+                  <div style={{ fontSize: '12px', color: '#999', marginBottom: '8px' }}>
+                    {news.published_at ? new Date(news.published_at).toLocaleDateString('ja-JP') : ''}
                   </div>
                   <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#111', margin: '0 0 8px', lineHeight: 1.5 }}>{news.title}</h2>
                   <p style={{ fontSize: '13px', color: '#666', margin: 0, lineHeight: 1.7 }}>{news.summary}</p>

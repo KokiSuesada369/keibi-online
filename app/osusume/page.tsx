@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { PREF_MAP } from '@/constants/prefs'
+import PrefDropdown from './PrefDropdown'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -46,9 +47,16 @@ export default async function OsusumeHubPage() {
         <h1 style={{ fontSize: 'clamp(20px, 5vw, 28px)', fontWeight: 700, marginBottom: '12px' }}>
           おすすめ警備会社を地域から探す
         </h1>
-        <p style={{ fontSize: '14px', color: '#666', lineHeight: 1.8, marginBottom: '40px' }}>
+        <p style={{ fontSize: '14px', color: '#666', lineHeight: 1.8, marginBottom: '24px' }}>
           都道府県・市区町村を選んで、地域のおすすめ警備会社ランキングをご確認ください。
         </p>
+
+        <div style={{ background: 'white', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '20px 24px', marginBottom: '40px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a2e', marginBottom: '12px' }}>
+            都道府県から直接ランキングを見る
+          </div>
+          <PrefDropdown />
+        </div>
 
         {REGIONS.map(region => (
           <div key={region.name} style={{ marginBottom: '48px' }}>

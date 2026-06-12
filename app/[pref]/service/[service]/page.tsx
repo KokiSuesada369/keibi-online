@@ -1,23 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
+import type { Company } from '@/types/company'
+import { SECURITY_TYPE_LABELS, SECURITY_TYPE_COLORS, SECURITY_TYPE_DESCRIPTIONS } from '@/constants/securityTypes'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-const NUMBER_LABELS: Record<number, string> = {
-  1: '1号警備',
-  2: '2号警備',
-  3: '3号警備',
-  4: '4号警備',
-}
-const NUMBER_DESCRIPTIONS: Record<number, string> = {
-  1: '施設警備・巡回警備・機械警備・保安警備・空港保安警備',
-  2: '交通誘導警備・雑踏警備',
-  3: '現金・貴重品の輸送警備',
-  4: '要人・個人の身辺警護',
-}
-const NUMBER_COLORS: Record<number, string> = {
-  1: '#457b9d', 2: '#2a9d8f', 3: '#e76f51', 4: '#e63946',
-}
 
 const PREF_MAP: Record<string, string> = {
   hokkaido:'北海道', aomori:'青森県', iwate:'岩手県', miyagi:'宮城県',
@@ -36,17 +22,6 @@ const PREF_MAP: Record<string, string> = {
 
 export const revalidate = 86400
 
-type Company = {
-  id: number
-  slug: string
-  name: string
-  zip: string
-  city: string
-  tel: string
-  url: string
-  numbers: number[]
-}
-
 export async function generateStaticParams() {
   // 47県 × 4業務 = 188ページを静的生成
   const params = []
@@ -62,11 +37,11 @@ export async function generateMetadata({ params }: { params: Promise<{ pref: str
   const { pref, service } = await params
   const prefName = PREF_MAP[pref]
   const num = parseInt(service)
-  const label = NUMBER_LABELS[num]
+  const label = SECURITY_TYPE_LABELS[num]
   if (!prefName || !label) return {}
   return {
     title: `${prefName}の${label}警備会社一覧 | keibi.online`,
-    description: `${prefName}の${label}（${NUMBER_DESCRIPTIONS[num]}）対応警備会社を掲載。地域密着の警備会社を探せます。`,
+    description: `${prefName}の${label}（${SECURITY_TYPE_DESCRIPTIONS[num]}）対応警備会社を掲載。地域密着の警備会社を探せます。`,
   }
 }
 
@@ -74,7 +49,7 @@ export default async function PrefServicePage({ params }: { params: Promise<{ pr
   const { pref, service } = await params
   const prefName = PREF_MAP[pref]
   const num = parseInt(service)
-  const label = NUMBER_LABELS[num]
+  const label = SECURITY_TYPE_LABELS[num]
   if (!prefName || !label) return <div>ページが見つかりません</div>
 
   const supabase = createClient(supabaseUrl, supabaseKey)
@@ -101,7 +76,7 @@ export default async function PrefServicePage({ params }: { params: Promise<{ pr
           {prefName}の{label}警備会社一覧
         </h1>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>
-          {NUMBER_DESCRIPTIONS[num]}
+          {SECURITY_TYPE_DESCRIPTIONS[num]}
         </p>
         <p style={{ color: '#666', marginBottom: '32px' }}>
           {companies.length}社掲載 — 2026年6月更新
@@ -116,14 +91,14 @@ export default async function PrefServicePage({ params }: { params: Promise<{ pr
               style={{
                 padding: '6px 14px',
                 borderRadius: '99px',
-                border: `1px solid ${NUMBER_COLORS[n]}`,
-                color: NUMBER_COLORS[n],
+                border: `1px solid ${SECURITY_TYPE_COLORS[n]}`,
+                color: SECURITY_TYPE_COLORS[n],
                 fontSize: '13px',
                 textDecoration: 'none',
                 whiteSpace: 'nowrap',
               }}
             >
-              {prefName}の{NUMBER_LABELS[n]}
+              {prefName}の{SECURITY_TYPE_LABELS[n]}
             </a>
           ))}
         </div>
@@ -150,11 +125,11 @@ export default async function PrefServicePage({ params }: { params: Promise<{ pr
                     {(c.numbers ?? []).map((n: number) => (
                       <span key={n} style={{
                         fontSize: '11px', padding: '2px 8px', borderRadius: '99px',
-                        background: NUMBER_COLORS[n] + '22', color: NUMBER_COLORS[n],
+                        background: SECURITY_TYPE_COLORS[n] + '22', color: SECURITY_TYPE_COLORS[n],
                         fontWeight: 600, marginRight: '4px', marginBottom: '4px',
                         display: 'inline-block'
                       }}>
-                        {NUMBER_LABELS[n]}
+                        {SECURITY_TYPE_LABELS[n]}
                       </span>
                     ))}
                   </div>

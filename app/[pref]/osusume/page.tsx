@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { generateIntro } from '@/data/companyIntro'
 import { safeJsonLd } from '@/app/lib/jsonld'
+import { SECURITY_TYPE_LABELS } from '@/constants/securityTypes'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -71,7 +72,7 @@ const PREF_FEATURES: Record<string, string> = {
   okinawa: '沖縄県は観光業が盛んな地域で、リゾートホテル・観光施設での警備需要が高い地域です。米軍基地関連施設の警備など特殊なニーズにも対応できる会社が揃っています。',
 }
 
-type Company = {
+type OsusumeCompany = {
   slug: string
   name: string
   pref: string
@@ -80,9 +81,6 @@ type Company = {
   numbers: number[]
 }
 
-const NUM_LABELS: Record<number, string> = {
-  1: '1号警備', 2: '2号警備', 3: '3号警備', 4: '4号警備',
-}
 const NUM_COLORS: Record<number, { bg: string; color: string }> = {
   1: { bg: '#eef2ff', color: '#3b4fa8' },
   2: { bg: '#e6f7f4', color: '#0f6e56' },
@@ -146,10 +144,10 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
       .limit(20),
   ])
 
-  const shuffled2 = deterministicShuffle((raw2 ?? []) as Company[], pref)
-  const shuffled1 = deterministicShuffle((raw1 ?? []) as Company[], pref)
+  const shuffled2 = deterministicShuffle((raw2 ?? []) as OsusumeCompany[], pref)
+  const shuffled1 = deterministicShuffle((raw1 ?? []) as OsusumeCompany[], pref)
 
-  let saizen: Company | null = null
+  let saizen: OsusumeCompany | null = null
   if (pref === 'hiroshima') {
     const { data } = await supabase
       .from('companies')
@@ -162,8 +160,8 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
   const usedSlugs = new Set<string>()
   if (saizen) usedSlugs.add('saizen-666')
 
-  const pickUnique = (arr: Company[], n: number): Company[] => {
-    const result: Company[] = []
+  const pickUnique = (arr: OsusumeCompany[], n: number): OsusumeCompany[] => {
+    const result: OsusumeCompany[] = []
     for (const c of arr) {
       if (!usedSlugs.has(c.slug) && result.length < n) {
         usedSlugs.add(c.slug)
@@ -173,9 +171,9 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
     return result
   }
 
-  let finalKotsu: Company[]
-  let finalEvent: Company[]
-  let finalParking: Company[]
+  let finalKotsu: OsusumeCompany[]
+  let finalEvent: OsusumeCompany[]
+  let finalParking: OsusumeCompany[]
 
   if (pref === 'hiroshima' && saizen) {
     finalKotsu = [saizen, ...pickUnique(shuffled2, 2)]
@@ -313,7 +311,7 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
                               const c = NUM_COLORS[n]
                               return c ? (
                                 <span key={n} style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '4px', background: c.bg, color: c.color, fontWeight: 600 }}>
-                                  {NUM_LABELS[n]}
+                                  {SECURITY_TYPE_LABELS[n]}
                                 </span>
                               ) : null
                             })}

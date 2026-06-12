@@ -145,7 +145,7 @@ export default async function RankingPage({
     const nums = numberFilter[category] ?? [2]
     const { data } = await supabase
       .from('companies')
-      .select('slug, name, pref, city, tel, numbers')
+      .select('slug, name, pref, city, tel, url, numbers')
       .eq('pref_slug', pref)
       .contains('numbers', nums)
       .limit(10)

@@ -19,8 +19,6 @@ export default async function NewsPage() {
     .select('*')
     .order('published_at', { ascending: false })
 
-  console.log('newsList:', newsList, 'error:', error)
-
   return (
     <main>
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: '48px 24px' }}>

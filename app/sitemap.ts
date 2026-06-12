@@ -2,6 +2,8 @@ import { createClient } from '@supabase/supabase-js'
 import { MetadataRoute } from 'next'
 import { articles } from '@/app/column/data'
 
+export const revalidate = 3600
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
@@ -81,6 +83,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   )
 
+  const { data: newsItems } = await supabase
+    .from('news')
+    .select('slug, published_at')
+    .order('published_at', { ascending: false })
+
+  const newsPages: MetadataRoute.Sitemap = (newsItems ?? []).map(n => ({
+    url: `${baseUrl}/news/${n.slug}`,
+    lastModified: n.published_at ? new Date(n.published_at) : new Date('2026-06-01'),
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }))
+
   const companyPages: MetadataRoute.Sitemap = []
   const pageSize = 1000
   let from = 0
@@ -114,6 +128,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...osusumePages,
     ...rankingPages,
     ...columnPages,
+    ...newsPages,
     ...licensePages,
     ...cityPages,
     ...companyPages,

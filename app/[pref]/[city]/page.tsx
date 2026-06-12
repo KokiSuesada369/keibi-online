@@ -1,17 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
+import type { Company } from '@/types/company'
+import { SECURITY_TYPE_LABELS, SECURITY_TYPE_COLORS } from '@/constants/securityTypes'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-const NUMBER_LABELS: Record<number, string> = {
-  1: '1号警備',
-  2: '2号警備',
-  3: '3号警備',
-  4: '4号警備',
-}
-const NUMBER_COLORS: Record<number, string> = {
-  1: '#457b9d', 2: '#2a9d8f', 3: '#e76f51', 4: '#e63946',
-}
 
 const PREF_MAP: Record<string, string> = {
   hokkaido:'北海道', aomori:'青森県', iwate:'岩手県', miyagi:'宮城県',
@@ -28,18 +20,7 @@ const PREF_MAP: Record<string, string> = {
   miyazaki:'宮崎県', kagoshima:'鹿児島県', okinawa:'沖縄県',
 }
 
-export const revalidate = 86400
-
-type Company = {
-  id: number
-  slug: string
-  name: string
-  zip: string
-  city: string
-  tel: string
-  url: string
-  numbers: number[]
-}
+export const revalidate = 3600
 
 type CityData = {
   city: string
@@ -129,8 +110,8 @@ export default async function CityPage({ params }: { params: Promise<{ pref: str
                 <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>📞 {c.tel}</div>
                 <div>
                   {(c.numbers ?? []).map((num: number) => (
-                    <span key={num} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: NUMBER_COLORS[num] + '22', color: NUMBER_COLORS[num], fontWeight: 600, marginRight: '4px', marginBottom: '4px', display: 'inline-block' }}>
-                      {NUMBER_LABELS[num]}
+                    <span key={num} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: SECURITY_TYPE_COLORS[num] + '22', color: SECURITY_TYPE_COLORS[num], fontWeight: 600, marginRight: '4px', marginBottom: '4px', display: 'inline-block' }}>
+                      {SECURITY_TYPE_LABELS[num]}
                     </span>
                   ))}
                 </div>

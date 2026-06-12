@@ -12,7 +12,6 @@ export default function Footer() {
           { label: '警備会社一覧', href: '/prefecture' },
           { label: 'ニュース', href: '/news' },
           { label: '資格情報', href: '/license' },
-          { label: '警備求人', href: '#' },
           { label: '近くの警備会社を探す', href: '/nearby' },
           { label: 'かんたん警備依頼', href: '/request' },
           { label: 'コラム', href: '/column' },
@@ -22,12 +21,12 @@ export default function Footer() {
           <a
             key={l.label}
             href={l.href}
-            onClick={l.href === '#' ? (e) => { e.preventDefault(); alert('近日公開予定です') } : undefined}
             style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}
           >
             {l.label}
           </a>
         ))}
+        <span title="近日公開予定" style={{ fontSize: '13px', color: '#bbb', cursor: 'default' }}>警備求人</span>
       </div>
       <div style={{ fontSize: '11px', color: '#bbb' }}>© 2026 keibi.online All rights reserved.</div>
     </footer>

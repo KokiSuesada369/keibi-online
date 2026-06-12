@@ -9,7 +9,6 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 export const revalidate = 86400
 
 export async function generateStaticParams() {
-  // 47県 × 4業務 = 188ページを静的生成
   const params = []
   for (const pref of Object.keys(PREF_MAP)) {
     for (const service of ['1', '2', '3', '4']) {
@@ -26,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ pref: str
   const label = SECURITY_TYPE_LABELS[num]
   if (!prefName || !label) return {}
   return {
-    title: `${prefName}の${label}警備会社一覧 | keibi.online`,
+    title: `${prefName}の${label}会社一覧 | keibi.online`,
     description: `${prefName}の${label}（${SECURITY_TYPE_DESCRIPTIONS[num]}）対応警備会社を掲載。地域密着の警備会社を探せます。`,
     alternates: { canonical: `https://keibi.online/${pref}/service/${service}` },
   }
@@ -50,6 +49,14 @@ export default async function PrefServicePage({ params }: { params: Promise<{ pr
 
   if (error || !companies) return <div>データの取得に失敗しました</div>
 
+  // 広島2号警備はSAIZENを先頭に固定
+  const sortedCompanies = (pref === 'hiroshima' && num === 2)
+    ? [
+        ...companies.filter((c: Company) => c.slug === 'saizen-666'),
+        ...companies.filter((c: Company) => c.slug !== 'saizen-666'),
+      ]
+    : companies
+
   return (
     <main>
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px' }}>
@@ -59,13 +66,13 @@ export default async function PrefServicePage({ params }: { params: Promise<{ pr
           <a href={`/${pref}`} style={{ color: '#999' }}>{prefName}</a> &gt;{' '}
           {label}
         </div>
-        <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>
-          {prefName}の{label}警備会社一覧
+        <h1 style={{ fontSize: 'clamp(20px, 5vw, 28px)', fontWeight: 700, marginBottom: '12px' }}>
+          {prefName}の{label}会社一覧
         </h1>
-        <p style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>
+        <p style={{ fontSize: '14px', color: '#555', lineHeight: 1.8, marginBottom: '12px' }}>
           {SECURITY_TYPE_DESCRIPTIONS[num]}
         </p>
-        <p style={{ color: '#666', marginBottom: '32px' }}>
+        <p style={{ fontSize: '14px', color: '#666', marginBottom: '32px' }}>
           {companies.length}社掲載 — 2026年6月更新
         </p>
 
@@ -90,22 +97,22 @@ export default async function PrefServicePage({ params }: { params: Promise<{ pr
           ))}
         </div>
 
-        {companies.length === 0 ? (
+        {sortedCompanies.length === 0 ? (
           <div style={{ color: '#999', textAlign: 'center', padding: '48px' }}>
             該当する警備会社が見つかりませんでした
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '12px' }}>
-            {companies.map((c: Company) => (
+            {sortedCompanies.map((c: Company) => (
               <a key={c.id} href={`/companies/${c.slug}`} style={{ textDecoration: 'none' }}>
                 <div style={{ border: '1px solid #e5e5e5', borderRadius: '12px', padding: '16px', background: 'white', height: '100%' }}>
-                  <div style={{ fontSize: '15px', fontWeight: 700, color: '#1a1a2e', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '15px', fontWeight: 700, color: '#1a1a2e', marginBottom: '6px' }}>
                     {c.name}
                   </div>
                   <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>
                     〒{c.zip} {c.city}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>
+                  <div style={{ fontSize: '12px', color: '#666', marginBottom: '12px' }}>
                     📞 {c.tel}
                   </div>
                   <div>

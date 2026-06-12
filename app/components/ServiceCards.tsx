@@ -29,7 +29,7 @@ export default function ServiceCards({ totalCompanies }: { totalCompanies: strin
     { icon: '📰', name: '業界ニュース', desc: '最新情報・法改正をお届け', count: 'ニュース掲載中', href: '/news' },
     { icon: '🎖️', name: '資格・検定情報', desc: '警備業務検定・資格取得ガイド', count: '講習日程掲載中', href: '/license' },
     { icon: '💼', name: '警備求人', desc: '全国の警備員・管理職の求人', count: '近日公開', href: '#' },
-    { icon: '🏆', name: 'おすすめ警備会社', desc: '都道府県別・業務別ランキングを掲載', count: 'ランキングを見る →', href: '/hiroshima/osusume' },
+    { icon: '🏆', name: 'おすすめ警備会社', desc: '地域・業務別ランキング掲載', count: 'ランキングを見る →', href: '/hiroshima/osusume' },
     { icon: '📝', name: '警備業界コラム', desc: '選び方・業界知識・ランキング', count: 'コラム掲載中', href: '/column' },
     { icon: '📍', name: '近くの警備会社を探す', desc: 'エリアを指定して検索', count: 'エリアから探す →', href: '/nearby' },
     { icon: '📋', name: 'かんたん警備依頼', desc: 'エリア・業務・予算を選ぶだけ', count: '無料で依頼する →', href: '/request' },

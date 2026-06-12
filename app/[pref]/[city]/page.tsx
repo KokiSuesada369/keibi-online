@@ -84,10 +84,10 @@ export default async function CityPage({ params }: { params: Promise<{ pref: str
           <a href={`/${pref}`} style={{ color: '#999' }}>{prefName}</a> &gt;{' '}
           {cd.city}
         </div>
-        <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>
+        <h1 style={{ fontSize: 'clamp(20px, 5vw, 28px)', fontWeight: 700, marginBottom: '12px' }}>
           {cd.city}の警備会社一覧
         </h1>
-        <p style={{ color: '#666', marginBottom: '32px' }}>
+        <p style={{ fontSize: '14px', color: '#666', lineHeight: 1.8, marginBottom: '32px' }}>
           {companies.length}社掲載 — {UPDATED_LABEL}
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '12px' }}>

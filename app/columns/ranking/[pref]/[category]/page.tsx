@@ -148,7 +148,10 @@ export default async function RankingPage({
       .eq('pref_slug', pref)
       .contains('numbers', nums)
       .limit(10)
-    companies = data ?? []
+    companies = (data ?? []).filter(c => {
+      if (category === 'shisetsu') return c.numbers?.includes(1)
+      return c.numbers?.includes(2)
+    })
   }
 
   const catLabel = isStatic ? cat!.label : (CAT_LABELS[category] ?? '警備')

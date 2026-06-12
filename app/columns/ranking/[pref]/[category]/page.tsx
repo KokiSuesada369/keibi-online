@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import hiroshimaRanking from '@/data/ranking/hiroshima'
 import type { PrefRankingData, RankingCategory } from '@/data/ranking/hiroshima'
+import { generateIntro } from '@/data/companyIntro'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -36,6 +37,13 @@ const BADGE_COLORS: Record<string, { bg: string; color: string }> = {
   info:    { bg: '#eff6ff', color: '#1d4ed8' },
 }
 
+const CAT_LABELS: Record<string, string> = {
+  kotsu: '交通誘導警備',
+  event: 'イベント警備・雑踏警備',
+  shisetsu: '施設警備',
+  parking: '駐車場警備',
+}
+
 type SupabaseCompany = {
   slug: string
   name: string
@@ -46,11 +54,22 @@ type SupabaseCompany = {
   numbers: number[]
 }
 
+const PREF_SLUGS = [
+  'hokkaido','aomori','iwate','miyagi','akita','yamagata','fukushima',
+  'ibaraki','tochigi','gunma','saitama','chiba','tokyo','kanagawa',
+  'niigata','toyama','ishikawa','fukui','yamanashi','nagano','gifu',
+  'shizuoka','aichi','mie','shiga','kyoto','osaka','hyogo','nara',
+  'wakayama','tottori','shimane','okayama','hiroshima','yamaguchi',
+  'tokushima','kagawa','ehime','kochi','fukuoka','saga','nagasaki',
+  'kumamoto','oita','miyazaki','kagoshima','okinawa',
+]
+const CATEGORIES = ['kotsu', 'event', 'shisetsu', 'parking']
+
 export const revalidate = 86400
 
 export async function generateStaticParams() {
-  return Object.entries(RANKINGS_BY_PREF).flatMap(([pref, data]) =>
-    Object.keys(data!.categories).map(category => ({ pref, category }))
+  return PREF_SLUGS.flatMap(pref =>
+    CATEGORIES.map(category => ({ pref, category }))
   )
 }
 
@@ -61,16 +80,28 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { pref, category } = await params
   const prefName = PREF_MAP[pref]
+  if (!prefName) return { title: 'ページが見つかりません | keibi.online' }
   const data = RANKINGS_BY_PREF[pref]
   const cat = data?.categories[category as RankingCategory]
-  if (!prefName || !cat) return { title: 'ページが見つかりません | keibi.online' }
+  if (data && cat) {
+    return {
+      title: `${prefName}の${cat.label}会社おすすめランキング10選【${data.updatedYear}年】 | keibi.online`,
+      description: `${prefName}で${cat.label}会社をお探しの方へ。${cat.certLabel}に対応する地元優良警備会社をランキング形式で厳選。料金相場・失敗しない選び方も解説します。`,
+      twitter: {
+        card: 'summary_large_image',
+        title: `${prefName}の${cat.label}会社おすすめランキング10選【${data.updatedYear}年】`,
+        description: `${prefName}で${cat.label}会社をお探しの方へ。${cat.certLabel}に対応する地元優良警備会社をランキング形式で厳選。`,
+      },
+    }
+  }
+  const catLabel = CAT_LABELS[category] ?? '警備'
   return {
-    title: `${prefName}の${cat.label}会社おすすめランキング10選【${data!.updatedYear}年】 | keibi.online`,
-    description: `${prefName}で${cat.label}会社をお探しの方へ。${cat.certLabel}に対応する地元優良警備会社をランキング形式で厳選。料金相場・失敗しない選び方も解説します。`,
+    title: `${prefName}の${catLabel}会社おすすめランキング10選【2026年】 | keibi.online`,
+    description: `${prefName}で${catLabel}会社をお探しの方へ。地域密着の優良警備会社をランキング形式で厳選。料金相場・失敗しない選び方も解説します。`,
     twitter: {
       card: 'summary_large_image',
-      title: `${prefName}の${cat.label}会社おすすめランキング10選【${data!.updatedYear}年】`,
-      description: `${prefName}で${cat.label}会社をお探しの方へ。${cat.certLabel}に対応する地元優良警備会社をランキング形式で厳選。`,
+      title: `${prefName}の${catLabel}会社おすすめランキング10選【2026年】`,
+      description: `${prefName}で${catLabel}会社をお探しの方へ。地域密着の優良警備会社をランキング形式で厳選。`,
     },
   }
 }
@@ -83,28 +114,48 @@ export default async function RankingPage({
   const { pref, category } = await params
   const prefName = PREF_MAP[pref]
   if (!prefName) notFound()
-  const rankingData = RANKINGS_BY_PREF[pref]
-  if (!rankingData) notFound()
-  const cat = rankingData.categories[category as RankingCategory]
-  if (!cat) notFound()
 
-  // Fetch Supabase details for companies that have a slug
-  const slugs = cat.companies.map(c => c.slug).filter((s): s is string => !!s)
+  const rankingData = RANKINGS_BY_PREF[pref]
+  const cat = rankingData?.categories[category as RankingCategory]
+
+  let companies: any[] = []
+  let isStatic = false
   let supabaseMap: Record<string, SupabaseCompany> = {}
-  if (slugs.length > 0) {
+
+  if (rankingData && cat) {
+    isStatic = true
+    const slugs = cat.companies.map(c => c.slug).filter((s): s is string => !!s)
+    if (slugs.length > 0) {
+      const { data } = await supabase
+        .from('companies')
+        .select('slug, name, pref, city, tel, url, numbers')
+        .in('slug', slugs)
+      for (const c of data ?? []) {
+        supabaseMap[c.slug] = c
+      }
+    }
+  } else {
+    const numberFilter: Record<string, number[]> = {
+      kotsu: [2],
+      event: [2],
+      shisetsu: [1],
+      parking: [2],
+    }
+    const nums = numberFilter[category] ?? [2]
     const { data } = await supabase
       .from('companies')
-      .select('slug, name, pref, city, tel, url, numbers')
-      .in('slug', slugs)
-    for (const c of data ?? []) {
-      supabaseMap[c.slug] = c
-    }
+      .select('slug, name, pref, city, tel, numbers')
+      .eq('pref_slug', pref)
+      .contains('numbers', nums)
+      .limit(10)
+    companies = data ?? []
   }
 
-  const bc = BADGE_COLORS[cat.badgeColor] ?? BADGE_COLORS.info
-  const otherCategories = (Object.keys(rankingData.categories) as RankingCategory[]).filter(
-    k => k !== category
-  )
+  const catLabel = isStatic ? cat!.label : (CAT_LABELS[category] ?? '警備')
+  const bc = BADGE_COLORS[cat?.badgeColor ?? 'info'] ?? BADGE_COLORS.info
+  const otherCategories = isStatic
+    ? (Object.keys(rankingData!.categories) as RankingCategory[]).filter(k => k !== category)
+    : CATEGORIES.filter(k => k !== category)
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8f9fa' }}>
@@ -114,15 +165,22 @@ export default async function RankingPage({
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'ItemList',
-            name: `${prefName}の${cat.label}会社おすすめランキング`,
-            description: cat.description,
-            numberOfItems: cat.companies.length,
-            itemListElement: cat.companies.map(company => ({
-              '@type': 'ListItem',
-              position: company.rank,
-              name: company.name,
-              url: company.slug ? `https://keibi.online/companies/${company.slug}` : `https://keibi.online/${pref}`,
-            }))
+            name: `${prefName}の${catLabel}会社おすすめランキング`,
+            description: isStatic ? cat!.description : `${prefName}の${catLabel}会社を厳選紹介`,
+            numberOfItems: isStatic ? cat!.companies.length : companies.length,
+            itemListElement: isStatic
+              ? cat!.companies.map(company => ({
+                  '@type': 'ListItem',
+                  position: company.rank,
+                  name: company.name,
+                  url: company.slug ? `https://keibi.online/companies/${company.slug}` : `https://keibi.online/${pref}`,
+                }))
+              : companies.map((company, i) => ({
+                  '@type': 'ListItem',
+                  position: i + 1,
+                  name: company.name,
+                  url: `https://keibi.online/companies/${company.slug}`,
+                })),
           })
         }}
       />
@@ -134,61 +192,66 @@ export default async function RankingPage({
           <span style={{ margin: '0 6px' }}>›</span>
           <Link href={`/${pref}`} style={{ color: '#999', textDecoration: 'none' }}>{prefName}</Link>
           <span style={{ margin: '0 6px' }}>›</span>
-          <span>{cat.label}ランキング</span>
+          <span>{catLabel}ランキング</span>
         </div>
 
         <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111', margin: '0 0 8px' }}>
-          {prefName}の{cat.label}会社おすすめランキング10選【{rankingData.updatedYear}年最新版】
+          {prefName}の{catLabel}会社おすすめランキング10選【{isStatic ? rankingData!.updatedYear : 2026}年最新版】
         </h1>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '1rem', lineHeight: 1.7 }}>
-          {cat.description}
+          {isStatic ? cat!.description : `${prefName}で${catLabel}会社をお探しの方へ。地域密着の優良警備会社をランキング形式で厳選紹介します。`}
         </p>
         <p style={{ fontSize: '13px', color: '#999', marginBottom: '2rem' }}>
-          {cat.companies.length}社掲載 — {rankingData.updatedYear}年6月更新
+          {isStatic ? `${cat!.companies.length}社掲載 — ${rankingData!.updatedYear}年6月更新` : `${companies.length}社掲載 — 2026年6月更新`}
         </p>
 
-        {/* 選び方のポイント */}
-        <div
-          style={{
-            background: '#fff',
-            borderRadius: '12px',
-            border: '1px solid #e5e7eb',
-            padding: '1.25rem 1.5rem',
-            marginBottom: '2rem',
-          }}
-        >
-          <h2 style={{ fontSize: '15px', fontWeight: 'bold', color: '#111', margin: '0 0 10px' }}>
-            選び方のポイント
-          </h2>
-          <ol style={{ margin: 0, paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {cat.points.map((p, i) => (
-              <li key={i} style={{ fontSize: '13px', color: '#444', lineHeight: 1.7 }}>{p}</li>
-            ))}
-          </ol>
-        </div>
+        {/* 選び方のポイント（静的データのみ） */}
+        {isStatic && (
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: '12px',
+              border: '1px solid #e5e7eb',
+              padding: '1.25rem 1.5rem',
+              marginBottom: '2rem',
+            }}
+          >
+            <h2 style={{ fontSize: '15px', fontWeight: 'bold', color: '#111', margin: '0 0 10px' }}>
+              選び方のポイント
+            </h2>
+            <ol style={{ margin: 0, paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {cat!.points.map((p, i) => (
+                <li key={i} style={{ fontSize: '13px', color: '#444', lineHeight: 1.7 }}>{p}</li>
+              ))}
+            </ol>
+          </div>
+        )}
 
-        {/* FAQ */}
-        <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.25rem 1.5rem', marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '15px', fontWeight: 'bold', color: '#111', margin: '0 0 10px' }}>よくある質問</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div>
-              <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. {prefName}で{cat.label}会社を選ぶ際のポイントは？</p>
-              <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. {cat.points[0]}</p>
-            </div>
-            <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '14px' }}>
-              <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. {cat.label}の料金相場はどのくらいですか？</p>
-              <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. {cat.certLabel}の料金は依頼内容・時間帯・人数によって異なります。複数社から見積もりを取り比較することを推奨します。まずはお気軽にお問い合わせください。</p>
-            </div>
-            <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '14px' }}>
-              <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. 急ぎで{cat.label}を依頼したい場合はどうすれば良いですか？</p>
-              <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. 対応スピードの早い地域密着型の警備会社への直接問い合わせが最も早い方法です。このページのランキング上位の会社は対応力が高い会社を厳選しています。</p>
+        {/* FAQ（静的データのみ） */}
+        {isStatic && (
+          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.25rem 1.5rem', marginBottom: '2rem' }}>
+            <h2 style={{ fontSize: '15px', fontWeight: 'bold', color: '#111', margin: '0 0 10px' }}>よくある質問</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. {prefName}で{cat!.label}会社を選ぶ際のポイントは？</p>
+                <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. {cat!.points[0]}</p>
+              </div>
+              <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '14px' }}>
+                <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. {cat!.label}の料金相場はどのくらいですか？</p>
+                <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. {cat!.certLabel}の料金は依頼内容・時間帯・人数によって異なります。複数社から見積もりを取り比較することを推奨します。まずはお気軽にお問い合わせください。</p>
+              </div>
+              <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '14px' }}>
+                <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. 急ぎで{cat!.label}を依頼したい場合はどうすれば良いですか？</p>
+                <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. 対応スピードの早い地域密着型の警備会社への直接問い合わせが最も早い方法です。このページのランキング上位の会社は対応力が高い会社を厳選しています。</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* ランキング一覧 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '2.5rem' }}>
-          {cat.companies.map((company) => {
+          {/* 静的データ（hiroshima等） */}
+          {isStatic && cat!.companies.map((company) => {
             const sb = company.slug ? supabaseMap[company.slug] : undefined
             const isTop3 = company.rank <= 3
             const cardContent = (
@@ -247,7 +310,6 @@ export default async function RankingPage({
                     <p style={{ fontSize: '12px', color: '#888', margin: '0 0 10px' }}>
                       {company.certification}
                     </p>
-                    {/* タグ */}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
                       {company.tags.map(tag => (
                         <span
@@ -268,7 +330,6 @@ export default async function RankingPage({
                     <p style={{ fontSize: '13px', color: '#444', margin: '0 0 10px', lineHeight: 1.7 }}>
                       {company.description}
                     </p>
-                    {/* おすすめポイント */}
                     <div
                       style={{
                         background: '#fafafa',
@@ -295,13 +356,67 @@ export default async function RankingPage({
                 </div>
               </div>
             )
-
             return sb ? (
               <Link key={company.rank} href={`/companies/${sb.slug}`} style={{ textDecoration: 'none' }}>
                 {cardContent}
               </Link>
             ) : (
               <div key={company.rank}>{cardContent}</div>
+            )
+          })}
+
+          {/* 動的データ（Supabase取得） */}
+          {!isStatic && companies.map((company, index) => {
+            const isTop = index === 0
+            return (
+              <a key={company.slug} href={`/companies/${company.slug}`} style={{ textDecoration: 'none' }}>
+                <div style={{
+                  background: '#fff',
+                  borderRadius: '12px',
+                  border: isTop ? '2px solid #f97316' : '1px solid #e5e7eb',
+                  padding: '1.5rem',
+                  position: 'relative',
+                  marginBottom: '16px',
+                }}>
+                  {isTop && (
+                    <div style={{
+                      position: 'absolute', top: '-12px', left: '16px',
+                      background: '#f97316', color: '#fff',
+                      fontSize: '11px', fontWeight: 'bold',
+                      padding: '3px 12px', borderRadius: '20px',
+                    }}>
+                      No.1 おすすめ
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <div style={{
+                      flexShrink: 0, width: '36px', height: '36px',
+                      borderRadius: '50%',
+                      background: index < 3 ? '#f97316' : '#e5e7eb',
+                      color: index < 3 ? '#fff' : '#666',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontWeight: 'bold', fontSize: '15px',
+                    }}>
+                      {index + 1}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>
+                        {company.name}
+                      </h2>
+                      <p style={{ fontSize: '13px', color: '#666', margin: '0 0 8px' }}>
+                        {company.pref}{company.city ?? ''}
+                        {company.tel && <span style={{ marginLeft: '10px' }}>📞 {company.tel}</span>}
+                      </p>
+                      <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.7, margin: 0 }}>
+                        {generateIntro({ slug: company.slug, name: company.name, pref: company.pref, city: company.city, numbers: company.numbers })}
+                      </p>
+                      <div style={{ marginTop: '10px' }}>
+                        <span style={{ fontSize: '12px', color: '#f97316', fontWeight: 600 }}>詳細を見る →</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
             )
           })}
         </div>
@@ -326,7 +441,7 @@ export default async function RankingPage({
                 href={`/columns/ranking/${pref}/${key}`}
                 style={{ fontSize: '13px', color: '#f97316', textDecoration: 'none' }}
               >
-                {prefName}{rankingData.categories[key].label}ランキングを見る →
+                {prefName}の{isStatic ? rankingData!.categories[key as RankingCategory].label : (CAT_LABELS[key] ?? key)}ランキングを見る →
               </Link>
             ))}
           </div>

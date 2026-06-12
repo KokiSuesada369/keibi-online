@@ -12,3 +12,5 @@ export const PREF_MAP: Record<string, string> = {
 }
 
 export const PREF_SLUGS = Object.keys(PREF_MAP)
+
+export const PREF_NAMES = Object.values(PREF_MAP)

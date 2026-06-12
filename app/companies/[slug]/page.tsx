@@ -4,23 +4,10 @@ import Link from 'next/link'
 import { Metadata } from 'next'
 import { generateDescription } from '@/app/companies/description'
 import { safeJsonLd } from '@/app/lib/jsonld'
+import { SECURITY_TYPE_LABELS, SECURITY_TYPE_COLORS } from '@/constants/securityTypes'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-const SERVICE_NAMES: Record<number, string> = {
-  1: '1号警備（施設警備）',
-  2: '2号警備（交通誘導）',
-  3: '3号警備（貴重品運搬）',
-  4: '4号警備（身辺警備）',
-}
-
-const SERVICE_COLORS: Record<number, string> = {
-  1: '#457b9d',
-  2: '#2a9d8f',
-  3: '#e76f51',
-  4: '#e63946',
-}
 
 export const revalidate = 86400
 
@@ -46,10 +33,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { data } = await supabase.from('companies').select('*').eq('slug', slug).single()
   if (!data) return { title: '会社が見つかりません | keibi.online' }
   const company = data as Company
-  const services = (company.numbers || []).map(n => SERVICE_NAMES[n]).filter(Boolean).join('・')
+  const services = (company.numbers || []).map(n => SECURITY_TYPE_LABELS[n]).filter(Boolean).join('・')
   return {
     title: `${company.name}｜${company.pref}${company.city}の警備会社 | keibi.online`,
     description: `${company.name}は${company.pref}${company.city}の警備会社です。${services}に対応しています。住所：${company.pref}${company.city}${company.address}`,
+    alternates: { canonical: `https://keibi.online/companies/${slug}` },
   }
 }
 
@@ -76,7 +64,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
     telephone: company.tel || undefined,
     url: company.url || undefined,
     areaServed: company.pref,
-    description: `${company.name}は${company.pref}${company.city}の警備会社です。${services.map(n => SERVICE_NAMES[n]).filter(Boolean).join('・')}に対応しています。`,
+    description: `${company.name}は${company.pref}${company.city}の警備会社です。${services.map(n => SECURITY_TYPE_LABELS[n]).filter(Boolean).join('・')}に対応しています。`,
   }
 
   return (
@@ -113,8 +101,8 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
         <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '2rem', marginBottom: '1rem' }}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '1rem' }}>
             {services.map(n => (
-              <span key={n} style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '20px', background: `${SERVICE_COLORS[n]}20`, color: SERVICE_COLORS[n], border: `1px solid ${SERVICE_COLORS[n]}40`, fontWeight: 500 }}>
-                {SERVICE_NAMES[n] || `${n}号警備`}
+              <span key={n} style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '20px', background: `${SECURITY_TYPE_COLORS[n]}20`, color: SECURITY_TYPE_COLORS[n], border: `1px solid ${SECURITY_TYPE_COLORS[n]}40`, fontWeight: 500 }}>
+                {SECURITY_TYPE_LABELS[n] || `${n}号警備`}
               </span>
             ))}
           </div>
@@ -146,8 +134,8 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
           <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#222', margin: '0 0 1rem' }}>対応業務</h2>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             {[1, 2, 3, 4].map(n => (
-              <div key={n} style={{ padding: '12px', borderRadius: '8px', border: `1px solid ${services.includes(n) ? SERVICE_COLORS[n] + '40' : '#f3f4f6'}`, background: services.includes(n) ? `${SERVICE_COLORS[n]}10` : '#f9fafb', fontSize: '13px', color: services.includes(n) ? SERVICE_COLORS[n] : '#aaa', fontWeight: services.includes(n) ? 500 : 400 }}>
-                {services.includes(n) ? '✓ ' : ''}{SERVICE_NAMES[n]}
+              <div key={n} style={{ padding: '12px', borderRadius: '8px', border: `1px solid ${services.includes(n) ? SECURITY_TYPE_COLORS[n] + '40' : '#f3f4f6'}`, background: services.includes(n) ? `${SECURITY_TYPE_COLORS[n]}10` : '#f9fafb', fontSize: '13px', color: services.includes(n) ? SECURITY_TYPE_COLORS[n] : '#aaa', fontWeight: services.includes(n) ? 500 : 400 }}>
+                {services.includes(n) ? '✓ ' : ''}{SECURITY_TYPE_LABELS[n]}
               </div>
             ))}
           </div>

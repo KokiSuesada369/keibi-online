@@ -1,21 +1,8 @@
 'use client'
 import { useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
-const PREFS = [
-  '北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県',
-  '茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県',
-  '新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県',
-  '静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県',
-  '奈良県','和歌山県','鳥取県','島根県','岡山県','広島県','山口県',
-  '徳島県','香川県','愛媛県','高知県','福岡県','佐賀県','長崎県',
-  '熊本県','大分県','宮崎県','鹿児島県','沖縄県',
-]
+import { supabase } from '@/lib/supabase'
+import { PREF_NAMES } from '@/constants/prefs'
+import { SECURITY_TYPE_LABELS, SECURITY_TYPE_COLORS } from '@/constants/securityTypes'
 
 const CITY_PLACEHOLDER: Record<string, string> = {
   '北海道': '例：札幌市中央区','青森県': '例：青森市','岩手県': '例：盛岡市',
@@ -34,13 +21,6 @@ const CITY_PLACEHOLDER: Record<string, string> = {
   '福岡県': '例：福岡市博多区','佐賀県': '例：佐賀市','長崎県': '例：長崎市',
   '熊本県': '例：熊本市中央区','大分県': '例：大分市','宮崎県': '例：宮崎市',
   '鹿児島県': '例：鹿児島市','沖縄県': '例：那覇市',
-}
-
-const NUMBER_LABELS: Record<number, string> = {
-  1: '1号警備', 2: '2号警備', 3: '3号警備', 4: '4号警備',
-}
-const NUMBER_COLORS: Record<number, string> = {
-  1: '#457b9d', 2: '#2a9d8f', 3: '#e76f51', 4: '#e63946',
 }
 
 type Company = {
@@ -118,7 +98,7 @@ export default function NearbyClient() {
               <label style={labelStyle}>都道府県</label>
               <select value={pref} onChange={e => setPref(e.target.value)} style={inputStyle}>
                 <option value="">選択してください</option>
-                {PREFS.map(p => <option key={p} value={p}>{p}</option>)}
+                {PREF_NAMES.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
             </div>
             <div>
@@ -170,8 +150,8 @@ export default function NearbyClient() {
                     {c.numbers && c.numbers.length > 0 && (
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '8px' }}>
                         {c.numbers.map(n => (
-                          <span key={n} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: NUMBER_COLORS[n] ?? '#888', color: '#fff', fontWeight: 600 }}>
-                            {NUMBER_LABELS[n] ?? `${n}号警備`}
+                          <span key={n} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: SECURITY_TYPE_COLORS[n] ?? '#888', color: '#fff', fontWeight: 600 }}>
+                            {SECURITY_TYPE_LABELS[n] ?? `${n}号警備`}
                           </span>
                         ))}
                       </div>

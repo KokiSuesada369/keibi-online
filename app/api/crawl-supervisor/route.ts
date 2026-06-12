@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { timingSafeEqual } from 'crypto'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -86,12 +87,16 @@ async function extractFromPdf(pdfUrl: string): Promise<any[]> {
 }
 
 function extractPdfUrls(html: string, baseUrl: string): string[] {
+  const baseHostname = new URL(baseUrl).hostname
   const matches = html.match(/href=["']([^"']*\.pdf[^"']*)/gi) || []
   return matches
     .map(m => m.replace(/href=["']/i, ''))
     .map(u => {
       try {
-        return u.startsWith('http') ? u : new URL(u, baseUrl).href
+        const resolved = u.startsWith('http') ? u : new URL(u, baseUrl).href
+        const resolvedHostname = new URL(resolved).hostname
+        if (resolvedHostname !== baseHostname && !resolvedHostname.endsWith('.' + baseHostname)) return null
+        return resolved
       } catch {
         return null
       }
@@ -120,8 +125,16 @@ async function saveSchedules(schedules: any[], pref: string, source: string, url
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const secret = searchParams.get('secret')
-  if (secret !== process.env.CRON_SECRET) {
+  const cronSecret = process.env.CRON_SECRET
+  if (!cronSecret) return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 })
+  const secret = searchParams.get('secret') ?? ''
+  try {
+    const a = Buffer.from(secret.padEnd(cronSecret.length))
+    const b = Buffer.from(cronSecret)
+    if (a.length !== b.length || !timingSafeEqual(a, b)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+  } catch {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

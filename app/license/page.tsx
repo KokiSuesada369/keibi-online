@@ -1,11 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { supabase } from '@/lib/supabase'
+import { PREF_NAMES } from '@/constants/prefs'
 
 const SERVICE_TYPES_SPECIAL = ['すべて', '交通誘導警備業務', '雑踏警備業務', '施設警備業務', '貴重品運搬警備業務', '核燃料物質等危険物運搬警備業務']
 const SERVICE_TYPES_SUPERVISOR = ['すべて', '1号警備業務', '2号警備業務', '3号警備業務', '4号警備業務', '機械警備業務管理者']
@@ -13,8 +9,15 @@ const GRADES = ['すべて', '1級', '2級']
 const TARGETS = ['すべて', '警備員', '一般']
 const TYPES = ['すべて', '新規取得', '追加取得', '定期講習']
 
-const PREFS_SPECIAL_OPTIONS = ['北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県','茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県','新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県','鳥取県','島根県','岡山県','広島県','山口県','徳島県','香川県','愛媛県','高知県','福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県']
-const PREFS_SUPERVISOR_OPTIONS = ['北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県','茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県','新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県','鳥取県','島根県','岡山県','広島県','山口県','徳島県','香川県','愛媛県','高知県','福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県']
+const PREFS_SPECIAL_OPTIONS = PREF_NAMES
+const PREFS_SUPERVISOR_OPTIONS = PREF_NAMES
+
+function formatDateRange(start?: string | null, end?: string | null): string {
+  const fmt = (d: string) => new Intl.DateTimeFormat('ja-JP', { year: 'numeric', month: 'numeric', day: 'numeric' }).format(new Date(d))
+  if (!start) return ''
+  if (!end || end === start) return fmt(start)
+  return `${fmt(start)} 〜 ${fmt(end)}`
+}
 
 const SERVICE_COLOR: Record<string, { bg: string; color: string }> = {
   '交通誘導警備業務': { bg: '#e6f7f4', color: '#0f6e56' },
@@ -250,7 +253,7 @@ export default function LicensePage() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a2e', whiteSpace: 'nowrap' }}>
-                        {r.start_date?.replace(/-/g, '/')} {r.end_date && r.end_date !== r.start_date ? `〜 ${r.end_date.replace(/-/g, '/')}` : ''}
+                        {formatDateRange(r.start_date, r.end_date)}
                       </span>
                       <span style={{ fontSize: '13px', color: '#555', display: 'flex', alignItems: 'flex-start', gap: '3px', flexWrap: 'wrap' }}>
                         📍<a href={`/license/${encodeURIComponent(r.pref)}`} style={{ color: '#457b9d', textDecoration: 'none', whiteSpace: 'nowrap' }}>{r.pref}</a>
@@ -322,7 +325,7 @@ export default function LicensePage() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a2e', whiteSpace: 'nowrap' }}>
-                        {r.date_start?.replace(/-/g, '/')} {r.date_end && r.date_end !== r.date_start ? `〜 ${r.date_end.replace(/-/g, '/')}` : ''}
+                        {formatDateRange(r.date_start, r.date_end)}
                       </span>
                       <span style={{ fontSize: '13px', color: '#555', display: 'inline-flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap' }}>
                         📍<a href={`/license/${encodeURIComponent(r.pref)}`} style={{ color: '#457b9d', textDecoration: 'none' }}>{r.pref}</a>

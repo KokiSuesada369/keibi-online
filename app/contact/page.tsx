@@ -3,6 +3,8 @@ export const metadata = {
   description: 'keibi.onlineへのお問い合わせはこちらから。掲載情報の修正・追加・その他ご要望をお受けしています。',
 }
 
+const CONTACT_EMAIL = 'info.saizen.holdings@gmail.com'
+
 export default function ContactPage() {
   return (
     <main>
@@ -12,33 +14,38 @@ export default function ContactPage() {
         </div>
         <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>お問い合わせ</h1>
         <p style={{ color: '#666', marginBottom: '40px' }}>掲載情報の修正・追加・その他ご要望はこちらからお問い合わせください。</p>
+
         <div style={{ background: 'white', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '32px' }}>
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', fontSize: '14px' }}>お名前</label>
-            <input type="text" placeholder="山田 太郎" style={{ width: '100%', padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' as const }} />
+          <h2 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '16px', color: '#1a1a2e' }}>メールでのお問い合わせ</h2>
+          <p style={{ fontSize: '14px', color: '#555', lineHeight: 1.8, marginBottom: '24px' }}>
+            以下のメールアドレスまでご連絡ください。<br />
+            掲載情報の修正・削除・新規掲載依頼・その他のご要望に対応しております。
+          </p>
+          <a
+            href={`mailto:${CONTACT_EMAIL}?subject=keibi.onlineへのお問い合わせ`}
+            style={{
+              display: 'inline-block',
+              padding: '14px 28px',
+              background: '#f97316',
+              color: '#fff',
+              borderRadius: '8px',
+              fontSize: '15px',
+              fontWeight: 700,
+              textDecoration: 'none',
+            }}
+          >
+            {CONTACT_EMAIL} にメールを送る
+          </a>
+
+          <div style={{ marginTop: '32px', padding: '16px', background: '#f9f9f9', borderRadius: '8px', fontSize: '13px', color: '#666', lineHeight: 1.7 }}>
+            <strong>よくあるお問い合わせ内容：</strong>
+            <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
+              <li>掲載情報の修正・削除依頼</li>
+              <li>新規掲載のご相談</li>
+              <li>サイトの不具合・表示の問題</li>
+              <li>その他のご要望</li>
+            </ul>
           </div>
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', fontSize: '14px' }}>メールアドレス</label>
-            <input type="email" placeholder="example@email.com" style={{ width: '100%', padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' as const }} />
-          </div>
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', fontSize: '14px' }}>お問い合わせ種別</label>
-            <select style={{ width: '100%', padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' as const }}>
-              <option>掲載情報の修正・削除</option>
-              <option>新規掲載のご依頼</option>
-              <option>その他</option>
-            </select>
-          </div>
-          <div style={{ marginBottom: '32px' }}>
-            <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', fontSize: '14px' }}>お問い合わせ内容</label>
-            <textarea placeholder="お問い合わせ内容をご記入ください" rows={6} style={{ width: '100%', padding: '10px 14px', border: '1px solid #e5e5e5', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' as const, resize: 'vertical' as const }} />
-          </div>
-          <div style={{ background: '#f9f9f9', border: '1px solid #e5e5e5', borderRadius: '8px', padding: '16px', marginBottom: '24px', fontSize: '13px', color: '#666' }}>
-            ※現在、お問い合わせフォームは準備中です。しばらくお待ちください。
-          </div>
-          <button disabled style={{ width: '100%', padding: '14px', background: '#ccc', color: 'white', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: 700, cursor: 'not-allowed' }}>
-            送信する（準備中）
-          </button>
         </div>
       </div>
     </main>

@@ -66,7 +66,7 @@ export default async function ColumnArticlePage({ params }: { params: Promise<{ 
             {article!.category}
           </span>
         </div>
-        <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '24px', lineHeight: 1.4 }}>
+        <h1 style={{ fontSize: 'clamp(20px, 5vw, 28px)', fontWeight: 700, marginBottom: '24px', lineHeight: 1.4 }}>
           {article!.title}
         </h1>
         <p style={{ fontSize: '15px', color: '#666', marginBottom: '40px', lineHeight: 1.8, padding: '16px', background: '#f9f9f9', borderRadius: '8px', borderLeft: '4px solid #1a1a2e' }}>

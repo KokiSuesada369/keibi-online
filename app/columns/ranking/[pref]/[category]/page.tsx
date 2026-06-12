@@ -177,7 +177,7 @@ export default async function RankingPage({
           <span>{catLabel}ランキング</span>
         </div>
 
-        <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111', margin: '0 0 8px' }}>
+        <h1 style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 'bold', color: '#111', margin: '0 0 8px' }}>
           {prefName}の{catLabel}会社おすすめランキング10選【{isStatic ? rankingData!.updatedYear : 2026}年最新版】
         </h1>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '1rem', lineHeight: 1.7 }}>

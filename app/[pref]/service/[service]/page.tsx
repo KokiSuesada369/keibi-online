@@ -97,6 +97,18 @@ export default async function PrefServicePage({ params }: { params: Promise<{ pr
           ))}
         </div>
 
+        {/* おすすめ警備会社へのリンク */}
+        <a href={`/${pref}/osusume`} style={{ textDecoration: 'none', display: 'block', marginBottom: '32px' }}>
+          <div style={{ background: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)', borderRadius: '12px', border: '2px solid #f97316', padding: '16px 20px' }}>
+            <div style={{ fontSize: '15px', fontWeight: 700, color: '#c2410c', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '6px' }}>
+              {prefName}のおすすめ警備会社ランキング
+            </div>
+            <div style={{ fontSize: '13px', color: '#f97316', fontWeight: 700 }}>
+              ランキングを見る →
+            </div>
+          </div>
+        </a>
+
         {sortedCompanies.length === 0 ? (
           <div style={{ color: '#999', textAlign: 'center', padding: '48px' }}>
             該当する警備会社が見つかりませんでした

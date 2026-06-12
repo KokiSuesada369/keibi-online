@@ -217,7 +217,7 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
           <span>おすすめ警備会社ランキング</span>
         </div>
 
-        <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111', margin: '0 0 8px' }}>
+        <h1 style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 'bold', color: '#111', margin: '0 0 8px' }}>
           {prefName}のおすすめ警備会社ランキング【2026年最新版】
         </h1>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '2rem', lineHeight: 1.7 }}>

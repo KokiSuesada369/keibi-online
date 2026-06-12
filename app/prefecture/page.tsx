@@ -31,7 +31,7 @@ export default function PrefecturePage() {
   return (
     <main>
       <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '48px 24px' }}>
-        <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>都道府県から警備会社を探す</h1>
+        <h1 style={{ fontSize: 'clamp(20px, 5vw, 28px)', fontWeight: 700, marginBottom: '8px' }}>都道府県から警備会社を探す</h1>
         <p style={{ color: '#666', marginBottom: '40px' }}>全国47都道府県の警備会社を掲載しています。</p>
 
         {prefectures.map((group) => (

@@ -196,7 +196,7 @@ export default function LicensePage() {
         <div style={{ fontSize: '13px', color: '#999', marginBottom: '16px' }}>
           <a href="/" style={{ color: '#999' }}>トップ</a> &gt; 資格・講習情報
         </div>
-        <h1 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '4px', color: '#1a1a2e' }}>資格・講習情報</h1>
+        <h1 style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 800, marginBottom: '4px', color: '#1a1a2e' }}>資格・講習情報</h1>
         <p style={{ color: '#888', fontSize: '13px', marginBottom: '24px' }}>警備業に関する講習日程を検索できます。</p>
 
         <div style={{ display: 'flex', gap: '4px', marginBottom: '20px', background: 'white', border: '1px solid #e8e8e8', borderRadius: '10px', padding: '4px' }}>

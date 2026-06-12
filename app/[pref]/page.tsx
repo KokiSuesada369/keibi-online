@@ -147,18 +147,13 @@ export default async function PrefecturePage({ params }: { params: Promise<{ pre
 
         {/* おすすめ警備会社へのリンク */}
         <a href={`/${pref}/osusume`} style={{ textDecoration: 'none', display: 'block', marginBottom: '32px' }}>
-          <div style={{ background: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)', borderRadius: '12px', border: '2px solid #f97316', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-            <div>
-              <div style={{ fontSize: '15px', fontWeight: 700, color: '#c2410c', marginBottom: '4px' }}>
-                🏆 {prefName}のおすすめ警備会社ランキング
-              </div>
-              <div style={{ fontSize: '13px', color: '#78350f', lineHeight: 1.6 }}>
-                交通誘導・施設・イベント・駐車場 業務別に厳選
-              </div>
+          <div style={{ background: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)', borderRadius: '12px', border: '2px solid #f97316', padding: '16px 20px' }}>
+            <div style={{ fontSize: '15px', fontWeight: 700, color: '#c2410c', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '6px' }}>
+              {prefName}のおすすめ警備会社ランキング
             </div>
-            <span style={{ fontSize: '13px', color: '#f97316', fontWeight: 700, whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: '13px', color: '#f97316', fontWeight: 700 }}>
               ランキングを見る →
-            </span>
+            </div>
           </div>
         </a>
 

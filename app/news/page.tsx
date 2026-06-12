@@ -27,7 +27,7 @@ export default async function NewsPage() {
           <span style={{ margin: '0 6px' }}>›</span>
           ニュース
         </div>
-        <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>警備業界ニュース</h1>
+        <h1 style={{ fontSize: 'clamp(20px, 5vw, 28px)', fontWeight: 700, marginBottom: '8px' }}>警備業界ニュース</h1>
         <p style={{ color: '#666', marginBottom: '40px' }}>警備業界の最新情報をお届けします。</p>
 
         {!newsList || newsList.length === 0 ? (
@@ -41,7 +41,7 @@ export default async function NewsPage() {
                 <div style={{ background: 'white', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', transition: 'box-shadow 0.2s' }}>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
                     {news.category && (
-                      <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '20px', background: '#fff3e0', color: '#f97316', border: '1px solid #fed7aa', fontWeight: 500 }}>
+                      <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '20px', background: '#fff3e0', color: '#f97316', border: '1px solid #fed7aa', fontWeight: 500, whiteSpace: 'nowrap' }}>
                         {news.category}
                       </span>
                     )}
@@ -52,7 +52,7 @@ export default async function NewsPage() {
                   <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#111', margin: '0 0 8px', lineHeight: 1.5 }}>{news.title}</h2>
                   <p style={{ fontSize: '13px', color: '#666', margin: 0, lineHeight: 1.7 }}>{news.summary}</p>
                   {news.source && (
-                    <p style={{ fontSize: '12px', color: '#999', margin: '8px 0 0' }}>出典：{news.source}</p>
+                    <p style={{ fontSize: '12px', color: '#999', margin: '8px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>出典：{news.source}</p>
                   )}
                 </div>
               </Link>

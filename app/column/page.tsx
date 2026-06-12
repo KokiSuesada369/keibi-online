@@ -25,7 +25,7 @@ export default function ColumnPage() {
         <div style={{ fontSize: '13px', color: '#999', marginBottom: '16px' }}>
           <a href="/" style={{ color: '#999' }}>トップ</a> &gt; コラム
         </div>
-        <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>警備業界コラム</h1>
+        <h1 style={{ fontSize: 'clamp(20px, 5vw, 28px)', fontWeight: 700, marginBottom: '8px' }}>警備業界コラム</h1>
         <p style={{ color: '#666', marginBottom: '40px' }}>警備会社の選び方や業界の基礎知識をお届けします。</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
           {articles.map(article => {

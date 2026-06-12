@@ -12,7 +12,7 @@ export default function ContactPage() {
         <div style={{ fontSize: '13px', color: '#999', marginBottom: '16px' }}>
           <a href="/" style={{ color: '#999' }}>トップ</a> &gt; お問い合わせ
         </div>
-        <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>お問い合わせ</h1>
+        <h1 style={{ fontSize: 'clamp(20px, 5vw, 28px)', fontWeight: 700, marginBottom: '8px' }}>お問い合わせ</h1>
         <p style={{ color: '#666', marginBottom: '40px' }}>掲載情報の修正・追加・その他ご要望はこちらからお問い合わせください。</p>
 
         <div style={{ background: 'white', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '32px' }}>

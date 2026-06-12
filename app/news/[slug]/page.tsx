@@ -47,11 +47,11 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
               {news.published_at ? new Date(news.published_at).toLocaleDateString('ja-JP') : ''}
             </span>
             {news.source && (
-              <span style={{ fontSize: '12px', color: '#999' }}>出典：{news.source_url ? <a href={news.source_url} target="_blank" rel="noopener noreferrer" style={{ color: '#f97316' }}>{news.source}</a> : news.source}</span>
+              <span style={{ fontSize: '12px', color: '#999', whiteSpace: 'nowrap' }}>出典：{news.source_url ? <a href={news.source_url} target="_blank" rel="noopener noreferrer" style={{ color: '#f97316' }}>{news.source}</a> : news.source}</span>
             )}
           </div>
 
-          <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111', margin: '0 0 24px', lineHeight: 1.6 }}>{news.title}</h1>
+          <h1 style={{ fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 700, color: '#111', margin: '0 0 24px', lineHeight: 1.6 }}>{news.title}</h1>
 
           <div style={{ fontSize: '15px', color: '#444', lineHeight: 1.9, whiteSpace: 'pre-wrap' }}>
             {news.body}

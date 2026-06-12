@@ -17,6 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: NOW, changeFrequency: 'weekly', priority: 1.0 },
     { url: `${baseUrl}/prefecture`, lastModified: NOW, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${baseUrl}/osusume`, lastModified: NOW, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/column`, lastModified: NOW, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/news`, lastModified: NOW, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${baseUrl}/license`, lastModified: NOW, changeFrequency: 'weekly', priority: 0.7 },
@@ -63,6 +64,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }))
+
+  const servicePages: MetadataRoute.Sitemap = PREF_SLUGS.flatMap(pref =>
+    ['1', '2', '3', '4'].map(service => ({
+      url: `${baseUrl}/${pref}/service/${service}`,
+      lastModified: NOW,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    }))
+  )
 
   const rankingPages: MetadataRoute.Sitemap = PREF_SLUGS.flatMap(pref =>
     ['kotsu', 'event', 'shisetsu', 'parking'].map(cat => ({
@@ -116,6 +126,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticPages,
     ...prefPages,
     ...osusumePages,
+    ...servicePages,
     ...rankingPages,
     ...columnPages,
     ...newsPages,

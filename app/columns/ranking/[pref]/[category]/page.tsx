@@ -58,24 +58,50 @@ export async function generateMetadata({
   const data = RANKINGS_BY_PREF[pref]
   const cat = data?.categories[category as RankingCategory]
   if (data && cat) {
+    const title = `${prefName}の${cat.label}会社おすすめランキング10選【${data.updatedYear}年】 | keibi.online`
+    const description = `${prefName}で${cat.label}会社をお探しの方へ。${cat.certLabel}に対応する地元優良警備会社をランキング形式で厳選。料金相場・失敗しない選び方も解説します。`
     return {
-      title: `${prefName}の${cat.label}会社おすすめランキング10選【${data.updatedYear}年】 | keibi.online`,
-      description: `${prefName}で${cat.label}会社をお探しの方へ。${cat.certLabel}に対応する地元優良警備会社をランキング形式で厳選。料金相場・失敗しない選び方も解説します。`,
+      title,
+      description,
+      alternates: { canonical: `https://keibi.online/columns/ranking/${pref}/${category}` },
+      openGraph: {
+        title,
+        description,
+        url: `https://keibi.online/columns/ranking/${pref}/${category}`,
+        siteName: 'keibi.online',
+        locale: 'ja_JP',
+        type: 'website',
+        images: [{ url: 'https://keibi.online/ogp.png', width: 1200, height: 630, alt: 'keibi.online' }],
+      },
       twitter: {
-        card: 'summary_large_image',
+        card: 'summary_large_image' as const,
         title: `${prefName}の${cat.label}会社おすすめランキング10選【${data.updatedYear}年】`,
         description: `${prefName}で${cat.label}会社をお探しの方へ。${cat.certLabel}に対応する地元優良警備会社をランキング形式で厳選。`,
+        images: ['https://keibi.online/ogp.png'],
       },
     }
   }
   const catLabel = CAT_LABELS[category] ?? '警備'
+  const title = `${prefName}の${catLabel}会社おすすめランキング10選【2026年】 | keibi.online`
+  const description = `${prefName}で${catLabel}会社をお探しの方へ。地域密着の優良警備会社をランキング形式で厳選。料金相場・失敗しない選び方も解説します。`
   return {
-    title: `${prefName}の${catLabel}会社おすすめランキング10選【2026年】 | keibi.online`,
-    description: `${prefName}で${catLabel}会社をお探しの方へ。地域密着の優良警備会社をランキング形式で厳選。料金相場・失敗しない選び方も解説します。`,
+    title,
+    description,
+    alternates: { canonical: `https://keibi.online/columns/ranking/${pref}/${category}` },
+    openGraph: {
+      title,
+      description,
+      url: `https://keibi.online/columns/ranking/${pref}/${category}`,
+      siteName: 'keibi.online',
+      locale: 'ja_JP',
+      type: 'website',
+      images: [{ url: 'https://keibi.online/ogp.png', width: 1200, height: 630, alt: 'keibi.online' }],
+    },
     twitter: {
-      card: 'summary_large_image',
+      card: 'summary_large_image' as const,
       title: `${prefName}の${catLabel}会社おすすめランキング10選【2026年】`,
       description: `${prefName}で${catLabel}会社をお探しの方へ。地域密着の優良警備会社をランキング形式で厳選。`,
+      images: ['https://keibi.online/ogp.png'],
     },
   }
 }
@@ -135,6 +161,28 @@ export default async function RankingPage({
 
   const catLabel = isStatic ? cat!.label : (CAT_LABELS[category] ?? '警備')
   const bc = BADGE_COLORS[cat?.badgeColor ?? 'info'] ?? BADGE_COLORS.info
+
+  const faqItems = isStatic
+    ? [
+        { q: `${prefName}で${cat!.label}会社を選ぶ際のポイントは？`, a: cat!.points[0] },
+        { q: `${cat!.label}の料金相場はどのくらいですか？`, a: `${cat!.certLabel}の料金は依頼内容・時間帯・人数によって異なります。複数社から見積もりを取り比較することを推奨します。まずはお気軽にお問い合わせください。` },
+        { q: `急ぎで${cat!.label}を依頼したい場合はどうすれば良いですか？`, a: '対応スピードの早い地域密着型の警備会社への直接問い合わせが最も早い方法です。このページのランキング上位の会社は対応力が高い会社を厳選しています。' },
+      ]
+    : [
+        { q: `${prefName}で${catLabel}会社を選ぶ際のポイントは？`, a: `${prefName}公安委員会の認定を受けた${catLabel}業者かどうかを確認し、対応エリア・実績・料金体系の明確さを複数社で比較することが重要です。` },
+        { q: `${catLabel}の料金相場はどのくらいですか？`, a: '料金は依頼内容・時間帯・人数によって異なります。複数社から見積もりを取り比較することを強くおすすめします。' },
+        { q: `急ぎで${catLabel}を依頼したい場合はどうすれば良いですか？`, a: '地域密着型の警備会社への直接問い合わせが最も早い方法です。このページに掲載している会社に直接ご連絡ください。' },
+      ]
+
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map(f => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  }
   const otherCategories = isStatic
     ? (Object.keys(rankingData!.categories) as RankingCategory[]).filter(k => k !== category)
     : CATEGORIES.filter(k => k !== category)
@@ -165,6 +213,10 @@ export default async function RankingPage({
                 })),
           })
         }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
       />
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '2rem 1rem' }}>
 
@@ -211,22 +263,18 @@ export default async function RankingPage({
 
         {/* FAQ（静的データのみ） */}
         {isStatic && (
-          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.25rem 1.5rem', marginBottom: '2rem' }}>
-            <h2 style={{ fontSize: '15px', fontWeight: 'bold', color: '#111', margin: '0 0 10px' }}>よくある質問</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div>
-                <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. {prefName}で{cat!.label}会社を選ぶ際のポイントは？</p>
-                <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. {cat!.points[0]}</p>
+          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.5rem', marginBottom: '2rem' }}>
+            <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#111', margin: '0 0 16px' }}>よくある質問</h2>
+            {[
+              { q: `${prefName}で${cat!.label}会社を選ぶ際のポイントは？`, a: cat!.points[0] },
+              { q: `${cat!.label}の料金相場はどのくらいですか？`, a: `${cat!.certLabel}の料金は依頼内容・時間帯・人数によって異なります。複数社から見積もりを取り比較することを推奨します。まずはお気軽にお問い合わせください。` },
+              { q: `急ぎで${cat!.label}を依頼したい場合はどうすれば良いですか？`, a: '対応スピードの早い地域密着型の警備会社への直接問い合わせが最も早い方法です。このページのランキング上位の会社は対応力が高い会社を厳選しています。' },
+            ].map((faq, i) => (
+              <div key={i} style={{ marginBottom: i < 2 ? '16px' : 0, paddingBottom: i < 2 ? '16px' : 0, borderBottom: i < 2 ? '1px solid #f3f4f6' : 'none' }}>
+                <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#1a1a2e', marginBottom: '6px' }}>Q. {faq.q}</div>
+                <div style={{ fontSize: '13px', color: '#555', lineHeight: 1.7 }}>A. {faq.a}</div>
               </div>
-              <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '14px' }}>
-                <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. {cat!.label}の料金相場はどのくらいですか？</p>
-                <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. {cat!.certLabel}の料金は依頼内容・時間帯・人数によって異なります。複数社から見積もりを取り比較することを推奨します。まずはお気軽にお問い合わせください。</p>
-              </div>
-              <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '14px' }}>
-                <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. 急ぎで{cat!.label}を依頼したい場合はどうすれば良いですか？</p>
-                <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. 対応スピードの早い地域密着型の警備会社への直接問い合わせが最も早い方法です。このページのランキング上位の会社は対応力が高い会社を厳選しています。</p>
-              </div>
-            </div>
+            ))}
           </div>
         )}
 
@@ -330,12 +378,12 @@ export default async function RankingPage({
                       <p style={{ fontSize: '13px', color: '#888', margin: '8px 0 0' }}>📞 {sb.tel}</p>
                     )}
                   </div>
-                  {sb && (
-                    <div style={{ fontSize: '12px', color: '#f97316', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                      詳細を見る →
-                    </div>
-                  )}
                 </div>
+                {sb && (
+                  <div style={{ marginTop: '10px', textAlign: 'right' }}>
+                    <span style={{ fontSize: '12px', color: '#f97316', fontWeight: 600 }}>詳細を見る →</span>
+                  </div>
+                )}
               </div>
             )
             return sb ? (
@@ -405,22 +453,18 @@ export default async function RankingPage({
 
         {/* FAQ（動的データ） */}
         {!isStatic && (
-          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.25rem 1.5rem', marginBottom: '2rem' }}>
-            <h2 style={{ fontSize: '15px', fontWeight: 'bold', color: '#111', margin: '0 0 10px' }}>よくある質問</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div>
-                <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. {prefName}で{catLabel}会社を選ぶ際のポイントは？</p>
-                <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. {prefName}公安委員会の認定を受けた{catLabel}業者かどうかを確認し、対応エリア・実績・料金体系の明確さを複数社で比較することが重要です。</p>
+          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.5rem', marginBottom: '2rem' }}>
+            <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#111', margin: '0 0 16px' }}>よくある質問</h2>
+            {[
+              { q: `${prefName}で${catLabel}会社を選ぶ際のポイントは？`, a: `${prefName}公安委員会の認定を受けた${catLabel}業者かどうかを確認し、対応エリア・実績・料金体系の明確さを複数社で比較することが重要です。` },
+              { q: `${catLabel}の料金相場はどのくらいですか？`, a: '料金は依頼内容・時間帯・人数によって異なります。複数社から見積もりを取り比較することを強くおすすめします。' },
+              { q: `急ぎで${catLabel}を依頼したい場合はどうすれば良いですか？`, a: '地域密着型の警備会社への直接問い合わせが最も早い方法です。このページに掲載している会社に直接ご連絡ください。' },
+            ].map((faq, i) => (
+              <div key={i} style={{ marginBottom: i < 2 ? '16px' : 0, paddingBottom: i < 2 ? '16px' : 0, borderBottom: i < 2 ? '1px solid #f3f4f6' : 'none' }}>
+                <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#1a1a2e', marginBottom: '6px' }}>Q. {faq.q}</div>
+                <div style={{ fontSize: '13px', color: '#555', lineHeight: 1.7 }}>A. {faq.a}</div>
               </div>
-              <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '14px' }}>
-                <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. {catLabel}の料金相場はどのくらいですか？</p>
-                <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. 料金は依頼内容・時間帯・人数によって異なります。複数社から見積もりを取り比較することを強くおすすめします。</p>
-              </div>
-              <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '14px' }}>
-                <p style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', margin: '0 0 4px' }}>Q. 急ぎで{catLabel}を依頼したい場合はどうすれば良いですか？</p>
-                <p style={{ fontSize: '13px', color: '#444', lineHeight: 1.8, margin: 0 }}>A. 地域密着型の警備会社への直接問い合わせが最も早い方法です。このページに掲載している会社に直接ご連絡ください。</p>
-              </div>
-            </div>
+            ))}
           </div>
         )}
 

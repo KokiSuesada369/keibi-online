@@ -102,10 +102,20 @@ export async function generateMetadata({ params }: { params: Promise<{ pref: str
     title: `${prefName}のおすすめ警備会社ランキング【2026年最新版】｜業務別に厳選 | keibi.online`,
     description: `${prefName}のおすすめ警備会社を業務別に厳選。交通誘導・施設警備・イベント警備・駐車場警備ごとにランキング形式でご紹介。失敗しない警備会社の選び方も解説。`,
     alternates: { canonical: `https://keibi.online/${pref}/osusume` },
+    openGraph: {
+      title: `${prefName}のおすすめ警備会社ランキング【2026年最新版】｜業務別に厳選 | keibi.online`,
+      description: `${prefName}のおすすめ警備会社を業務別に厳選。交通誘導・施設警備・イベント警備・駐車場警備ごとにランキング形式でご紹介。失敗しない警備会社の選び方も解説。`,
+      url: `https://keibi.online/${pref}/osusume`,
+      siteName: 'keibi.online',
+      locale: 'ja_JP',
+      type: 'website',
+      images: [{ url: 'https://keibi.online/ogp.png', width: 1200, height: 630, alt: 'keibi.online' }],
+    },
     twitter: {
       card: 'summary_large_image',
       title: `${prefName}のおすすめ警備会社ランキング【2026年最新版】`,
       description: `${prefName}のおすすめ警備会社を業務別に厳選。交通誘導・施設警備・イベント・駐車場ごとにランキング形式でご紹介。`,
+      images: ['https://keibi.online/ogp.png'],
     },
   }
 }
@@ -200,11 +210,37 @@ export default async function OsusumeePage({ params }: { params: Promise<{ pref:
     { id: 'parking', label: '駐車場警備', desc: '駐車場・商業施設・工場の車両誘導・管理', companies: finalParking },
   ]
 
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: '警備会社を選ぶ際の重要なポイントは何ですか？',
+        acceptedAnswer: { '@type': 'Answer', text: '認定証・警備業許可の有無、対応できる業務の範囲、緊急時の連絡体制、実績と評判の4点を確認することが重要です。また、複数社から見積もりを取り、料金体系が明確な会社を選びましょう。' },
+      },
+      {
+        '@type': 'Question',
+        name: '相見積もりは必要ですか？',
+        acceptedAnswer: { '@type': 'Answer', text: '相見積もりは強くおすすめします。警備会社によって料金・サービス内容・対応エリアが大きく異なります。最低でも3社以上から見積もりを取ることで、適正価格と優良な会社を見極めることができます。' },
+      },
+      {
+        '@type': 'Question',
+        name: '急な依頼にも対応してもらえますか？',
+        acceptedAnswer: { '@type': 'Answer', text: '会社によって異なりますが、多くの警備会社では前日や当日の急な依頼にも対応しています。ただし、警備員の確保には時間が必要なため、余裕を持って依頼することをおすすめします。' },
+      },
+    ],
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: '#f8f9fa' }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
       />
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '2rem 1rem' }}>
 

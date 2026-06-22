@@ -30,7 +30,21 @@ export async function generateMetadata({ params }: { params: Promise<{ pref: str
     title: `${prefName}の警備会社一覧 | keibi.online`,
     description: `${prefName}の警備会社を掲載。施設警備・交通誘導・雑踏警備・機械警備など業務別に検索できます。`,
     alternates: { canonical: `https://keibi.online/${pref}` },
-    twitter: { card: 'summary_large_image' as const },
+    openGraph: {
+      title: `${prefName}の警備会社一覧 | keibi.online`,
+      description: `${prefName}の警備会社を掲載。施設警備・交通誘導・雑踏警備・機械警備など業務別に検索できます。`,
+      url: `https://keibi.online/${pref}`,
+      siteName: 'keibi.online',
+      locale: 'ja_JP',
+      type: 'website',
+      images: [{ url: 'https://keibi.online/ogp.png', width: 1200, height: 630, alt: 'keibi.online' }],
+    },
+    twitter: {
+      card: 'summary_large_image' as const,
+      title: `${prefName}の警備会社一覧 | keibi.online`,
+      description: `${prefName}の警備会社を掲載。施設警備・交通誘導・雑踏警備・機械警備など業務別に検索できます。`,
+      images: ['https://keibi.online/ogp.png'],
+    },
   }
 }
 
@@ -63,7 +77,7 @@ export default async function PrefecturePage({ params }: { params: Promise<{ pre
     'name': `${prefName}の警備会社一覧`,
     'description': `${prefName}の警備会社${companies.length}社を掲載。施設警備・交通誘導警備・雑踏警備など業務別に検索できます。`,
     'numberOfItems': companies.length,
-    'itemListElement': companies.slice(0, 10).map((c, i) => ({
+    'itemListElement': companies.map((c, i) => ({
       '@type': 'ListItem',
       'position': i + 1,
       'item': {

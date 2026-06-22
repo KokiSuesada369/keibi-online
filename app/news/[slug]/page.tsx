@@ -17,6 +17,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${data.title} | keibi.online`,
     description: data.summary,
+    alternates: { canonical: `https://keibi.online/news/${slug}` },
+    openGraph: {
+      title: `${data.title} | keibi.online`,
+      description: data.summary,
+      url: `https://keibi.online/news/${slug}`,
+      siteName: 'keibi.online',
+      locale: 'ja_JP',
+      type: 'article',
+      images: [{ url: 'https://keibi.online/ogp.png', width: 1200, height: 630, alt: 'keibi.online' }],
+    },
+    twitter: {
+      card: 'summary_large_image' as const,
+      title: `${data.title} | keibi.online`,
+      description: data.summary,
+      images: ['https://keibi.online/ogp.png'],
+    },
   }
 }
 

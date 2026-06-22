@@ -24,10 +24,27 @@ export async function generateMetadata({ params }: { params: Promise<{ pref: str
   const num = parseInt(service)
   const label = SECURITY_TYPE_LABELS[num]
   if (!prefName || !label) return {}
+  const title = `${prefName}の${label}会社一覧 | keibi.online`
+  const description = `${prefName}の${label}（${SECURITY_TYPE_DESCRIPTIONS[num]}）対応警備会社を掲載。地域密着の警備会社を探せます。`
   return {
-    title: `${prefName}の${label}会社一覧 | keibi.online`,
-    description: `${prefName}の${label}（${SECURITY_TYPE_DESCRIPTIONS[num]}）対応警備会社を掲載。地域密着の警備会社を探せます。`,
+    title,
+    description,
     alternates: { canonical: `https://keibi.online/${pref}/service/${service}` },
+    openGraph: {
+      title,
+      description,
+      url: `https://keibi.online/${pref}/service/${service}`,
+      siteName: 'keibi.online',
+      locale: 'ja_JP',
+      type: 'website',
+      images: [{ url: 'https://keibi.online/ogp.png', width: 1200, height: 630, alt: 'keibi.online' }],
+    },
+    twitter: {
+      card: 'summary_large_image' as const,
+      title,
+      description,
+      images: ['https://keibi.online/ogp.png'],
+    },
   }
 }
 

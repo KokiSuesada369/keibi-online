@@ -41,10 +41,27 @@ export async function generateMetadata({ params }: { params: Promise<{ pref: str
     .single()
 
   if (!data) return {}
+  const title = `${data.city}の警備会社一覧 | keibi.online`
+  const description = `${data.city}（${data.pref}）の警備会社を掲載。施設警備・交通誘導・雑踏警備など業務別に検索できます。`
   return {
-    title: `${data.city}の警備会社一覧 | keibi.online`,
-    description: `${data.city}（${data.pref}）の警備会社を掲載。施設警備・交通誘導・雑踏警備など業務別に検索できます。`,
+    title,
+    description,
     alternates: { canonical: `https://keibi.online/${pref}/${city}` },
+    openGraph: {
+      title,
+      description,
+      url: `https://keibi.online/${pref}/${city}`,
+      siteName: 'keibi.online',
+      locale: 'ja_JP',
+      type: 'website',
+      images: [{ url: 'https://keibi.online/ogp.png', width: 1200, height: 630, alt: 'keibi.online' }],
+    },
+    twitter: {
+      card: 'summary_large_image' as const,
+      title,
+      description,
+      images: ['https://keibi.online/ogp.png'],
+    },
   }
 }
 

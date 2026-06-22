@@ -34,10 +34,27 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!data) return { title: '会社が見つかりません | keibi.online' }
   const company = data as Company
   const services = (company.numbers || []).map(n => SECURITY_TYPE_LABELS[n]).filter(Boolean).join('・')
+  const title = `${company.name}｜${company.pref}${company.city}の警備会社 | keibi.online`
+  const description = `${company.name}は${company.pref}${company.city}の警備会社です。${services}に対応しています。住所：${company.pref}${company.city}${company.address}`
   return {
-    title: `${company.name}｜${company.pref}${company.city}の警備会社 | keibi.online`,
-    description: `${company.name}は${company.pref}${company.city}の警備会社です。${services}に対応しています。住所：${company.pref}${company.city}${company.address}`,
+    title,
+    description,
     alternates: { canonical: `https://keibi.online/companies/${slug}` },
+    openGraph: {
+      title,
+      description,
+      url: `https://keibi.online/companies/${slug}`,
+      siteName: 'keibi.online',
+      locale: 'ja_JP',
+      type: 'website',
+      images: [{ url: 'https://keibi.online/ogp.png', width: 1200, height: 630, alt: 'keibi.online' }],
+    },
+    twitter: {
+      card: 'summary_large_image' as const,
+      title,
+      description,
+      images: ['https://keibi.online/ogp.png'],
+    },
   }
 }
 
@@ -63,8 +80,18 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
     },
     telephone: company.tel || undefined,
     url: company.url || undefined,
-    areaServed: company.pref,
+    areaServed: { '@type': 'AdministrativeArea', name: company.pref },
     description: `${company.name}は${company.pref}${company.city}の警備会社です。${services.map(n => SECURITY_TYPE_LABELS[n]).filter(Boolean).join('・')}に対応しています。`,
+    ...(services.length > 0 && {
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: '警備サービス',
+        itemListElement: services.map(n => ({
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: SECURITY_TYPE_LABELS[n] },
+        })),
+      },
+    }),
   }
 
   return (
@@ -148,6 +175,33 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
             {generateDescription(company)}
           </p>
         </div>
+
+        {/* 関連ランキング */}
+        {services.some(n => [1, 2].includes(n)) && (
+          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.5rem', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#222', margin: '0 0 1rem' }}>{company.pref}の警備会社ランキング</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {services.includes(2) && (
+                <Link href={`/columns/ranking/${company.pref_slug}/kotsu`} style={{ fontSize: '13px', color: '#f97316', textDecoration: 'none' }}>
+                  {company.pref}の交通誘導警備会社ランキングを見る →
+                </Link>
+              )}
+              {services.includes(1) && (
+                <Link href={`/columns/ranking/${company.pref_slug}/shisetsu`} style={{ fontSize: '13px', color: '#f97316', textDecoration: 'none' }}>
+                  {company.pref}の施設警備会社ランキングを見る →
+                </Link>
+              )}
+              {services.includes(2) && (
+                <Link href={`/columns/ranking/${company.pref_slug}/event`} style={{ fontSize: '13px', color: '#f97316', textDecoration: 'none' }}>
+                  {company.pref}のイベント警備会社ランキングを見る →
+                </Link>
+              )}
+              <Link href={`/${company.pref_slug}/osusume`} style={{ fontSize: '13px', color: '#f97316', textDecoration: 'none' }}>
+                {company.pref}のおすすめ警備会社ランキングを見る →
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* 都道府県リンクカード */}
         <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.5rem' }}>

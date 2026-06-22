@@ -43,3 +43,5 @@ next-env.d.ts
 # OneDrive conflict files
 *-DESKTOP-*.tsx
 *-DESKTOP-*.css
+
+.vercel

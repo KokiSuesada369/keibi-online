@@ -1,6 +1,8 @@
 import os
+import re
 import sys
 import time
+import random
 import requests
 from dotenv import load_dotenv
 from ddgs import DDGS
@@ -24,27 +26,83 @@ EXCLUDE_DOMAINS = [
     'minato-search.com', 'telewave.co.jp', 'itp.ne.jp', 'navi-search.com',
     'mapion.co.jp', 'navitime.co.jp', 'google.com', 'goo.ne.jp',
     'itszai.jp', 'clients.itszai.jp',
+    # 警備協会・業界団体（会員検索ページ）
+    'hssa.or.jp', 'ksa.or.jp', 'css-s.or.jp', 'npa.go.jp',
+    'keibikyo.or.jp', 'security.or.jp',
 ]
 
-def is_official_url(url: str) -> bool:
-    return not any(domain in url for domain in EXCLUDE_DOMAINS)
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    'Accept-Language': 'ja,en;q=0.9',
+}
+
+SLEEP_BASE = 10        # 通常インターバル（秒）
+SLEEP_RATE_LIMIT = 120 # レート制限検知時の待機（秒）
+MAX_RETRIES = 3        # 検索リトライ回数
+
+
+def normalize_name(name: str) -> str:
+    return re.sub(r'(株式会社|有限会社|合同会社|一般社団法人|公益財団法人)\s*', '', name).strip()
+
+
+def is_excluded(url: str) -> bool:
+    return any(domain in url for domain in EXCLUDE_DOMAINS)
+
+
+def get_page_title(url: str) -> str | None:
+    try:
+        res = requests.get(url, headers=HEADERS, timeout=6, allow_redirects=True)
+        if res.status_code != 200:
+            return None
+        res.encoding = res.apparent_encoding
+        match = re.search(r'<title[^>]*>(.*?)</title>', res.text, re.IGNORECASE | re.DOTALL)
+        if match:
+            return re.sub(r'\s+', ' ', match.group(1)).strip()
+        return None
+    except Exception:
+        return None
+
+
+def is_company_page(url: str, company_name: str) -> bool:
+    title = get_page_title(url)
+    if not title:
+        return False
+    core = normalize_name(company_name)
+    return core in title
+
+
+def ddgs_search(query: str, max_results: int = 5) -> list:
+    """DDGSで検索。レート制限エラー時は待機してリトライ"""
+    for attempt in range(MAX_RETRIES):
+        try:
+            with DDGS() as ddgs:
+                return list(ddgs.text(query, max_results=max_results))
+        except Exception as e:
+            err = str(e)
+            if 'startpage' in err or 'RatelimitException' in err or 'rate' in err.lower():
+                wait = SLEEP_RATE_LIMIT * (attempt + 1)
+                print(f"  [レート制限] {wait}秒待機してリトライ ({attempt+1}/{MAX_RETRIES})...", flush=True)
+                time.sleep(wait)
+            else:
+                print(f"  [検索エラー] {e}", flush=True)
+                return []
+    return []
+
 
 def search_company_url(company_name: str, pref: str) -> str | None:
-    """会社名でDuckDuckGo検索してURLを取得"""
-    query = f"{company_name} {pref} 公式サイト"
-    try:
-        with DDGS() as ddgs:
-            results = list(ddgs.text(query, max_results=5))
-            for r in results:
-                if is_official_url(r['href']):
-                    return r['href']
-        return None
-    except Exception as e:
-        print(f"検索エラー: {company_name} - {e}")
+    query = f"{pref} 警備 {company_name}"
+    results = ddgs_search(query)
+    if not results:
         return None
 
+    candidates = [r['href'] for r in results if not is_excluded(r['href'])]
+    for url in candidates:
+        if is_company_page(url, company_name):
+            return url
+    return None
+
+
 def update_company_url(company_id: int, url: str) -> bool:
-    """Supabase REST APIで直接URLを更新"""
     endpoint = f"{SUPABASE_URL}/rest/v1/companies?id=eq.{company_id}"
     headers = {
         "apikey": SUPABASE_KEY,
@@ -56,11 +114,11 @@ def update_company_url(company_id: int, url: str) -> bool:
         res = requests.patch(endpoint, json={"url": url}, headers=headers, timeout=10)
         return res.status_code in [200, 204]
     except Exception as e:
-        print(f"更新エラー: {e}")
+        print(f"  [更新エラー] {e}", flush=True)
         return False
 
+
 def fetch_companies_without_url(offset: int, limit: int) -> list:
-    """Supabase REST APIでURL未登録の会社を取得"""
     endpoint = f"{SUPABASE_URL}/rest/v1/companies"
     headers = {
         "apikey": SUPABASE_KEY,
@@ -76,8 +134,9 @@ def fetch_companies_without_url(offset: int, limit: int) -> list:
         res = requests.get(endpoint, headers=headers, params=params, timeout=10)
         return res.json() if res.status_code == 200 else []
     except Exception as e:
-        print(f"取得エラー: {e}")
+        print(f"取得エラー: {e}", flush=True)
         return []
+
 
 def fetch_all():
     offset = 0
@@ -87,33 +146,37 @@ def fetch_all():
     while True:
         companies = fetch_companies_without_url(offset, batch_size)
         if not companies:
+            print("処理完了（残件なし）", flush=True)
             break
 
-        print(f"\n処理中: {offset + 1} 〜 {offset + len(companies)} 件目")
+        print(f"\n処理中: {offset + 1} 〜 {offset + len(companies)} 件目", flush=True)
 
         for company in companies:
             name = company['name']
             pref = company.get('pref', '')
 
-            print(f"  検索中: {name} ({pref})")
+            print(f"  検索中: {name} ({pref})", flush=True)
             found_url = search_company_url(name, pref)
 
             if found_url:
                 success = update_company_url(company["id"], found_url)
                 if success:
-                    print(f"  [OK] 取得・更新: {found_url}")
+                    print(f"  [OK] {found_url}", flush=True)
                     total_updated += 1
                 else:
-                    print(f"  [NG] 取得したが更新失敗: {found_url}")
+                    print(f"  [NG] 更新失敗: {found_url}", flush=True)
             else:
-                print(f"  [--] 見つからず")
+                print(f"  [--] 見つからず", flush=True)
 
-            time.sleep(2)
+            # ランダムインターバルでレート制限を回避
+            sleep_time = SLEEP_BASE + random.uniform(0, 3)
+            time.sleep(sleep_time)
 
         offset += batch_size
-        print(f"累計更新: {total_updated}件")
+        print(f"累計更新: {total_updated}件", flush=True)
 
     print(f"\n完了！合計 {total_updated} 件のURLを更新しました。")
+
 
 if __name__ == "__main__":
     fetch_all()

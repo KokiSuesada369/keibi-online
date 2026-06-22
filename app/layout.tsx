@@ -4,6 +4,7 @@ import Footer from '@/app/components/Footer'
 import Script from 'next/script'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://keibi.online'),
   title: 'keibi.online - 警備業界の総合情報サイト',
   description: '全国6,875社の警備会社を都道府県・業務別に無料検索。交通誘導・施設警備・イベント警備・駐車場警備に対応する地域の警備会社をすぐに見つけられます。資格講習日程・警備求人・業界ニュースも掲載。',
   openGraph: {
@@ -34,6 +35,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" />
         {process.env.NEXT_PUBLIC_GA_ID && (
           <>
             <Script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} strategy="afterInteractive" />

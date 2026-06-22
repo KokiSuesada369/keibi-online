@@ -1,6 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
 import ServiceCards from '@/app/components/ServiceCards'
 import { safeJsonLd } from '@/app/lib/jsonld'
+import type { Metadata } from 'next'
+import Script from 'next/script'
+
+export const metadata: Metadata = {
+  alternates: { canonical: 'https://keibi.online' },
+}
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -99,7 +105,7 @@ export default async function HomePage() {
             警備会社を探す →
           </a>
         </div>
-        <script src="/particle.js" defer />
+        <Script src="/particle.js" strategy="lazyOnload" />
       </section>
 
       {/* サービス一覧 */}

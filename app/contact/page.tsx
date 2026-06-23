@@ -3,7 +3,7 @@ export const metadata = {
   description: 'keibi.onlineへのお問い合わせはこちらから。掲載情報の修正・追加・その他ご要望をお受けしています。',
 }
 
-const CONTACT_EMAIL = 'info.saizen.holdings@gmail.com'
+const CONTACT_EMAIL = 'info@saizen.one'
 
 export default function ContactPage() {
   return (

@@ -1,4 +1,4 @@
-import { articles } from '@/app/column/data'
+import { getSortedArticles } from '@/app/column/data'
 
 export const metadata = {
   title: '警備業界コラム | keibi.online',
@@ -28,14 +28,19 @@ export default function ColumnPage() {
         <h1 style={{ fontSize: 'clamp(20px, 5vw, 28px)', fontWeight: 700, marginBottom: '8px' }}>警備業界コラム</h1>
         <p style={{ color: '#666', marginBottom: '40px' }}>警備会社の選び方や業界の基礎知識をお届けします。</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
-          {articles.map(article => {
+          {getSortedArticles().map(article => {
             const color = CATEGORY_COLORS[article.category] ?? '#1a1a2e'
             return (
               <a key={article.slug} href={`/column/${article.slug}`} style={{ textDecoration: 'none' }}>
                 <div style={{ border: '1px solid #e5e5e5', borderRadius: '12px', padding: '24px', background: 'white', height: '100%' }}>
-                  <span style={{ fontSize: '11px', padding: '3px 10px', borderRadius: '99px', background: color + '22', color, fontWeight: 600, marginBottom: '12px', display: 'inline-block' }}>
-                    {article.category}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '11px', padding: '3px 10px', borderRadius: '99px', background: color + '22', color, fontWeight: 600, display: 'inline-block' }}>
+                      {article.category}
+                    </span>
+                    {article.date && (
+                      <span style={{ fontSize: '11px', color: '#aaa' }}>{article.date.replace(/-/g, '/')}</span>
+                    )}
+                  </div>
                   <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#1a1a2e', marginBottom: '8px', lineHeight: 1.5 }}>
                     {article.title}
                   </h2>

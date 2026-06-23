@@ -14,6 +14,23 @@ export const metadata = {
   },
 }
 
+const orgJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'SAIZEN警備保障株式会社',
+  url: 'https://keibi.online',
+  email: 'info@saizen.one',
+  foundingDate: '2026',
+  address: {
+    '@type': 'PostalAddress',
+    addressRegion: '広島県',
+    addressLocality: '広島市西区',
+    streetAddress: '横川町3丁目1-9-305',
+    addressCountry: 'JP',
+  },
+  founder: { '@type': 'Person', name: '末貞 皓己' },
+}
+
 const aboutJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'AboutPage',
@@ -24,6 +41,11 @@ const aboutJsonLd = {
     name: 'keibi.online',
     url: 'https://keibi.online',
     description: '全国の警備会社を地域・業務別に検索できる警備業界専門のポータルサイト。警備会社検索・業界コラム・資格講習情報・ニュースを提供。',
+    publisher: {
+      '@type': 'Organization',
+      name: 'SAIZEN警備保障株式会社',
+      email: 'info@saizen.one',
+    },
   },
 }
 
@@ -42,6 +64,7 @@ const sections: { h: string; body: string[] }[] = [
     body: [
       'keibi.online（警備オンライン）は、全国の警備会社を「地域」と「業務（1号〜4号）」から検索できる、警備業界専門のポータルサイトです。施設警備・交通誘導警備・雑踏警備・貴重品運搬警備・身辺警備など、目的に合った警備会社を効率よく探せます。',
       '警備を依頼したい企業・個人の方と、地域の警備会社をつなぐことを目的としています。あわせて、警備業界のコラム・資格講習の日程・業界ニュースなど、警備に関わるすべての方に役立つ情報を発信しています。',
+      '本サイトは、広島県広島市で交通誘導・雑踏警備を手がけるSAIZEN警備保障株式会社が運営しています。警備の現場を知る立場から、依頼者にとって本当に役立つ情報の提供を心がけています。',
     ],
   },
   {
@@ -77,6 +100,7 @@ const links = [
 export default function AboutPage() {
   return (
     <main style={{ background: '#fbfbfd' }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(orgJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(aboutJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }} />
 
@@ -111,17 +135,28 @@ export default function AboutPage() {
             <span style={{ color: '#f97316', marginRight: '8px' }}>■</span>サイト情報
           </h2>
           <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' }}>
-            {[
-              { k: 'サイト名', v: 'keibi.online（警備オンライン）' },
-              { k: '内容', v: '警備会社検索・警備業界コラム・資格講習情報・業界ニュースの提供' },
-              { k: '対応エリア', v: '全国47都道府県' },
-              { k: 'お問い合わせ', v: 'お問い合わせフォームより承ります' },
-            ].map((row, i) => (
-              <div key={i} style={{ display: 'flex', borderBottom: i < 3 ? '1px solid #f3f4f6' : 'none' }}>
-                <div style={{ width: '120px', flexShrink: 0, padding: '13px 16px', background: '#f8f9fa', fontSize: '13px', fontWeight: 700, color: '#6b7280' }}>{row.k}</div>
-                <div style={{ padding: '13px 16px', fontSize: '13px', color: '#374151', lineHeight: 1.7 }}>{row.v}</div>
-              </div>
-            ))}
+            {(() => {
+              const rows = [
+                { k: 'サイト名', v: 'keibi.online（警備オンライン）' },
+                { k: '運営会社', v: 'SAIZEN警備保障株式会社' },
+                { k: '代表者', v: '末貞 皓己' },
+                { k: '所在地', v: '広島県広島市西区横川町3丁目1-9-305' },
+                { k: 'メール', v: 'info@saizen.one' },
+                { k: '運営開始', v: '2026年' },
+                { k: '内容', v: '警備会社検索・警備業界コラム・資格講習情報・業界ニュースの提供' },
+                { k: '対応エリア', v: '全国47都道府県' },
+              ]
+              return rows.map((row, i) => (
+                <div key={i} style={{ display: 'flex', borderBottom: i < rows.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
+                  <div style={{ width: '120px', flexShrink: 0, padding: '13px 16px', background: '#f8f9fa', fontSize: '13px', fontWeight: 700, color: '#6b7280' }}>{row.k}</div>
+                  <div style={{ padding: '13px 16px', fontSize: '13px', color: '#374151', lineHeight: 1.7 }}>
+                    {row.k === 'メール'
+                      ? <a href={`mailto:${row.v}`} style={{ color: '#f97316', textDecoration: 'none' }}>{row.v}</a>
+                      : row.v}
+                  </div>
+                </div>
+              ))
+            })()}
           </div>
         </section>
 

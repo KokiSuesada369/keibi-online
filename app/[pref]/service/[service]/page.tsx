@@ -2,6 +2,8 @@ import { createClient } from '@supabase/supabase-js'
 import type { Company } from '@/types/company'
 import { SECURITY_TYPE_LABELS, SECURITY_TYPE_COLORS, SECURITY_TYPE_DESCRIPTIONS } from '@/constants/securityTypes'
 import { PREF_MAP } from '@/constants/prefs'
+import { safeJsonLd } from '@/app/lib/jsonld'
+import { generateServiceDescription, generateServiceFaq } from './serviceContent'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -74,8 +76,48 @@ export default async function PrefServicePage({ params }: { params: Promise<{ pr
       ]
     : companies
 
+  const contentInput = { pref: prefName, serviceNum: num, count: companies.length }
+  const description = generateServiceDescription(contentInput)
+  const faqs = generateServiceFaq(contentInput)
+
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `${prefName}の${label}会社一覧`,
+    numberOfItems: companies.length,
+    itemListElement: (sortedCompanies as Company[]).map((c, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'LocalBusiness',
+        name: c.name,
+        url: `https://keibi.online/companies/${c.slug}`,
+        ...(c.tel && { telephone: c.tel }),
+        address: { '@type': 'PostalAddress', addressRegion: prefName, addressLocality: c.city, addressCountry: 'JP' },
+      },
+    })),
+  }
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  }
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'トップ', item: 'https://keibi.online' },
+      { '@type': 'ListItem', position: 2, name: '都道府県一覧', item: 'https://keibi.online/prefecture' },
+      { '@type': 'ListItem', position: 3, name: prefName, item: `https://keibi.online/${pref}` },
+      { '@type': 'ListItem', position: 4, name: `${prefName}の${label}`, item: `https://keibi.online/${pref}/service/${service}` },
+    ],
+  }
+
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(itemListJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }} />
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px' }}>
         <div style={{ fontSize: '13px', color: '#999', marginBottom: '16px' }}>
           <a href="/" style={{ color: '#999' }}>トップ</a> &gt;{' '}
@@ -89,9 +131,16 @@ export default async function PrefServicePage({ params }: { params: Promise<{ pr
         <p style={{ fontSize: '14px', color: '#555', lineHeight: 1.8, marginBottom: '12px' }}>
           {SECURITY_TYPE_DESCRIPTIONS[num]}
         </p>
-        <p style={{ fontSize: '14px', color: '#666', marginBottom: '32px' }}>
+        <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
           {companies.length}社掲載 — 2026年6月更新
         </p>
+
+        {/* 導入解説文 */}
+        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderLeft: `4px solid ${SECURITY_TYPE_COLORS[num]}`, borderRadius: '8px', padding: '18px 20px', marginBottom: '32px' }}>
+          {description.map((p, i) => (
+            <p key={i} style={{ fontSize: '14px', color: '#374151', lineHeight: 1.9, margin: i === 0 ? '0 0 10px' : 0 }}>{p}</p>
+          ))}
+        </div>
 
         {/* 他の業務へのリンク */}
         <div style={{ marginBottom: '32px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -161,6 +210,29 @@ export default async function PrefServicePage({ params }: { params: Promise<{ pr
             ))}
           </div>
         )}
+
+        {/* FAQ */}
+        <h2 style={{ fontSize: '16px', fontWeight: 700, margin: '40px 0 14px', color: '#1f2937' }}>{prefName}の{label}に関するよくある質問</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '36px' }}>
+          {faqs.map((f, i) => (
+            <div key={i} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' }}>
+              <div style={{ display: 'flex', gap: '8px', padding: '13px 16px', background: '#f8f9fa', fontSize: '14px', fontWeight: 700, color: '#1f2937' }}>
+                <span style={{ color: SECURITY_TYPE_COLORS[num], fontWeight: 800 }}>Q.</span>{f.q}
+              </div>
+              <div style={{ display: 'flex', gap: '8px', padding: '13px 16px', fontSize: '13px', color: '#4b5563', lineHeight: 1.8 }}>
+                <span style={{ color: '#2a9d8f', fontWeight: 800 }}>A.</span><span>{f.a}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 関連リンク */}
+        <div style={{ background: '#f8f9fa', borderRadius: '12px', padding: '20px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+          <a href={`/${pref}`} style={{ fontSize: '13px', color: '#f97316', fontWeight: 600, textDecoration: 'none' }}>→ {prefName}の警備会社一覧</a>
+          <a href={`/${pref}/osusume`} style={{ fontSize: '13px', color: '#f97316', fontWeight: 600, textDecoration: 'none' }}>→ {prefName}のおすすめ警備会社ランキング</a>
+          <a href="/column/guide-001" style={{ fontSize: '13px', color: '#f97316', fontWeight: 600, textDecoration: 'none' }}>→ 警備会社の選び方</a>
+          {num === 2 && <a href="/column/cost-001" style={{ fontSize: '13px', color: '#f97316', fontWeight: 600, textDecoration: 'none' }}>→ 交通誘導警備の料金相場</a>}
+        </div>
       </div>
     </main>
   )

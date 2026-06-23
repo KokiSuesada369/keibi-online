@@ -15,6 +15,7 @@ export default function Footer() {
           { label: '近くの警備会社を探す', href: '/nearby' },
           { label: 'かんたん警備依頼', href: '/request' },
           { label: 'コラム', href: '/column' },
+          { label: '運営者情報', href: '/about' },
           { label: 'お問い合わせ', href: '/contact' },
           { label: '修正依頼', href: '/contact' },
         ].map(l => (

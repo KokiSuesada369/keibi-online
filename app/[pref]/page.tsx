@@ -4,6 +4,7 @@ import { safeJsonLd } from '@/app/lib/jsonld'
 import type { Company } from '@/types/company'
 import { SECURITY_TYPE_LABELS, SECURITY_TYPE_COLORS } from '@/constants/securityTypes'
 import { PREF_MAP } from '@/constants/prefs'
+import { generatePrefDescription, generatePrefFaq } from './prefContent'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -70,6 +71,22 @@ export default async function PrefecturePage({ params }: { params: Promise<{ pre
 
   if (error || !companies) return <div>データの取得に失敗しました</div>
 
+  // 固有コンテンツ生成
+  const serviceCounts: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0 }
+  ;(companies as Company[]).forEach(c => {
+    ;(c.numbers ?? []).forEach((n: number) => {
+      if (serviceCounts[n] !== undefined) serviceCounts[n] += 1
+    })
+  })
+  const prefContentInput = { pref: prefName, prefSlug: pref, count: companies.length, cityCount: cities?.length ?? 0, serviceCounts }
+  const prefDescription = generatePrefDescription(prefContentInput)
+  const prefFaqs = generatePrefFaq(prefContentInput)
+  const prefFaqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: prefFaqs.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  }
+
   // 構造化データ（JSON-LD）
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -130,9 +147,16 @@ export default async function PrefecturePage({ params }: { params: Promise<{ pre
         <h1 style={{ fontSize: 'clamp(20px, 5vw, 28px)', fontWeight: 700, marginBottom: '12px' }}>
           {prefName}の警備会社一覧
         </h1>
-        <p style={{ fontSize: '14px', color: '#666', lineHeight: 1.8, marginBottom: '32px' }}>
+        <p style={{ fontSize: '14px', color: '#666', lineHeight: 1.8, marginBottom: '20px' }}>
           {companies.length}社掲載 — {UPDATED_LABEL}
         </p>
+
+        {/* 導入解説文 */}
+        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderLeft: '4px solid #f97316', borderRadius: '8px', padding: '18px 20px', marginBottom: '36px' }}>
+          {prefDescription.map((p, i) => (
+            <p key={i} style={{ fontSize: '14px', color: '#374151', lineHeight: 1.9, margin: i === prefDescription.length - 1 ? 0 : '0 0 10px' }}>{p}</p>
+          ))}
+        </div>
 
         {cities && cities.length > 0 && (
           <div style={{ marginBottom: '40px' }}>
@@ -192,6 +216,22 @@ export default async function PrefecturePage({ params }: { params: Promise<{ pre
                 </div>
               </div>
             </a>
+          ))}
+        </div>
+
+        {/* FAQ */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(prefFaqJsonLd) }} />
+        <h2 style={{ fontSize: '18px', fontWeight: 700, margin: '44px 0 16px' }}>{prefName}の警備会社に関するよくある質問</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {prefFaqs.map((f, i) => (
+            <div key={i} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' }}>
+              <div style={{ display: 'flex', gap: '8px', padding: '13px 16px', background: '#f8f9fa', fontSize: '14px', fontWeight: 700, color: '#1f2937' }}>
+                <span style={{ color: '#f97316', fontWeight: 800 }}>Q.</span>{f.q}
+              </div>
+              <div style={{ display: 'flex', gap: '8px', padding: '13px 16px', fontSize: '13px', color: '#4b5563', lineHeight: 1.8 }}>
+                <span style={{ color: '#2a9d8f', fontWeight: 800 }}>A.</span><span>{f.a}</span>
+              </div>
+            </div>
           ))}
         </div>
       </div>

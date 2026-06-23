@@ -76,8 +76,8 @@ export default async function ColumnArticlePage({ params }: { params: Promise<{ 
             description: article.description,
             url: `https://keibi.online/column/${article.slug}`,
             publisher: { '@type': 'Organization', name: 'keibi.online', url: 'https://keibi.online' },
-            datePublished: '2026-01-01T00:00:00.000Z',
-            dateModified: '2026-06-23T00:00:00.000Z',
+            datePublished: article.date ? `${article.date}T00:00:00.000Z` : '2026-01-01T00:00:00.000Z',
+            dateModified: article.date ? `${article.date}T00:00:00.000Z` : '2026-06-23T00:00:00.000Z',
           }),
         }}
       />
@@ -112,7 +112,7 @@ export default async function ColumnArticlePage({ params }: { params: Promise<{ 
           </h1>
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', fontSize: '12px', color: 'rgba(255,255,255,0.85)' }}>
             <span>🕐 読了目安 約{readingMinutes}分</span>
-            <span>📅 2026年6月更新</span>
+            <span>📅 {article.date ? article.date.replace(/-/g, '/') : '2026年6月'}更新</span>
             <span>📝 {article.sections.length}つの見出し</span>
           </div>
         </div>

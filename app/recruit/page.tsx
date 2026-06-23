@@ -60,8 +60,8 @@ const EMP_COLOR: Record<string, { bg: string; color: string }> = {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ display: 'flex', borderBottom: '1px solid #f3f4f6' }}>
-      <div style={{ width: '110px', flexShrink: 0, padding: '12px 14px', background: '#f8f9fa', fontSize: '12px', fontWeight: 700, color: '#6b7280' }}>{label}</div>
-      <div style={{ padding: '12px 14px', fontSize: '13px', color: '#374151', lineHeight: 1.7 }}>{value}</div>
+      <div style={{ width: '78px', flexShrink: 0, padding: '12px 8px 12px 12px', background: '#f8f9fa', fontSize: '12px', fontWeight: 700, color: '#6b7280', lineHeight: 1.5 }}>{label}</div>
+      <div style={{ flex: 1, minWidth: 0, padding: '12px 14px', fontSize: '13px', color: '#374151', lineHeight: 1.7, wordBreak: 'break-word' }}>{value}</div>
     </div>
   )
 }

@@ -57,10 +57,10 @@ const EMP_COLOR: Record<string, { bg: string; color: string }> = {
   '契約社員': { bg: '#fff4e6', color: '#854f0b' },
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value }: { label: React.ReactNode; value: string }) {
   return (
     <div style={{ display: 'flex', borderBottom: '1px solid #f3f4f6' }}>
-      <div style={{ width: '78px', flexShrink: 0, padding: '12px 8px 12px 12px', background: '#f8f9fa', fontSize: '12px', fontWeight: 700, color: '#6b7280', lineHeight: 1.5 }}>{label}</div>
+      <div style={{ width: '70px', flexShrink: 0, padding: '12px 6px 12px 12px', background: '#f8f9fa', fontSize: '12px', fontWeight: 700, color: '#6b7280', lineHeight: 1.5, wordBreak: 'keep-all' }}>{label}</div>
       <div style={{ flex: 1, minWidth: 0, padding: '12px 14px', fontSize: '13px', color: '#374151', lineHeight: 1.7, wordBreak: 'break-word' }}>{value}</div>
     </div>
   )
@@ -128,13 +128,13 @@ export default function RecruitPage() {
 
                     {/* 詳細テーブル */}
                     <div>
-                      {job.careerUp && <Row label="キャリアアップ" value={job.careerUp} />}
+                      {job.careerUp && <Row label={<>キャリア<br />アップ</>} value={job.careerUp} />}
                       <Row label="勤務地" value={job.location} />
                       <Row label="勤務時間" value={job.hours} />
                       {job.trial && <Row label="試用期間" value={job.trial} />}
                       {job.insurance && <Row label="社会保険" value={job.insurance} />}
                       {job.training && <Row label="研修制度" value={job.training} />}
-                      {job.qualification && <Row label="資格・経験" value={job.qualification} />}
+                      {job.qualification && <Row label={<>資格・<br />経験</>} value={job.qualification} />}
                     </div>
 
                     {/* 応募ボタン */}

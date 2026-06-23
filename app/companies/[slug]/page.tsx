@@ -66,6 +66,26 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
   const company = data as Company
   const services = company.numbers || []
 
+  // 内部リンク強化: 同じ市区町村（不足時は同一県）の他の警備会社を取得
+  // 企業ページ同士をつなぎ、クロール・インデックスを促進する
+  let { data: nearbyData } = await supabase
+    .from('companies')
+    .select('slug, name, city, numbers')
+    .eq('pref_slug', company.pref_slug)
+    .eq('city_slug', company.city_slug)
+    .neq('slug', company.slug)
+    .limit(8)
+  if (!nearbyData || nearbyData.length < 4) {
+    const { data: prefData } = await supabase
+      .from('companies')
+      .select('slug, name, city, numbers')
+      .eq('pref_slug', company.pref_slug)
+      .neq('slug', company.slug)
+      .limit(8)
+    nearbyData = prefData ?? nearbyData
+  }
+  const nearby = (nearbyData ?? []) as { slug: string; name: string; city: string; numbers: number[] }[]
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
@@ -203,12 +223,44 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
           </div>
         )}
 
+        {/* 同じエリアの警備会社（内部リンク強化） */}
+        {nearby.length > 0 && (
+          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.5rem', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#222', margin: '0 0 1rem' }}>
+              {company.city ? `${company.city}の他の警備会社` : `${company.pref}の他の警備会社`}
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '8px' }}>
+              {nearby.map(n => (
+                <Link key={n.slug} href={`/companies/${n.slug}`} style={{ textDecoration: 'none' }}>
+                  <div style={{ border: '1px solid #eee', borderRadius: '8px', padding: '10px 12px', height: '100%' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a2e', marginBottom: '4px', lineHeight: 1.4 }}>{n.name}</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px' }}>
+                      {(n.numbers ?? []).map(num => (
+                        <span key={num} style={{ fontSize: '10px', padding: '1px 6px', borderRadius: '99px', background: SECURITY_TYPE_COLORS[num] + '22', color: SECURITY_TYPE_COLORS[num], fontWeight: 600 }}>
+                          {SECURITY_TYPE_LABELS[num]}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* 都道府県リンクカード */}
         <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.5rem' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: '#222', margin: '0 0 1rem' }}>{company.pref}の警備会社を探す</h2>
-          <Link href={`/${company.pref_slug}`} style={{ display: 'inline-block', fontSize: '13px', padding: '8px 16px', background: '#f97316', color: '#fff', borderRadius: '8px', textDecoration: 'none' }}>
-            {company.pref}の警備会社一覧 →
-          </Link>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            <Link href={`/${company.pref_slug}`} style={{ display: 'inline-block', fontSize: '13px', padding: '8px 16px', background: '#f97316', color: '#fff', borderRadius: '8px', textDecoration: 'none' }}>
+              {company.pref}の警備会社一覧 →
+            </Link>
+            {company.city_slug && (
+              <Link href={`/${company.pref_slug}/${company.city_slug}`} style={{ display: 'inline-block', fontSize: '13px', padding: '8px 16px', background: '#fff', color: '#f97316', border: '1px solid #f97316', borderRadius: '8px', textDecoration: 'none' }}>
+                {company.city}の警備会社一覧 →
+              </Link>
+            )}
+          </div>
         </div>
 
       </div>

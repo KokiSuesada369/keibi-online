@@ -17,7 +17,7 @@ export const metadata = {
 
 const UNIT_LABEL: Record<string, string> = { HOUR: 'HOUR', DAY: 'DAY', MONTH: 'MONTH', YEAR: 'YEAR' }
 
-function jobPostingJsonLd(company: { name: string; pref: string; address?: string }, job: Job) {
+function jobPostingJsonLd(company: { name: string; pref: string; address?: string; website?: string }, job: Job) {
   return {
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
@@ -28,6 +28,7 @@ function jobPostingJsonLd(company: { name: string; pref: string; address?: strin
     hiringOrganization: {
       '@type': 'Organization',
       name: company.name,
+      ...(company.website ? { sameAs: company.website } : {}),
     },
     jobLocation: {
       '@type': 'Place',
@@ -86,13 +87,18 @@ export default function RecruitPage() {
         {recruitCompanies.map(company => (
           <section key={company.slug} style={{ marginBottom: '48px' }}>
             {/* 会社ヘッダー */}
-            <div style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%)', borderRadius: '14px 14px 0 0', padding: '22px 24px', color: '#fff' }}>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', marginBottom: '6px' }}>{company.pref}{company.address ? `・${company.address}` : ''}</div>
-              <h2 style={{ fontSize: '19px', fontWeight: 800, margin: 0 }}>{company.name}</h2>
-              {company.intro && <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)', lineHeight: 1.8, margin: '10px 0 0' }}>{company.intro}</p>}
-              {company.companyHref && (
-                <a href={company.companyHref} style={{ display: 'inline-block', marginTop: '12px', fontSize: '12px', color: '#fff', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '6px', padding: '6px 14px', textDecoration: 'none' }}>会社情報を見る →</a>
-              )}
+            <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderBottom: 'none', borderTop: '4px solid #f97316', borderRadius: '14px 14px 0 0', padding: '22px 24px' }}>
+              <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '6px' }}>{company.pref}{company.address ? `・${company.address}` : ''}</div>
+              <h2 style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: '#1f2937' }}>{company.name}</h2>
+              {company.intro && <p style={{ fontSize: '13px', color: '#4b5563', lineHeight: 1.85, margin: '10px 0 0' }}>{company.intro}</p>}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '14px' }}>
+                {company.companyHref && (
+                  <a href={company.companyHref} style={{ display: 'inline-block', fontSize: '12px', fontWeight: 700, color: '#374151', background: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: '6px', padding: '7px 14px', textDecoration: 'none' }}>会社情報を見る →</a>
+                )}
+                {company.website && (
+                  <a href={company.website} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: '12px', fontWeight: 700, color: '#fff', background: '#f97316', borderRadius: '6px', padding: '7px 14px', textDecoration: 'none' }}>会社のホームページはこちら →</a>
+                )}
+              </div>
             </div>
 
             {/* 求人カード群 */}

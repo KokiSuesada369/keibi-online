@@ -26,6 +26,7 @@ export type RecruitCompany = {
   prefSlug?: string
   address?: string
   companyHref?: string // 企業詳細ページへのリンク
+  website?: string // 会社の公式ホームページ
   intro?: string
   jobs: Job[]
 }
@@ -38,6 +39,7 @@ export const recruitCompanies: RecruitCompany[] = [
     prefSlug: 'hiroshima',
     address: '広島県広島市西区横川町3丁目1-9-305',
     companyHref: '/companies/saizen-666',
+    website: 'https://saizen.one',
     intro: '広島市西区横川を拠点に、交通誘導・雑踏警備を手がける警備会社です。未経験者を一から育てる研修体制と、営業所長まで目指せるキャリアパスが特長。明朗会計で地域の建設会社やイベント主催者から信頼を集めています。',
     jobs: [
       {
@@ -55,6 +57,7 @@ export const recruitCompanies: RecruitCompany[] = [
         insurance: '完備（アルバイト・正社員問わず）',
         training: '入社後、現場に出る前に新任教育20時間あり',
         qualification: '不問・未経験歓迎',
+        highlights: ['入社祝い金10万円あり'],
       },
       {
         employmentType: '正社員',
@@ -70,7 +73,7 @@ export const recruitCompanies: RecruitCompany[] = [
         trial: 'なし',
         insurance: '完備',
         training: '入社後、現場に出る前に新任教育20時間あり',
-        qualification: '不問・未経験歓迎',
+        qualification: '不問・未経験歓迎（運転免許必須）',
         highlights: ['入社祝い金10万円あり'],
       },
     ],

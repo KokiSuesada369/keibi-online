@@ -254,6 +254,8 @@ export default function LicensePage() {
                   <div key={r.id} style={{ background: isPast ? '#fafafa' : 'white', border: '1px solid #e8e8e8', borderRadius: '10px', padding: '14px 16px', opacity: isPast ? 0.6 : 1 }}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center', marginBottom: '8px' }}>
                       <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '4px', background: col.bg, color: col.color }}>{SERVICE_SHORT[r.service_type] ?? r.service_type}</span>
+                      {r.grade && <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '4px', background: '#1a1a2e', color: '#fff' }}>{r.grade}</span>}
+                      {r.target && r.target !== '警備員' && <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '4px', background: '#fff0e6', color: '#c2410c' }}>{r.target}</span>}
                       {isPast && <span style={{ fontSize: '11px', color: '#aaa' }}>終了</span>}
                       {r.notes && r.notes.includes('中止') && <span style={{ fontSize: '11px', color: '#e63946', fontWeight: 700 }}>中止</span>}
                     </div>

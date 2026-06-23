@@ -118,8 +118,8 @@ export default async function PrefLicensePage({ params }: { params: { pref: stri
                       </span>
                     )}
                     {s.grade && (
-                      <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-gray-100 text-gray-700">
-                        {s.grade}級
+                      <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-gray-900 text-white">
+                        {s.grade}
                       </span>
                     )}
                   </div>

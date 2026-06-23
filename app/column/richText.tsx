@@ -2,10 +2,10 @@ import React from 'react'
 
 export type RichTheme = { main: string; bg: string; soft: string }
 
-// インライン装飾: **太字** と ==ハイライト==
+// インライン装飾: **太字** ==ハイライト== [リンク文字](URL)
 function inline(text: string, theme: RichTheme, keyBase: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = []
-  const regex = /(\*\*[^*]+\*\*|==[^=]+==)/g
+  const regex = /(\*\*[^*]+\*\*|==[^=]+==|\[[^\]]+\]\([^)]+\))/g
   let lastIndex = 0
   let k = 0
   let m: RegExpExecArray | null
@@ -18,12 +18,30 @@ function inline(text: string, theme: RichTheme, keyBase: string): React.ReactNod
           {token.slice(2, -2)}
         </strong>
       )
-    } else {
+    } else if (token.startsWith('==')) {
       nodes.push(
         <mark key={`${keyBase}-m${k++}`} style={{ background: theme.bg, color: theme.main, padding: '1px 4px', borderRadius: '3px', fontWeight: 600 }}>
           {token.slice(2, -2)}
         </mark>
       )
+    } else {
+      const mm = token.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
+      if (mm) {
+        const [, label, href] = mm
+        const external = /^https?:\/\//.test(href)
+        nodes.push(
+          <a
+            key={`${keyBase}-a${k++}`}
+            href={href}
+            {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            style={{ color: theme.main, fontWeight: 700, textDecoration: 'underline' }}
+          >
+            {label}{external ? ' ↗' : ''}
+          </a>
+        )
+      } else {
+        nodes.push(token)
+      }
     }
     lastIndex = m.index + token.length
   }

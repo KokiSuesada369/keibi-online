@@ -3,6 +3,7 @@ import { getSortedArticles } from '@/app/column/data'
 export const metadata = {
   title: '警備業界コラム | keibi.online',
   description: '警備会社の選び方・警備料金の相場・警備業界の基礎知識などをコラム形式でお届けします。',
+  alternates: { canonical: 'https://keibi.online/column' },
   openGraph: {
     title: '警備業界コラム｜警備会社の選び方・料金・資格を解説',
     description: '警備会社の選び方・料金相場・資格取得ガイドなど、警備業界に関する情報をわかりやすく解説するコラムです。',

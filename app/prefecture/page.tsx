@@ -1,6 +1,7 @@
 export const metadata = {
   title: '都道府県から警備会社を探す｜全国47都道府県対応 | keibi.online',
   description: '全国47都道府県から警備会社を検索。交通誘導・施設警備・イベント警備・駐車場警備に対応した地域の警備会社を掲載。',
+  alternates: { canonical: 'https://keibi.online/prefecture' },
 }
 
 const prefectures = [

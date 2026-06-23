@@ -9,6 +9,7 @@ const supabase = createClient(
 export const metadata = {
   title: '警備業界ニュース | keibi.online',
   description: '警備業界の最新ニュース・法改正・業界動向をお届けします。',
+  alternates: { canonical: 'https://keibi.online/news' },
 }
 
 export const revalidate = 3600

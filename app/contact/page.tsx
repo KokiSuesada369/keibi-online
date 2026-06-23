@@ -1,6 +1,7 @@
 export const metadata = {
   title: 'お問い合わせ | keibi.online',
   description: 'keibi.onlineへのお問い合わせはこちらから。掲載情報の修正・追加・その他ご要望をお受けしています。',
+  alternates: { canonical: 'https://keibi.online/contact' },
 }
 
 const CONTACT_EMAIL = 'info@saizen.one'

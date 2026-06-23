@@ -55,6 +55,20 @@ const jsonLd = {
   'name': 'keibi.online',
   'url': 'https://keibi.online',
   'description': '警備業界専門のポータルサイト。全国の警備会社検索・業界ニュース・資格情報・求人情報を提供。',
+  'potentialAction': {
+    '@type': 'SearchAction',
+    'target': { '@type': 'EntryPoint', 'urlTemplate': 'https://keibi.online/prefecture' },
+    'query-input': 'required name=search_term_string',
+  },
+}
+
+const orgJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  'name': 'keibi.online',
+  'url': 'https://keibi.online',
+  'description': '全国の警備会社を地域・業務別に検索できる警備業界専門のポータルサイト。',
+  'logo': 'https://keibi.online/ogp.png',
 }
 
 export default async function HomePage() {
@@ -87,6 +101,7 @@ export default async function HomePage() {
   return (
     <main style={{ background: '#f5f6fa', minHeight: '100vh', fontFamily: "'Noto Sans JP', sans-serif" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(orgJsonLd) }} />
 
       {/* ヒーロー */}
       <section style={{ position: 'relative', padding: '56px 24px 48px', textAlign: 'center', background: '#0f172a', overflow: 'hidden' }}>

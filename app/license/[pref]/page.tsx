@@ -26,6 +26,7 @@ export async function generateMetadata({ params }: { params: { pref: string } })
   return {
     title: `${pref}の警備員資格講習 日程一覧 | keibi.online`,
     description: `${pref}で開催される警備員指導教育責任者講習・機械警備業務管理者講習・特別講習の日程一覧です。`,
+    alternates: { canonical: `https://keibi.online/license/${encodeURIComponent(pref)}` },
   }
 }
 

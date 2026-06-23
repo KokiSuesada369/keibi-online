@@ -41,8 +41,36 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
   const { data: news } = await supabase.from('news').select('*').eq('slug', slug).single()
   if (!news) notFound()
 
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: news.title,
+    description: news.summary,
+    url: `https://keibi.online/news/${slug}`,
+    mainEntityOfPage: `https://keibi.online/news/${slug}`,
+    image: 'https://keibi.online/ogp.png',
+    ...(news.published_at ? { datePublished: news.published_at, dateModified: news.published_at } : {}),
+    author: { '@type': 'Organization', name: 'keibi.online' },
+    publisher: {
+      '@type': 'Organization',
+      name: 'keibi.online',
+      logo: { '@type': 'ImageObject', url: 'https://keibi.online/ogp.png' },
+    },
+  }
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'トップ', item: 'https://keibi.online' },
+      { '@type': 'ListItem', position: 2, name: 'ニュース', item: 'https://keibi.online/news' },
+      { '@type': 'ListItem', position: 3, name: news.title, item: `https://keibi.online/news/${slug}` },
+    ],
+  }
+
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd).replace(/</g, '\\u003c') }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, '\\u003c') }} />
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '48px 24px' }}>
         <div style={{ fontSize: '13px', color: '#999', marginBottom: '24px' }}>
           <Link href="/" style={{ color: '#999', textDecoration: 'none' }}>トップ</Link>

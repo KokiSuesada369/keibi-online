@@ -25,6 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/about`, lastModified: NOW, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${baseUrl}/nearby`, lastModified: NOW, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${baseUrl}/request`, lastModified: NOW, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/recruit`, lastModified: NOW, changeFrequency: 'weekly' as const, priority: 0.8 },
   ]
 
   const prefPages: MetadataRoute.Sitemap = PREF_SLUGS.map(pref => ({

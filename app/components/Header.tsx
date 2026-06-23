@@ -3,7 +3,6 @@ import { useState } from 'react'
 
 export default function Header() {
   const [open, setOpen] = useState(false)
-  const [jobTooltip, setJobTooltip] = useState(false)
 
   return (
     <header style={{ background: 'white', borderBottom: '1px solid #e8e8e8', position: 'sticky', top: 0, zIndex: 100 }}>
@@ -15,18 +14,7 @@ export default function Header() {
           <a href="/prefecture" style={{ color: '#555', textDecoration: 'none' }}>警備会社一覧</a>
           <a href="/news" style={{ color: '#555', textDecoration: 'none' }}>ニュース</a>
           <a href="/license" style={{ color: '#555', textDecoration: 'none' }}>資格情報</a>
-          <span
-            style={{ color: '#bbb', textDecoration: 'none', cursor: 'default', position: 'relative' }}
-            onMouseEnter={() => setJobTooltip(true)}
-            onMouseLeave={() => setJobTooltip(false)}
-          >
-            警備求人
-            {jobTooltip && (
-              <span style={{ position: 'absolute', top: '20px', left: '50%', transform: 'translateX(-50%)', background: '#1a1a2e', color: 'white', fontSize: '11px', padding: '4px 8px', borderRadius: '4px', whiteSpace: 'nowrap', zIndex: 200 }}>
-                近日公開予定
-              </span>
-            )}
-          </span>
+          <a href="/recruit" style={{ color: '#555', textDecoration: 'none' }}>警備求人</a>
           <a href="/osusume" style={{ color: '#555', textDecoration: 'none' }}>おすすめ警備会社</a>
           <a href="/nearby" style={{ color: '#555', textDecoration: 'none' }}>近くの警備会社</a>
           <a href="/request" style={{ color: '#555', textDecoration: 'none' }}>警備依頼</a>
@@ -45,7 +33,7 @@ export default function Header() {
             { label: '警備会社一覧', href: '/prefecture' },
             { label: 'ニュース', href: '/news' },
             { label: '資格情報', href: '/license' },
-            { label: '警備求人（近日公開）', href: '#', disabled: true },
+            { label: '警備求人', href: '/recruit' },
             { label: 'おすすめ警備会社', href: '/osusume' },
             { label: '近くの警備会社', href: '/nearby' },
             { label: '警備依頼', href: '/request' },
@@ -54,9 +42,9 @@ export default function Header() {
           ].map(item => (
             <a
               key={item.label}
-              href={item.disabled ? undefined : item.href}
-              onClick={() => { if (!item.disabled) setOpen(false) }}
-              style={{ display: 'block', padding: '14px 24px', color: item.disabled ? '#bbb' : '#1a1a2e', textDecoration: 'none', fontSize: '15px', borderBottom: '1px solid #f0f0f0', cursor: item.disabled ? 'default' : 'pointer' }}
+              href={item.href}
+              onClick={() => setOpen(false)}
+              style={{ display: 'block', padding: '14px 24px', color: '#1a1a2e', textDecoration: 'none', fontSize: '15px', borderBottom: '1px solid #f0f0f0', cursor: 'pointer' }}
             >
               {item.label}
             </a>

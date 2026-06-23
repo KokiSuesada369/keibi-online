@@ -12,6 +12,7 @@ export default function Footer() {
           { label: '警備会社一覧', href: '/prefecture' },
           { label: 'ニュース', href: '/news' },
           { label: '資格情報', href: '/license' },
+          { label: '警備求人', href: '/recruit' },
           { label: '近くの警備会社を探す', href: '/nearby' },
           { label: 'かんたん警備依頼', href: '/request' },
           { label: 'コラム', href: '/column' },

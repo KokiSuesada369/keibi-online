@@ -28,7 +28,6 @@ export default function Footer() {
             {l.label}
           </a>
         ))}
-        <span title="近日公開予定" style={{ fontSize: '13px', color: '#bbb', cursor: 'default' }}>警備求人</span>
       </div>
       <div style={{ fontSize: '11px', color: '#bbb' }}>© 2026 keibi.online All rights reserved.</div>
     </footer>

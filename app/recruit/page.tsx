@@ -60,7 +60,7 @@ const EMP_COLOR: Record<string, { bg: string; color: string }> = {
 function Row({ label, value }: { label: React.ReactNode; value: string }) {
   return (
     <div style={{ display: 'flex', borderBottom: '1px solid #f3f4f6' }}>
-      <div style={{ width: '70px', flexShrink: 0, padding: '12px 6px 12px 12px', background: '#f8f9fa', fontSize: '12px', fontWeight: 700, color: '#6b7280', lineHeight: 1.5, wordBreak: 'keep-all' }}>{label}</div>
+      <div style={{ width: '70px', flexShrink: 0, padding: '12px 4px 12px 8px', background: '#f8f9fa', fontSize: '11px', fontWeight: 700, color: '#6b7280', lineHeight: 1.5, wordBreak: 'keep-all', letterSpacing: '-0.02em' }}>{label}</div>
       <div style={{ flex: 1, minWidth: 0, padding: '12px 14px', fontSize: '13px', color: '#374151', lineHeight: 1.7, wordBreak: 'break-word' }}>{value}</div>
     </div>
   )
@@ -134,7 +134,7 @@ export default function RecruitPage() {
                       {job.trial && <Row label="試用期間" value={job.trial} />}
                       {job.insurance && <Row label="社会保険" value={job.insurance} />}
                       {job.training && <Row label="研修制度" value={job.training} />}
-                      {job.qualification && <Row label={<>資格・<br />経験</>} value={job.qualification} />}
+                      {job.qualification && <Row label="資格・経験" value={job.qualification} />}
                     </div>
 
                     {/* 応募ボタン */}

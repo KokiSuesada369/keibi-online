@@ -1,8 +1,6 @@
 'use client'
 import { useRef, useEffect } from 'react'
 
-const COMING_SOON = '近日公開予定です'
-
 const arrowBtnStyle: React.CSSProperties = {
   position: 'absolute',
   top: '50%',
@@ -28,7 +26,7 @@ export default function ServiceCards({ totalCompanies }: { totalCompanies: strin
     { icon: '🏢', name: '警備会社検索', desc: '全国を都道府県・業務別に検索', count: `${totalCompanies}社掲載`, href: '/prefecture' },
     { icon: '📰', name: '業界ニュース', desc: '最新情報・法改正をお届け', count: 'ニュース掲載中', href: '/news' },
     { icon: '🎖️', name: '資格・検定情報', desc: '警備業務検定・資格取得ガイド', count: '講習日程掲載中', href: '/license' },
-    { icon: '💼', name: '警備求人', desc: '全国の警備員・管理職の求人', count: '近日公開', href: '#' },
+    { icon: '💼', name: '警備求人', desc: '全国の警備員・管理職の求人', count: '求人を見る →', href: '/recruit' },
     { icon: '🏆', name: 'おすすめ警備会社', desc: '地域・業務別ランキング掲載', count: 'ランキングを見る →', href: '/osusume' },
     { icon: '📝', name: '警備業界コラム', desc: '選び方・業界知識・ランキング', count: 'コラム掲載中', href: '/column' },
     { icon: '📍', name: '近くの警備会社を探す', desc: 'エリアを指定して検索', count: 'エリアから探す →', href: '/nearby' },
@@ -83,8 +81,7 @@ export default function ServiceCards({ totalCompanies }: { totalCompanies: strin
         {tripled.map((s, i) => (
           <a
             key={`${s.name}-${i}`}
-            href={s.href === '#' ? '#' : s.href}
-            onClick={s.href === '#' ? (e) => { e.preventDefault(); alert(COMING_SOON) } : undefined}
+            href={s.href}
             style={{ textDecoration: 'none', flexShrink: 0, width: '200px' }}
           >
             <div style={{ background: '#fafafa', border: '1px solid #eee', borderRadius: '10px', padding: '14px' }}>
